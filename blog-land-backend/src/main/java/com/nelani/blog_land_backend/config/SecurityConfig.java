@@ -21,7 +21,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .formLogin(login -> login.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/oauth2/**", "/api/v1/auth/oauth2/callback", "/error").permitAll()
+                        .requestMatchers("/auth/**", "/oauth2/**", "/api/v1/auth/oauth2/callback", "/error",
+                                "/h2-console/**", "/contact-us/**", "/newsletter/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth.successHandler(customSuccessHandler))
