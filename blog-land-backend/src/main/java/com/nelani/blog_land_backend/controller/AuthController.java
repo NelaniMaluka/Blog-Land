@@ -1,14 +1,11 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.config.JwtUtil;
-
+import com.nelani.blog_land_backend.response.ErrorResponse;
 import com.nelani.blog_land_backend.model.User;
-import com.nelani.blog_land_backend.repository.UserRepository;
+import com.nelani.blog_land_backend.service.AuthService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -17,40 +14,38 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private UserRepository userRepo;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtUtil jwtUtils;
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
-        if (userRepo.findByEmail(user.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("User already exists");
+        try {
+            return authService.registerUser(user);
+        } catch (IllegalArgumentException e) {
+            ErrorResponse errorResponse = new ErrorResponse("Validation Error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        } catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse("Internal Server Error",
+                    "An unexpected error occurred while saving your message. Please try again later.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setProvider("LOCAL");
-        userRepo.save(user);
-
-        String token = jwtUtils.generateJwtToken(user.getEmail());
-        return ResponseEntity.ok(Map.of("jwt", token));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> payload) {
-        String email = payload.get("email");
-        String password = payload.get("password");
-
-        User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
-
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        try {
+            return authService.loginUser(payload);
+        } catch (IllegalArgumentException e) {
+            ErrorResponse errorResponse = new ErrorResponse("Validation Error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        } catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse("Internal Server Error",
+                    "An unexpected error occurred while saving your message. Please try again later.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
-
-        String token = jwtUtils.generateJwtToken(email);
-        return ResponseEntity.ok(Map.of("jwt", token));
     }
 
 }
