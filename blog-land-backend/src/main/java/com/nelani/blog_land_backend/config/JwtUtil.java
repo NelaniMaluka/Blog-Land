@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.config;
 
+import com.nelani.blog_land_backend.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -10,15 +11,17 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // 🔐 Securely generated secret key
+    // Securely generated secret key
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
-    // ⏱️ Token validity (e.g. 1 day = 86400000 ms)
+    // Token validity (e.g. 1 day = 86400000 ms)
     private final int jwtExpirationMs = 86400000;
 
-    public String generateJwtToken(String email) {
+    public String generateJwtToken(User user) {
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(user.getEmail())
+                .claim("id", user.getId())
+                .claim("name", user.getFirstname() + " " + user.getLastname())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(key)
