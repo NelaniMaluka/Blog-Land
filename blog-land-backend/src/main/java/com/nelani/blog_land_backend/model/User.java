@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,16 +44,23 @@ public class User {
     // Add profile icon URL field
     private String profileIconUrl;
 
+    //Add user location
+    private String location;
+
     @Builder.Default
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
 
     @Builder.Default
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
     @Builder.Default
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Like> likes = new ArrayList<>();
+
 }
 
