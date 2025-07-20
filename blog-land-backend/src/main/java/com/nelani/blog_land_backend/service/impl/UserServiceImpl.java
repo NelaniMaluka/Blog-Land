@@ -1,7 +1,7 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Response.ErrorResponse;
-import com.nelani.blog_land_backend.Response.UserResponse;
+import com.nelani.blog_land_backend.response.ErrorResponse;
+import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.Util.FormValidation;
 import com.nelani.blog_land_backend.config.JwtUtil;
 import com.nelani.blog_land_backend.model.User;

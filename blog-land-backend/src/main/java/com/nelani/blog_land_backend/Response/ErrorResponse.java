@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.Response;
+package com.nelani.blog_land_backend.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

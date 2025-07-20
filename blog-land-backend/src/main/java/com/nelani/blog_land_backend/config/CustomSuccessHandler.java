@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.config;
 
-import com.nelani.blog_land_backend.Response.UserResponse;
+import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;

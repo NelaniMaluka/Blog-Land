@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.Response;
+package com.nelani.blog_land_backend.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

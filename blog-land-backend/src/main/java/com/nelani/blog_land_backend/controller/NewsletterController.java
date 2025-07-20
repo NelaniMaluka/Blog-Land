@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.Response.ErrorResponse;
+import com.nelani.blog_land_backend.response.ErrorResponse;
 import com.nelani.blog_land_backend.model.Newsletter;
 import com.nelani.blog_land_backend.service.NewsletterService;
 
