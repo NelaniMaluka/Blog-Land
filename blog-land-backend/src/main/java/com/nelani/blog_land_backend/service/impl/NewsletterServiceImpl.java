@@ -27,6 +27,7 @@ public class NewsletterServiceImpl implements NewsletterService {
             // trim and validate fields
             String email = FormValidation.trimAndValidate(newsletter.getEmail(), "Email");
 
+            // Validate email format
             if (!FormValidation.isValidEmail(email)){
                 return ResponseEntity.badRequest().body(new ErrorResponse("Invalid email format",
                         "The provided email address is not valid. Please provide a valid email address."));
