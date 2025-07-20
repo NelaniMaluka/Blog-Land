@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.config;
 
+import com.nelani.blog_land_backend.Response.UserResponse;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,9 +39,27 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             return userRepo.save(newUser);
         });
 
-        String token = jwtUtils.generateJwtToken(email);
+        String token = jwtUtils.generateJwtToken(user);
+
+        UserResponse userResponse = new UserResponse(
+                user.getId(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getEmail(),
+                user.getProfileIconUrl(),
+                user.getLocation(),
+                token
+        );
+
         response.setContentType("application/json");
-        response.getWriter().write("{\"jwt\":\"" + token + "\"}");
+        response.setCharacterEncoding("UTF-8");
+
+        // Use Jackson ObjectMapper or similar to serialize userResponse to Json
+        String json = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(userResponse);
+
+        response.getWriter().write(json);
+        response.getWriter().flush();
+        response.getWriter().close();
     }
 }
 
