@@ -7,7 +7,6 @@ import com.nelani.blog_land_backend.repository.ContactRepository;
 import com.nelani.blog_land_backend.service.ContactService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +28,7 @@ public class ContactServiceImpl implements ContactService {
             String email = FormValidation.trimAndValidate(contact.getEmail(), "Email");
             String message = FormValidation.trimAndValidate(contact.getMessage(), "Message");
 
+            // Validate email format
             if (!FormValidation.isValidEmail(email)){
                 return ResponseEntity.badRequest().body(new ErrorResponse("Invalid email format",
                         "The provided email address is not valid. Please provide a valid email address."));
