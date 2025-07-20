@@ -7,7 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +30,7 @@ public class UnifiedAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            FilterChain filterChain) throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
 
@@ -54,11 +54,12 @@ public class UnifiedAuthenticationFilter extends OncePerRequestFilter {
 
             // Improved injection logic
             Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
-            boolean shouldInject = (existingAuth == null) || !(existingAuth instanceof UsernamePasswordAuthenticationToken);
+            boolean shouldInject = (existingAuth == null)
+                    || !(existingAuth instanceof UsernamePasswordAuthenticationToken);
 
             if (shouldInject) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
+                        Collections.emptyList());
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
@@ -69,4 +70,3 @@ public class UnifiedAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-
