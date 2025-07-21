@@ -26,6 +26,9 @@ public class UserResponse {
     @JsonProperty("lastname")
     private String lastname;
 
+    @JsonProperty("provider")
+    private String provider;
+
     @JsonProperty("profileIconUrl")
     private String profileIconUrl;
 

@@ -15,8 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
-
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -37,9 +35,9 @@ public class UserServiceImpl implements UserService {
             String firstname = FormValidation.trimAndValidate(updateUser.getFirstname(), "Firstname");
             String lastname = FormValidation.trimAndValidate(updateUser.getLastname(), "Lastname");
             String email = FormValidation.trimAndValidate(updateUser.getEmail(), "Email");
+            String provider = FormValidation.trimAndValidate(updateUser.getProvider(), " Provider");
             String profileIconUrl = updateUser.getProfileIconUrl();
             String location = updateUser.getLocation();
-
 
             // Validate email format
             if (!FormValidation.isValidEmail(email)){
@@ -51,10 +49,28 @@ public class UserServiceImpl implements UserService {
 
             if (auth == null || !(auth.getPrincipal() instanceof User)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("error", "No authenticated user found"));
+                        .body(new ErrorResponse("error",
+                                "No authenticated user found"));
+
             }
 
             User user = (User) auth.getPrincipal();
+
+            // Restricts email change to local users
+            if (!user.getProvider().equals("LOCAL") && !user.getEmail().equals(email)){
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse("Authentication Type Error",
+                        "OAuth user's can not change their email."));
+            }
+
+            // Validates user provider
+            if (!user.getProvider().equals(provider)){
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse("Authentication Type Error",
+                                "The provided authentication type is not valid."));
+            }
 
             user.setFirstname(firstname);
             user.setLastname(lastname);
@@ -69,9 +85,10 @@ public class UserServiceImpl implements UserService {
 
             UserResponse responsePayload = new UserResponse(
                     user.getId(),
+                    user.getEmail(),
                     user.getFirstname(),
                     user.getLastname(),
-                    user.getEmail(),
+                    user.getProvider(),
                     user.getProfileIconUrl(),
                     user.getLocation(),
                     newToken

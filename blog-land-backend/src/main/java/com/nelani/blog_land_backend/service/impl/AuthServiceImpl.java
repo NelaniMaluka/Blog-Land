@@ -65,9 +65,10 @@ public class AuthServiceImpl implements AuthService {
 
             UserResponse userResponse = new UserResponse(
                     user.getId(),
+                    user.getEmail(),
                     user.getFirstname(),
                     user.getLastname(),
-                    user.getEmail(),
+                    user.getProvider(),
                     user.getProfileIconUrl(),
                     user.getLocation(),
                     token
@@ -136,9 +137,10 @@ public class AuthServiceImpl implements AuthService {
 
             UserResponse userResponse = new UserResponse(
                     user.getId(),
+                    user.getEmail(),
                     user.getFirstname(),
                     user.getLastname(),
-                    user.getEmail(),
+                    user.getProvider(),
                     user.getProfileIconUrl(),
                     user.getLocation(),
                     token
