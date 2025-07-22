@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/newsletter")
+@RequestMapping("/api/newsletter")
 public class NewsletterController {
 
     private final NewsletterService newsletterService;
