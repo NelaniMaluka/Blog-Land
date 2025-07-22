@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.service.impl;
 
+import com.nelani.blog_land_backend.Util.UserValidation;
 import com.nelani.blog_land_backend.response.ErrorResponse;
 import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.Util.FormValidation;
@@ -10,10 +11,10 @@ import com.nelani.blog_land_backend.service.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -28,8 +29,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> updateUserDetails(User updateUser){
-        try{
+    public ResponseEntity<?> updateUserDetails(User updateUser) {
+        try {
 
             // trim and validate fields
             String firstname = FormValidation.trimAndValidate(updateUser.getFirstname(), "Firstname");
@@ -40,32 +41,30 @@ public class UserServiceImpl implements UserService {
             String location = updateUser.getLocation();
 
             // Validate email format
-            if (!FormValidation.isValidEmail(email)){
+            if (!FormValidation.isValidEmail(email)) {
                 return ResponseEntity.badRequest().body(new ErrorResponse("Invalid email format",
                         "The provided email address is not valid. Please provide a valid email address."));
             }
 
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-            if (auth == null || !(auth.getPrincipal() instanceof User)) {
+            // Get the authenticated user
+            Optional<User> optionalUser = UserValidation.getAuthenticatedUser();
+            if (optionalUser.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ErrorResponse("error",
-                                "No authenticated user found"));
-
+                        .body(new ErrorResponse("error", "No authenticated user found"));
             }
 
-            User user = (User) auth.getPrincipal();
+            User user = optionalUser.get();
 
             // Restricts email change to local users
-            if (!user.getProvider().equals("LOCAL") && !user.getEmail().equals(email)){
+            if (!user.getProvider().equals("LOCAL") && !user.getEmail().equals(email)) {
                 return ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
                         .body(new ErrorResponse("Authentication Type Error",
-                        "OAuth user's can not change their email."));
+                                "OAuth user's can not change their email."));
             }
 
             // Validates user provider
-            if (!user.getProvider().equals(provider)){
+            if (!user.getProvider().equals(provider)) {
                 return ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
                         .body(new ErrorResponse("Authentication Type Error",
@@ -91,12 +90,10 @@ public class UserServiceImpl implements UserService {
                     user.getProvider(),
                     user.getProfileIconUrl(),
                     user.getLocation(),
-                    newToken
-            );
+                    newToken);
 
             return ResponseEntity.ok(responsePayload);
-        }  catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Internal Server Error",
                             "An unexpected error occurred while saving your message. Please try again later."));
