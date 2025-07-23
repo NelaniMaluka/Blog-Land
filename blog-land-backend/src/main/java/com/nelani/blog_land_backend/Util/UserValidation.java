@@ -1,6 +1,7 @@
 package com.nelani.blog_land_backend.Util;
 
 import com.nelani.blog_land_backend.model.User;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -14,6 +15,11 @@ public class UserValidation {
             return Optional.empty();
         }
         return Optional.of((User) auth.getPrincipal());
+    }
+
+    public static User getOrThrowUnauthorized() {
+        return UserValidation.getAuthenticatedUser()
+                .orElseThrow(() -> new BadCredentialsException("No authenticated user found"));
     }
 
 }
