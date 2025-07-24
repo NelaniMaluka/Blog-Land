@@ -6,7 +6,7 @@ import com.nelani.blog_land_backend.Util.UserValidation;
 import com.nelani.blog_land_backend.dto.PasswordDto;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
-import com.nelani.blog_land_backend.service.PasswordService;
+import com.nelani.blog_land_backend.service.ChangePasswordService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class PasswordServiceImpl implements PasswordService {
+public class ChangePasswordServiceImpl implements ChangePasswordService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    public PasswordServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public ChangePasswordServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
