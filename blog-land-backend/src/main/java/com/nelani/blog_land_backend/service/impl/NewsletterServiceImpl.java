@@ -6,6 +6,7 @@ import com.nelani.blog_land_backend.model.Newsletter;
 import com.nelani.blog_land_backend.repository.NewsletterRepository;
 import com.nelani.blog_land_backend.service.NewsletterService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +37,7 @@ public class NewsletterServiceImpl implements NewsletterService {
 
         // Save the newsletter email
         newsletterRepository.save(newsletter);
-        return ResponseEntity.ok("Success, we received your email. Thank you for subscribing to our newsletter");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Success, we received your email. Thank you for subscribing to our newsletter.");
     }
 
 }

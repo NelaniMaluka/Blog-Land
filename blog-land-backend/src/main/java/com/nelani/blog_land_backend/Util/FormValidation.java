@@ -54,4 +54,11 @@ public class FormValidation {
         }
         return field.trim();
     }
+
+    public static Long trimAndValidate(Long field, String fieldName) {
+        if (field == null) {
+            throw new IllegalArgumentException(fieldName + field + " is required.");
+        }
+        return field;
+    }
 }

@@ -5,6 +5,7 @@ import com.nelani.blog_land_backend.model.Contact;
 import com.nelani.blog_land_backend.repository.ContactRepository;
 import com.nelani.blog_land_backend.service.ContactService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,6 @@ public class ContactServiceImpl implements ContactService {
 
         // Save the contact message
         contactRepository.save(contact);
-        return ResponseEntity.ok("Success, we received your message. Thank you for reaching out.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Success, we received your message. Thank you for reaching out.");
     }
 }

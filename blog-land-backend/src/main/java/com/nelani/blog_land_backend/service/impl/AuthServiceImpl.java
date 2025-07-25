@@ -8,6 +8,7 @@ import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.service.AuthService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -107,6 +108,6 @@ public class AuthServiceImpl implements AuthService {
                                 user.getLocation(),
                                 token);
 
-                return ResponseEntity.ok(userResponse);
+                return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
         }
 }
