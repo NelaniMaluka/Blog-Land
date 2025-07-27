@@ -5,7 +5,6 @@ import com.nelani.blog_land_backend.Util.ResponseBuilder;
 import com.nelani.blog_land_backend.config.JwtUtil;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
-import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.service.AuthService;
 
 import org.springframework.http.HttpStatus;
@@ -52,17 +51,7 @@ public class AuthServiceImpl implements AuthService {
                 // Generates Jwt token
                 String token = jwtUtils.generateJwtToken(user);
 
-                UserResponse userResponse = new UserResponse(
-                                user.getId(),
-                                user.getEmail(),
-                                user.getFirstname(),
-                                user.getLastname(),
-                                user.getProvider(),
-                                user.getProfileIconUrl(),
-                                user.getLocation(),
-                                token);
-
-                return ResponseEntity.ok(userResponse);
+                return ResponseEntity.ok(token);
         }
 
         @Override
@@ -98,16 +87,6 @@ public class AuthServiceImpl implements AuthService {
                 // Generate JwtToken
                 String token = jwtUtils.generateJwtToken(user);
 
-                UserResponse userResponse = new UserResponse(
-                                user.getId(),
-                                user.getEmail(),
-                                user.getFirstname(),
-                                user.getLastname(),
-                                user.getProvider(),
-                                user.getProfileIconUrl(),
-                                user.getLocation(),
-                                token);
-
-                return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
+                return ResponseEntity.status(HttpStatus.CREATED).body(token);
         }
 }

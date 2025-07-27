@@ -17,10 +17,32 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/update")
+    @GetMapping()
+    public ResponseEntity<?> getUseDetails() {
+        try {
+            return userService.getUserDetails();
+        } catch (IllegalArgumentException e) {
+            return ResponseBuilder.invalid("Validation Error", e.getMessage());
+        } catch (Exception e) {
+            return ResponseBuilder.serverError();
+        }
+    }
+
+    @PutMapping("/update-user")
     public ResponseEntity<?> updateUseDetails(@RequestBody User user) {
         try {
             return userService.updateUserDetails(user);
+        } catch (IllegalArgumentException e) {
+            return ResponseBuilder.invalid("Validation Error", e.getMessage());
+        } catch (Exception e) {
+            return ResponseBuilder.serverError();
+        }
+    }
+
+    @DeleteMapping("/delete-user")
+    public ResponseEntity<?> deleteUseDetails(@RequestParam Long id) {
+        try {
+            return userService.deleteUserDetails(id);
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {

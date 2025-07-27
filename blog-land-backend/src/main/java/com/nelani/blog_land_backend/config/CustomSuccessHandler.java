@@ -1,6 +1,5 @@
 package com.nelani.blog_land_backend.config;
 
-import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +22,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException {
+            Authentication authentication) throws IOException {
 
         DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
         String email = oauthUser.getAttribute("email");
@@ -41,26 +40,14 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
         String token = jwtUtils.generateJwtToken(user);
 
-        UserResponse userResponse = new UserResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getFirstname(),
-                user.getLastname(),
-                user.getProvider(),
-                user.getProfileIconUrl(),
-                user.getLocation(),
-                token
-        );
-
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
         // Use Jackson ObjectMapper or similar to serialize userResponse to Json
-        String json = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(userResponse);
+        String json = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(token);
 
         response.getWriter().write(json);
         response.getWriter().flush();
         response.getWriter().close();
     }
 }
-

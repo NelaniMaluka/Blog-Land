@@ -61,4 +61,11 @@ public class FormValidation {
         }
         return field;
     }
+
+    public static int trimAndValidate(Integer field, String fieldName) {
+        if (field == null) {
+            throw new IllegalArgumentException(fieldName + field + " is required.");
+        }
+        return field;
+    }
 }

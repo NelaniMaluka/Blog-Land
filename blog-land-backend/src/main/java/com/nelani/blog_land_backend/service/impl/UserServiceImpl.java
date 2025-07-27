@@ -26,8 +26,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public ResponseEntity<?> getUserDetails() {
+        // Get current authenticated user
+        User user = UserValidation.getOrThrowUnauthorized();
+
+        UserResponse responsePayload = new UserResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getProvider(),
+                user.getProfileIconUrl(),
+                user.getLocation());
+
+        return ResponseEntity.ok(responsePayload);
+    }
+
+    @Override
+    @Transactional
     public ResponseEntity<?> updateUserDetails(User updateUser) {
         // trim and validate fields
+        Long id = FormValidation.trimAndValidate(updateUser.getId(), "User Id");
         String firstname = FormValidation.trimAndValidate(updateUser.getFirstname(), "Firstname");
         String lastname = FormValidation.trimAndValidate(updateUser.getLastname(), "Lastname");
         String email = FormValidation.validatedEmail(updateUser.getEmail());
@@ -37,6 +56,12 @@ public class UserServiceImpl implements UserService {
 
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
+
+        // Checks if the user id matches the auth user id
+        if (!user.getId().equals(id)) {
+            return ResponseBuilder.unauthorized("Unauthorized",
+                    "The provided user Id does not match the authenticated user id");
+        }
 
         // Restricts email change to local users
         if (!user.getProvider().equals("LOCAL") && !user.getEmail().equals(email)) {
@@ -61,17 +86,26 @@ public class UserServiceImpl implements UserService {
         // Generate new token with updated email
         String newToken = jwtUtil.generateJwtToken(user);
 
-        UserResponse responsePayload = new UserResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getFirstname(),
-                user.getLastname(),
-                user.getProvider(),
-                user.getProfileIconUrl(),
-                user.getLocation(),
-                newToken);
-
-        return ResponseEntity.ok(responsePayload);
+        return ResponseEntity.ok(newToken);
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<?> deleteUserDetails(Long id) {
+        Long Id = FormValidation.trimAndValidate(id, "User Id");
+
+        // Get current authenticated user
+        User user = UserValidation.getOrThrowUnauthorized();
+
+        // Checks if the user id matches the auth user id
+        if (!user.getId().equals(id)) {
+            return ResponseBuilder.unauthorized("Unauthorized",
+                    "The provided user Id does not match the authenticated user id"+user.getId() + " " + Id);
+        }
+
+        // Deletes user
+        userRepository.delete(user);
+
+        return ResponseEntity.ok("Success, Successfully deleted your account");
+    }
 }
