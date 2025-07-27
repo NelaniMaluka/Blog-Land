@@ -26,7 +26,23 @@ public class Post {
     private String title;
 
     @Lob
+    @Column(nullable = false)
     private String content;
+
+    @Column(nullable = false)
+    private int wordCount;
+
+    @Column(nullable = false)
+    private int readTime;
+
+    @Column(nullable = false)
+    private String summary;
+
+    @Column(nullable = false)
+    private String imgUrl;
+
+    @Lob
+    private String references;
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -40,12 +56,26 @@ public class Post {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Comment> comments = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Like> likes = new ArrayList<>();
+
+    public void setContent(String content) {
+        this.content = content;
+        this.wordCount = calculateWordCount(content);
+        this.readTime = calculateReadTime(this.wordCount);
+    }
+
+    private int calculateWordCount(String content) {
+        return content == null ? 0 : content.trim().split("\\s+").length;
+    }
+
+    private int calculateReadTime(int words) {
+        int averageWordsPerMinute = 200; // You can adjust this
+        return Math.max(1, words / averageWordsPerMinute);
+    }
+
 }
 

@@ -25,7 +25,7 @@ public class Category {
     private String name;
 
     @Builder.Default
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 }
 

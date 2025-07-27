@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class LikeResponse {
     private Long id;
+    private Long userId;
 }
