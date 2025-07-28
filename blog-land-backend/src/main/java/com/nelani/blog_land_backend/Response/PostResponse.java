@@ -23,11 +23,10 @@ public class PostResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Long categoryId;
-    private String author;
-    private String authorProfileUrl;
     private String summary;
-    private String profileImgUrl;
+    private String postImgUrl;
     private String references;
+    private UserResponse user;
     private List<CommentResponse> comments;
     private List<LikeResponse> likes;
 }

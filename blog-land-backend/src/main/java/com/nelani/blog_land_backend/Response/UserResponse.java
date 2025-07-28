@@ -1,11 +1,13 @@
 package com.nelani.blog_land_backend.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
+import com.nelani.blog_land_backend.model.ExperienceLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -20,4 +22,8 @@ public class UserResponse {
     private String provider;
     private String profileIconUrl;
     private String location;
+    private ExperienceLevel experience;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private Map<String, String> socials;
 }

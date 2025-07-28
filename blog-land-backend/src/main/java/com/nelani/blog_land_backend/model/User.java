@@ -8,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "users")
@@ -45,6 +47,19 @@ public class User {
 
     //Add user location
     private String location;
+
+    @Enumerated(EnumType.STRING)
+    private ExperienceLevel experience;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "author_socials",
+            joinColumns = @JoinColumn(name = "author_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"author_id", "platform"})
+    )
+    @Column(name = "url")
+    @MapKeyColumn(name = "platform")
+    private Map<String, String> socials = new HashMap<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();

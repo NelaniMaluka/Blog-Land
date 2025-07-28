@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/post")
 public class PostsController {
@@ -24,6 +26,24 @@ public class PostsController {
     public PostsController(PostRepository postRepository, PostService postService) {
         this.postRepository = postRepository;
         this.postService = postService;
+    }
+
+    @GetMapping("/get-all/post")
+    public ResponseEntity<?> getPost(@RequestParam Long id) {
+        try {
+            // Checks if the post exists
+            Optional<Post> post = postRepository.findById(id);
+            if (post.isEmpty()) {
+                return ResponseBuilder.invalid("Post not found",
+                        "No post with ID " + id + " exists.");
+            }
+
+            PostResponse response = PostBuilder.generateUserPostWithUserInfo(post.get());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseBuilder.serverError();
+        }
     }
 
     @GetMapping("/get-all/posts")

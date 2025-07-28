@@ -1,7 +1,9 @@
 package com.nelani.blog_land_backend.service.impl;
 
 import com.nelani.blog_land_backend.Util.ResponseBuilder;
+import com.nelani.blog_land_backend.Util.UserBuilder;
 import com.nelani.blog_land_backend.Util.UserValidation;
+import com.nelani.blog_land_backend.model.ExperienceLevel;
 import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.Util.FormValidation;
 import com.nelani.blog_land_backend.config.JwtUtil;
@@ -12,6 +14,8 @@ import com.nelani.blog_land_backend.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,14 +34,7 @@ public class UserServiceImpl implements UserService {
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
-        UserResponse responsePayload = new UserResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getFirstname(),
-                user.getLastname(),
-                user.getProvider(),
-                user.getProfileIconUrl(),
-                user.getLocation());
+        UserResponse responsePayload = UserBuilder.buildLoggedInUser(user);
 
         return ResponseEntity.ok(responsePayload);
     }
@@ -53,6 +50,8 @@ public class UserServiceImpl implements UserService {
         String provider = FormValidation.trimAndValidate(updateUser.getProvider(), " Provider");
         String profileIconUrl = updateUser.getProfileIconUrl();
         String location = updateUser.getLocation();
+        ExperienceLevel experienceLevel = updateUser.getExperience();
+        Map<String, String> socials = updateUser.getSocials();
 
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
@@ -80,6 +79,8 @@ public class UserServiceImpl implements UserService {
         user.setEmail(email);
         user.setProfileIconUrl(profileIconUrl);
         user.setLocation(location);
+        user.setExperience(experienceLevel);
+        user.setSocials(socials);
 
         userRepository.save(user);
 

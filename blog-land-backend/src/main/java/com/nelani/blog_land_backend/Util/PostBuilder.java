@@ -20,11 +20,10 @@ public class PostBuilder {
         response.setCreatedAt(post.getCreatedAt());
         response.setUpdatedAt(post.getUpdatedAt());
         response.setCategoryId(post.getCategory().getId());
-        response.setAuthor(post.getUser().getFirstname() + " " + post.getUser().getLastname());
-        response.setAuthorProfileUrl(post.getUser().getProfileIconUrl());
-        response.setProfileImgUrl(post.getImgUrl());
+        response.setPostImgUrl(post.getImgUrl());
         response.setSummary(post.getSummary());
         response.setReferences(post.getReferences());
+        response.setUser(UserBuilder.publicUser(post.getUser()));
         response.setComments(mapComments(post.getComments()));
         response.setLikes(mapLikes(post.getLikes()));
         return response;
@@ -35,6 +34,7 @@ public class PostBuilder {
                 .map(c -> new CommentResponse(
                         c.getId(),
                         c.getUser().getId(),
+                        c.getPost().getId(),
                         c.getContent(),
                         c.getUser().getFirstname() + " " + c.getUser().getLastname(),
                         c.getUser().getProfileIconUrl(),
@@ -45,9 +45,10 @@ public class PostBuilder {
     public static CommentResponse mapComment(Comment comment) {
         CommentResponse response = new CommentResponse();
         response.setId(comment.getId());
+        response.setUserId(comment.getUser().getId());
+        response.setPostId(comment.getPost().getId());
         response.setContent(comment.getContent());
         response.setAuthor(comment.getUser().getFirstname() + " " + comment.getUser().getLastname());
-        response.setUserId(comment.getUser().getId());
         response.setProfileImgUrl(comment.getUser().getProfileIconUrl());
         response.setCreatedAt(comment.getCreatedAt());
         return response;
