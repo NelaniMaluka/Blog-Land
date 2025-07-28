@@ -77,5 +77,10 @@ public class Post {
         return Math.max(1, words / averageWordsPerMinute);
     }
 
+    @Override
+    public String toString() {
+        return "Post{id=" + id + ", title='" + title + "', userId=" + user.getId() + "}";
+    }
+
 }
 

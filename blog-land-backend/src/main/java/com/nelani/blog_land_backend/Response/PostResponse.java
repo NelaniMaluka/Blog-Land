@@ -26,7 +26,7 @@ public class PostResponse {
     private String author;
     private String authorProfileUrl;
     private String summary;
-    private String imgUrl;
+    private String profileImgUrl;
     private String references;
     private List<CommentResponse> comments;
     private List<LikeResponse> likes;

@@ -5,15 +5,15 @@ import com.nelani.blog_land_backend.Util.PostBuilder;
 import com.nelani.blog_land_backend.Util.ResponseBuilder;
 import com.nelani.blog_land_backend.Util.UserValidation;
 import com.nelani.blog_land_backend.dto.PostDto;
-import com.nelani.blog_land_backend.model.Category;
-import com.nelani.blog_land_backend.model.Post;
-import com.nelani.blog_land_backend.model.User;
+import com.nelani.blog_land_backend.model.*;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.response.PostResponse;
 import com.nelani.blog_land_backend.service.PostService;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +27,9 @@ import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
@@ -42,6 +45,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public ResponseEntity<?> getByCategoryId(Long categoryId, int page, int size) {
+        // Trim and validate
         Long id = FormValidation.trimAndValidate(categoryId, "Category Id");
 
         // Validate category existence
@@ -87,6 +91,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public ResponseEntity<?> addPost(PostDto postDto) {
+        // Trim and validate
         String title = FormValidation.trimAndValidate(postDto.getTitle(), "Title");
         String content = FormValidation.trimAndValidate(postDto.getContent(), "Content");
         Long userId = FormValidation.trimAndValidate(postDto.getUserId(), "User Id");
@@ -138,6 +143,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public ResponseEntity<?> updatePost(PostDto postDto) {
+        // Trim and validate
         Long id = FormValidation.trimAndValidate(postDto.getId(), "Post Id");
         String title = FormValidation.trimAndValidate(postDto.getTitle(), "Title");
         String content = FormValidation.trimAndValidate(postDto.getContent(), "Content");
@@ -193,6 +199,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public ResponseEntity<?> deletePost(PostDto postDto) {
+        // Trim and validate
         Long id = FormValidation.trimAndValidate(postDto.getId(), "Post Id");
         Long userId = FormValidation.trimAndValidate(postDto.getUserId(), "User Id");
 
@@ -221,9 +228,13 @@ public class PostServiceImpl implements PostService {
         Post existingPost = post.get();
         User postOwner = existingPost.getUser();
 
-        postOwner.getPosts().remove(existingPost);
-        postRepository.delete(existingPost);
-        postRepository.flush();
+        try {
+            postOwner.getPosts().remove(existingPost); // triggers orphanRemoval
+            entityManager.flush(); // should cascade delete comments and likes
+            entityManager.clear(); // refresh context
+        } catch (Exception e) {
+            throw new RuntimeException("Post deletion failed.");
+        }
 
         return ResponseEntity.ok("Success, Your post was successfully deleted");
     }

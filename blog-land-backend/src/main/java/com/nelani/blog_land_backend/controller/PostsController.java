@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
-
-
 @RestController
 @RequestMapping("/api/post")
 public class PostsController {
@@ -42,9 +40,10 @@ public class PostsController {
     }
 
     @GetMapping("/get-all/category")
-    public ResponseEntity<?> getAllPostsByCategory(@RequestParam Long categoryId, @RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<?> getAllPostsByCategory(@RequestParam Long categoryId, @RequestParam int page,
+            @RequestParam int size) {
         try {
-            return postService.getByCategoryId(categoryId , page, size);
+            return postService.getByCategoryId(categoryId, page, size);
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {

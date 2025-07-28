@@ -54,5 +54,10 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Like> likes;
+
+    @Override
+    public String toString() {
+        return "User{id=" + id + ", name='" + firstname + " " + lastname + "'}";
+    }
 }
 
