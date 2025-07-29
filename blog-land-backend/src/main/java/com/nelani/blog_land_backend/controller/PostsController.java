@@ -9,7 +9,6 @@ import com.nelani.blog_land_backend.response.PostResponse;
 import com.nelani.blog_land_backend.service.PostService;
 
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +42,15 @@ public class PostsController {
         }
     }
 
+    @GetMapping("/get-all/latest-post")
+    public ResponseEntity<?> getLatestPost(@RequestParam int page, @RequestParam int size) {
+        try {
+            return postService.getLatestPost(page, size);
+        } catch (Exception e) {
+            return ResponseBuilder.serverError();
+        }
+    }
+
     @GetMapping("/get-all/post")
     public ResponseEntity<?> getPost(@RequestParam Long id) {
         try {
@@ -65,7 +73,7 @@ public class PostsController {
     public ResponseEntity<?> getAllPosts(@RequestParam int page, @RequestParam int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<Post> postPage = postRepository.findAll(pageable);
+            Page<Post> postPage = postRepository.findAllByOrderByCreatedAtDesc(pageable);
 
             Page<PostResponse> responsePage = postPage.map(PostBuilder::generateUserPostWithUserInfo);
             return ResponseEntity.ok(responsePage);

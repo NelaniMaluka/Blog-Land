@@ -7,7 +7,7 @@ import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.repository.UserRepository;
-import org.jsoup.Jsoup;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.HtmlUtils;
@@ -43,7 +43,8 @@ public class TechCrunchSeeder {
         }
 
         for (int page = 1; page <= pages && seededCount < totalPostsToSeed; page++) {
-            String apiUrl = "https://techcrunch.com/wp-json/wp/v2/posts?per_page=" + pageSize + "&page=" + page + "&_embed";
+            String apiUrl = "https://techcrunch.com/wp-json/wp/v2/posts?per_page=" + pageSize + "&page=" + page
+                    + "&_embed";
 
             try {
                 ResponseEntity<JsonNode> response = restTemplate.getForEntity(apiUrl, JsonNode.class);
@@ -56,7 +57,8 @@ public class TechCrunchSeeder {
                 JsonNode posts = response.getBody();
 
                 for (JsonNode postNode : posts) {
-                    if (seededCount >= totalPostsToSeed) break;
+                    if (seededCount >= totalPostsToSeed)
+                        break;
 
                     try {
                         JsonNode titleNode = postNode.path("title").path("rendered");
@@ -64,13 +66,14 @@ public class TechCrunchSeeder {
                         JsonNode excerptNode = postNode.path("excerpt").path("rendered");
                         JsonNode linkNode = postNode.path("link");
 
-                        if (titleNode.isMissingNode() || contentNode.isMissingNode() || excerptNode.isMissingNode() || linkNode.isMissingNode()) {
+                        if (titleNode.isMissingNode() || contentNode.isMissingNode() || excerptNode.isMissingNode()
+                                || linkNode.isMissingNode()) {
                             continue;
                         }
 
                         String title = HtmlUtils.htmlUnescape(titleNode.asText());
-                        String content = Jsoup.parse(contentNode.asText()).text();
-                        String summary = Jsoup.parse(excerptNode.asText()).text();
+                        String content = contentNode.asText();
+                        String summary = excerptNode.asText();
                         String imageUrl = postNode.at("/_embedded/wp:featuredmedia/0/source_url").asText("");
                         int readTime = 3 + random.nextInt(5);
                         String referencesJson = linkNode.asText();
@@ -130,8 +133,7 @@ public class TechCrunchSeeder {
                 Map.entry("Personal Development", List.of("growth", "development", "self", "mindset")),
                 Map.entry("Business", List.of("business", "market", "enterprise", "startup", "company")),
                 Map.entry("Photography", List.of("photography", "camera", "photo", "lens", "shoot")),
-                Map.entry("DIY", List.of("diy", "craft", "handmade", "tutorial", "how to"))
-        );
+                Map.entry("DIY", List.of("diy", "craft", "handmade", "tutorial", "how to")));
 
         Map<Category, Integer> scoreMap = new HashMap<>();
 

@@ -1,10 +1,8 @@
 package com.nelani.blog_land_backend.Util;
 
 import com.nelani.blog_land_backend.model.Comment;
-import com.nelani.blog_land_backend.model.Like;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.response.CommentResponse;
-import com.nelani.blog_land_backend.response.LikeResponse;
 import com.nelani.blog_land_backend.response.PostResponse;
 
 import java.util.List;
@@ -25,7 +23,6 @@ public class PostBuilder {
         response.setReferences(post.getReferences());
         response.setUser(UserBuilder.publicUser(post.getUser()));
         response.setComments(mapComments(post.getComments()));
-        response.setLikes(mapLikes(post.getLikes()));
         return response;
     }
 
@@ -54,11 +51,10 @@ public class PostBuilder {
         return response;
     }
 
-    public static List<LikeResponse> mapLikes(List<Like> likes) {
-        return likes.stream()
-                .map(l -> new LikeResponse(
-                        l.getId(),
-                        l.getUser().getId()))
-                .toList();
+    public static int calculateReadTime(String content) {
+        int words = content == null ? 0 : content.trim().split("\\s+").length;
+        int averageWordsPerMinute = 200;
+        return Math.max(1, words / averageWordsPerMinute);
     }
+
 }

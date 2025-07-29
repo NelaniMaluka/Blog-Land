@@ -14,10 +14,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query(value = "SELECT * FROM posts ORDER BY RAND() LIMIT 1", nativeQuery = true)
     Post findRandomPost();
 
-    Page<Post> findAll(Pageable pageable);
+    Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<Post> findByCategoryId(Long categoryId, Pageable pageable);
+    Page<Post> findByCategoryIdOrderByCreatedAtDesc(Long categoryId, Pageable pageable);
 
-    Page<Post> findByUserId(Long userId, Pageable pageable);
+    Page<Post> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
 
 }

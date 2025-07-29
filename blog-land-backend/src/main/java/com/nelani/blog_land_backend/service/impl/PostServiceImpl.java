@@ -5,6 +5,7 @@ import com.nelani.blog_land_backend.Util.PostBuilder;
 import com.nelani.blog_land_backend.Util.ResponseBuilder;
 import com.nelani.blog_land_backend.Util.UserValidation;
 import com.nelani.blog_land_backend.dto.PostDto;
+import com.nelani.blog_land_backend.dto.TechCrunchPostDto;
 import com.nelani.blog_land_backend.model.*;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
@@ -21,8 +22,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -58,12 +62,47 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(page, size);
 
         // Fetch paginated posts by category
-        Page<Post> postPage = postRepository.findByCategoryId(id, pageable);
+        Page<Post> postPage = postRepository.findByCategoryIdOrderByCreatedAtDesc(id, pageable);
 
         // Convert to PostResponse while retaining pagination metadata
         Page<PostResponse> responsePage = postPage.map(PostBuilder::generateUserPostWithUserInfo);
 
         return ResponseEntity.ok(responsePage);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getLatestPost(int page, int size) {
+        try {
+            String apiUrl = "https://techcrunch.com/wp-json/wp/v2/posts?per_page=" + size + "&page=" + page + "&_embed";
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<TechCrunchPostDto[]> response = restTemplate.getForEntity(apiUrl, TechCrunchPostDto[].class);
+            TechCrunchPostDto[] externalPosts = response.getBody();
+
+            List<PostResponse> postResponses = Arrays.stream(externalPosts).map(dto -> {
+                String author = dto.get_embedded().getAuthor()[0].getName();
+                String title = dto.getTitle().getRendered();
+                String content = dto.getContent().getRendered();
+                String summary = dto.getExcerpt().getRendered();
+                LocalDateTime createdAt = LocalDateTime.parse(dto.getDate());
+
+                return PostResponse.builder()
+                        .title(title)
+                        .content(content)
+                        .summary(summary)
+                        .author(author)
+                        .source("TechCrunch")
+                        .createdAt(createdAt)
+                        .readTime(PostBuilder.calculateReadTime(content))
+                        .build();
+            }).toList();
+
+            return ResponseEntity.ok(postResponses);
+
+        } catch (Exception e) {
+            return ResponseBuilder.serverError();
+        }
     }
 
     @Override
@@ -80,7 +119,7 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(page, size);
 
         // Fetch paginated posts by category
-        Page<Post> postPage = postRepository.findByUserId(user.getId(), pageable);
+        Page<Post> postPage = postRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
 
         // Convert to PostResponse while retaining pagination metadata
         Page<PostResponse> responsePage = postPage.map(PostBuilder::generateUserPostWithUserInfo);

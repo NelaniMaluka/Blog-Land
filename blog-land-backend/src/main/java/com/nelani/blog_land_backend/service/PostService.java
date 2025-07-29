@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 public interface PostService {
     ResponseEntity<?> getByCategoryId(Long categoryId, int page, int size);
 
+    ResponseEntity<?> getLatestPost( int page, int size);
+
     ResponseEntity<?> getByUserId(int page, int size);
 
     ResponseEntity<?> addPost(PostDto postDto);
