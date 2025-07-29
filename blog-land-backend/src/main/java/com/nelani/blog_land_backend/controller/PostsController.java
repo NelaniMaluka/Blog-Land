@@ -9,6 +9,7 @@ import com.nelani.blog_land_backend.response.PostResponse;
 import com.nelani.blog_land_backend.service.PostService;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,20 @@ public class PostsController {
     public PostsController(PostRepository postRepository, PostService postService) {
         this.postRepository = postRepository;
         this.postService = postService;
+    }
+
+    @GetMapping("/get-all/random-post")
+    public ResponseEntity<?> getRandomPost() {
+        try {
+            // Gets random post
+            Post post = postRepository.findRandomPost();
+
+            // Formats the random post and returns it
+            PostResponse response = PostBuilder.generateUserPostWithUserInfo(post);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseBuilder.serverError();
+        }
     }
 
     @GetMapping("/get-all/post")

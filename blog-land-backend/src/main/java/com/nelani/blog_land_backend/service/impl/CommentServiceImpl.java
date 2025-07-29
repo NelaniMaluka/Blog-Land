@@ -202,7 +202,7 @@ public class CommentServiceImpl implements CommentService {
         Optional<Comment> comment = commentRepository.findById(id);
         if (comment.isEmpty()) {
             return ResponseBuilder.invalid("Comment not found",
-                    "No post with ID " + id + " exists.");
+                    "No comment with ID " + id + " exists.");
         }
 
         // Checks if the post belongs to the user

@@ -40,23 +40,20 @@ public class User {
     private String provider; // GOOGLE or LOCAL
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.USER;
 
     // Add profile icon URL field
     private String profileIconUrl;
 
-    //Add user location
+    // Add user location
     private String location;
 
     @Enumerated(EnumType.STRING)
     private ExperienceLevel experience;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "author_socials",
-            joinColumns = @JoinColumn(name = "author_id"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"author_id", "platform"})
-    )
+    @CollectionTable(name = "author_socials", joinColumns = @JoinColumn(name = "author_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+            "author_id", "platform" }))
     @Column(name = "url")
     @MapKeyColumn(name = "platform")
     private Map<String, String> socials = new HashMap<>();
@@ -75,4 +72,3 @@ public class User {
         return "User{id=" + id + ", name='" + firstname + " " + lastname + "'}";
     }
 }
-
