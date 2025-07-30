@@ -41,6 +41,9 @@ public class Post {
     @Column(nullable = false)
     private String imgUrl;
 
+    @Column(nullable = false)
+    private Long viewCount = 0L;
+
     @Lob
     private String references;
 

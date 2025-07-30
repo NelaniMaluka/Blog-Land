@@ -29,4 +29,12 @@ public class UserBuilder {
         userResponse.setSocials(user.getSocials());
         return userResponse;
     }
+
+    public static UserResponse publicUserWithMinimalDetails(User user){
+        UserResponse userResponse = new UserResponse();
+        userResponse.setFirstname(user.getFirstname());
+        userResponse.setLastname(user.getLastname());
+        userResponse.setProfileIconUrl(user.getProfileIconUrl());
+        return userResponse;
+    }
 }

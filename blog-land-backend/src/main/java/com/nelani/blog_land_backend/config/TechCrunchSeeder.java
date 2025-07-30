@@ -90,6 +90,7 @@ public class TechCrunchSeeder {
                                 .references(referencesJson)
                                 .user(user)
                                 .category(category)
+                                .viewCount((long) new Random().nextInt(1000))
                                 .createdAt(LocalDateTime.now())
                                 .build();
 

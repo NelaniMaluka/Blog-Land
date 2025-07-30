@@ -25,9 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -44,6 +43,39 @@ public class PostServiceImpl implements PostService {
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> searchByKeyword(String keyword) {
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<Post> posts = postRepository.searchByKeyword(keyword, pageable);
+
+        // Rank results using custom scoring
+        List<PostResponse> rankedResults = posts.stream()
+                .map(post -> {
+                    int score = calculateRelevanceScore(post, keyword);
+                    return PostResponse.builder()
+                            .id(post.getId())
+                            .title(post.getTitle())
+                            .readTime(post.getReadTime())
+                            .score(score)
+                            .build();
+                })
+                .sorted(Comparator.comparingInt(PostResponse::getScore).reversed())
+                .limit(5)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(rankedResults);
+    }
+
+    @Override
+    @Transactional
+    public void incrementViews(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
+        post.setViewCount(post.getViewCount() + 1);
+        postRepository.save(post);
     }
 
     @Override
@@ -65,7 +97,7 @@ public class PostServiceImpl implements PostService {
         Page<Post> postPage = postRepository.findByCategoryIdOrderByCreatedAtDesc(id, pageable);
 
         // Convert to PostResponse while retaining pagination metadata
-        Page<PostResponse> responsePage = postPage.map(PostBuilder::generateUserPostWithUserInfo);
+        Page<PostResponse> responsePage = postPage.map(PostBuilder::generatePost);
 
         return ResponseEntity.ok(responsePage);
     }
@@ -122,7 +154,7 @@ public class PostServiceImpl implements PostService {
         Page<Post> postPage = postRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
 
         // Convert to PostResponse while retaining pagination metadata
-        Page<PostResponse> responsePage = postPage.map(PostBuilder::generateUserPostWithUserInfo);
+        Page<PostResponse> responsePage = postPage.map(PostBuilder::generatePost);
 
         return ResponseEntity.ok(responsePage);
     }
@@ -170,6 +202,7 @@ public class PostServiceImpl implements PostService {
                 .imgUrl(imgUrl)
                 .references(references)
                 .summary(summary)
+                .viewCount(0L)
                 .build();
         newPost.setContent(content);
 
@@ -276,5 +309,21 @@ public class PostServiceImpl implements PostService {
         }
 
         return ResponseEntity.ok("Success, Your post was successfully deleted");
+    }
+
+    private int calculateRelevanceScore(Post post, String keyword) {
+        int score = 0;
+        String lowerKeyword = keyword.toLowerCase();
+
+        if (post.getTitle().toLowerCase().contains(lowerKeyword))
+            score += 3;
+        if (post.getSummary().toLowerCase().contains(lowerKeyword))
+            score += 2;
+        if (post.getContent().toLowerCase().contains(lowerKeyword))
+            score += 1;
+        if (post.getCategory() != null && post.getCategory().getName().toLowerCase().contains(lowerKeyword))
+            score += 2;
+
+        return score;
     }
 }

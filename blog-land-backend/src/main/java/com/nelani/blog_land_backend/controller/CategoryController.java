@@ -4,6 +4,7 @@ import com.nelani.blog_land_backend.Util.ResponseBuilder;
 import com.nelani.blog_land_backend.dto.CategoryDto;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
 
+import com.nelani.blog_land_backend.repository.PostRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,18 +17,23 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/category")
 public class CategoryController {
 
-    public final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+    private final PostRepository postRepository;
 
-    public CategoryController(CategoryRepository categoryRepository) {
+    public CategoryController(CategoryRepository categoryRepository, PostRepository postRepository) {
         this.categoryRepository = categoryRepository;
+        this.postRepository = postRepository;
     }
 
     @GetMapping
-    public ResponseEntity<?> getCategories(){
+    public ResponseEntity<?> getCategories() {
         try {
             List<CategoryDto> categoryDtos = categoryRepository.findAll()
                     .stream()
-                    .map(CategoryDto::new)
+                    .map(category -> {
+                        int postCount = postRepository.countByCategoryId(category.getId());
+                        return new CategoryDto(category, postCount);
+                    })
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(categoryDtos);

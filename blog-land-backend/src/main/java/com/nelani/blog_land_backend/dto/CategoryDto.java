@@ -11,10 +11,12 @@ import lombok.NoArgsConstructor;
 public class CategoryDto {
     private Long id;
     private String name;
+    private int postCount;
 
-    public CategoryDto(Category category) {
+    public CategoryDto(Category category, int postCount) {
         this.id = category.getId();
         this.name = category.getName();
+        this.postCount = postCount;
     }
 }
 

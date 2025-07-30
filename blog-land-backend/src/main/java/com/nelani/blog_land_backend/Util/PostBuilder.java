@@ -19,10 +19,26 @@ public class PostBuilder {
         response.setUpdatedAt(post.getUpdatedAt());
         response.setCategoryId(post.getCategory().getId());
         response.setPostImgUrl(post.getImgUrl());
+        response.setViews(post.getViewCount());
         response.setSummary(post.getSummary());
         response.setReferences(post.getReferences());
         response.setUser(UserBuilder.publicUser(post.getUser()));
         response.setComments(mapComments(post.getComments()));
+        return response;
+    }
+
+    public static PostResponse generatePost(Post post) {
+        PostResponse response = new PostResponse();
+        response.setId(post.getId());
+        response.setTitle(post.getTitle());
+        response.setReadTime(post.getReadTime());
+        response.setCreatedAt(post.getCreatedAt());
+        response.setUpdatedAt(post.getUpdatedAt());
+        response.setPostImgUrl(post.getImgUrl());
+        response.setViews(post.getViewCount());
+        response.setSummary(post.getSummary());
+        response.setCommentCount(post.getComments() != null ? post.getComments().size() : 0);
+        response.setUser(UserBuilder.publicUserWithMinimalDetails(post.getUser()));
         return response;
     }
 

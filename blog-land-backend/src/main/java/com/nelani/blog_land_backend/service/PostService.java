@@ -4,9 +4,13 @@ import com.nelani.blog_land_backend.dto.PostDto;
 import org.springframework.http.ResponseEntity;
 
 public interface PostService {
+    void incrementViews(Long postId);
+
+    ResponseEntity<?> searchByKeyword(String query);
+
     ResponseEntity<?> getByCategoryId(Long categoryId, int page, int size);
 
-    ResponseEntity<?> getLatestPost( int page, int size);
+    ResponseEntity<?> getLatestPost(int page, int size);
 
     ResponseEntity<?> getByUserId(int page, int size);
 

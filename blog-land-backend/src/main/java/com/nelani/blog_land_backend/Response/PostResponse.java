@@ -25,9 +25,12 @@ public class PostResponse {
     private Long categoryId;
     private String summary;
     private String postImgUrl;
+    private Long views;
     private String references;
     private String author;
     private String source;
+    private int score;
     private UserResponse user;
+    private int commentCount;
     private List<CommentResponse> comments;
 }

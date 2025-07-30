@@ -28,6 +28,17 @@ public class PostsController {
         this.postService = postService;
     }
 
+    @GetMapping("/api/search")
+    public ResponseEntity<?> searchPosts(@RequestParam String query) {
+        try {
+            return postService.searchByKeyword(query);
+        } catch (IllegalArgumentException e) {
+            return ResponseBuilder.invalid("Validation Error", e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.ok(e);
+        }
+    }
+
     @GetMapping("/get-all/random-post")
     public ResponseEntity<?> getRandomPost() {
         try {
@@ -51,8 +62,24 @@ public class PostsController {
         }
     }
 
-    @GetMapping("/get-all/post")
-    public ResponseEntity<?> getPost(@RequestParam Long id) {
+    @GetMapping("/get-all/popular-post")
+    public ResponseEntity<?> getTrendingPost(@RequestParam int page, @RequestParam int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Post> popularPosts = postRepository.findAllByOrderByViewCountDesc(pageable);
+
+            Page<PostResponse> responsePage = popularPosts.map(PostBuilder::generatePost);
+
+            return ResponseEntity.ok(responsePage);
+        } catch (IllegalArgumentException e) {
+            return ResponseBuilder.invalid("Validation Error", e.getMessage());
+        } catch (Exception e) {
+            return ResponseBuilder.serverError();
+        }
+    }
+
+    @GetMapping("/get-all/{id}/post")
+    public ResponseEntity<?> getPost(@PathVariable Long id) {
         try {
             // Checks if the post exists
             Optional<Post> post = postRepository.findById(id);
@@ -75,8 +102,10 @@ public class PostsController {
             Pageable pageable = PageRequest.of(page, size);
             Page<Post> postPage = postRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-            Page<PostResponse> responsePage = postPage.map(PostBuilder::generateUserPostWithUserInfo);
+            Page<PostResponse> responsePage = postPage.map(PostBuilder::generatePost);
             return ResponseEntity.ok(responsePage);
+        } catch (IllegalArgumentException e) {
+            return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
             return ResponseBuilder.serverError();
         }
@@ -98,6 +127,18 @@ public class PostsController {
     public ResponseEntity<?> getAllPostsByUserId(@RequestParam int page, @RequestParam int size) {
         try {
             return postService.getByUserId(page, size);
+        } catch (IllegalArgumentException e) {
+            return ResponseBuilder.invalid("Validation Error", e.getMessage());
+        } catch (Exception e) {
+            return ResponseBuilder.serverError();
+        }
+    }
+
+    @PostMapping("/get-all/posts/{postId}/view")
+    public ResponseEntity<?> incrementViewCount(@PathVariable Long postId) {
+        try {
+            postService.incrementViews(postId);
+            return ResponseEntity.ok().build(); // still OK with void response
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
