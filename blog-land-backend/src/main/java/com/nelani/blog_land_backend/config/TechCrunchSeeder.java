@@ -9,12 +9,15 @@ import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.repository.UserRepository;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.HtmlUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Component
 public class TechCrunchSeeder {
 
     public void seed(
@@ -161,5 +164,134 @@ public class TechCrunchSeeder {
                 .filter(c -> c.getName().equalsIgnoreCase("Other"))
                 .findFirst()
                 .orElse(categories.get(0));
+    }
+
+    private boolean isSeedingDay() {
+        int day = LocalDateTime.now().getDayOfMonth();
+        return day == 1 || day == 15;
+    }
+
+    private List<Category> findTwoLeastPopulatedCategories(CategoryRepository categoryRepository, PostRepository postRepository) {
+        List<Category> allCategories = categoryRepository.findAll();
+
+        Map<Category, Long> categoryPostCounts = new HashMap<>();
+        for (Category category : allCategories) {
+            Long count = postRepository.countByCategory(category);
+            categoryPostCounts.put(category, count);
+        }
+
+        return categoryPostCounts.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .limit(2)
+                .map(Map.Entry::getKey)
+                .toList();
+    }
+
+
+    public void seedLeastPopulatedCategories(
+            RestTemplate restTemplate,
+            PostRepository postRepository,
+            UserRepository userRepository,
+            CategoryRepository categoryRepository) {
+
+        if (!isSeedingDay()) {
+            System.out.println("📅 Today is not a seeding day. Skipping.");
+            return;
+        }
+
+        List<User> users = userRepository.findAll();
+        List<Category> targetCategories = findTwoLeastPopulatedCategories(categoryRepository, postRepository);
+
+        if (users.isEmpty() || targetCategories.isEmpty()) {
+            System.out.println("⚠️ Skipping seeding — missing users or categories.");
+            return;
+        }
+
+        int postsPerCategory = 2;
+        int totalPostsToSeed = postsPerCategory * targetCategories.size();
+        int pageSize = 10;
+        int pages = (int) Math.ceil((double) totalPostsToSeed / pageSize);
+        int seededCount = 0;
+
+        Map<Category, Integer> seededPerCategory = new HashMap<>();
+        for (Category category : targetCategories) {
+            seededPerCategory.put(category, 0);
+        }
+
+        for (int page = 1; page <= pages && seededCount < totalPostsToSeed; page++) {
+            String apiUrl = "https://techcrunch.com/wp-json/wp/v2/posts?per_page=" + pageSize + "&page=" + page + "&_embed";
+
+            try {
+                ResponseEntity<JsonNode> response = restTemplate.getForEntity(apiUrl, JsonNode.class);
+                JsonNode posts = response.getBody();
+
+                for (JsonNode postNode : posts) {
+                    if (seededCount >= totalPostsToSeed) break;
+
+                    try {
+                        JsonNode titleNode = postNode.path("title").path("rendered");
+                        JsonNode contentNode = postNode.path("content").path("rendered");
+                        JsonNode excerptNode = postNode.path("excerpt").path("rendered");
+                        JsonNode linkNode = postNode.path("link");
+
+                        if (titleNode.isMissingNode() || contentNode.isMissingNode() || excerptNode.isMissingNode() || linkNode.isMissingNode()) {
+                            continue;
+                        }
+
+                        String title = HtmlUtils.htmlUnescape(titleNode.asText());
+                        String content = contentNode.asText();
+                        String summary = excerptNode.asText();
+                        String imageUrl = postNode.at("/_embedded/wp:featuredmedia/0/source_url").asText("");
+                        int readTime = 3 + new Random().nextInt(5);
+                        String referencesJson = linkNode.asText();
+
+                        if (users.isEmpty()) {
+                            System.err.println("⚠️ No users available for seeding.");
+                            return;
+                        }
+
+                        List<User> limitedUsers = users.stream().limit(20).toList();
+                        User user = limitedUsers.get(new Random().nextInt(limitedUsers.size()));
+
+                        Category category = determineCategoryByScore(title, content, targetCategories);
+
+                        if (!targetCategories.contains(category)) continue; // skip if not a match
+                        if (seededPerCategory.get(category) >= postsPerCategory) continue;
+                        if (title == null || content == null || title.length() < 10 || content.length() < 50) {
+                            continue; // skip invalid entries
+                        }
+
+                        Post post = Post.builder()
+                                .title(title)
+                                .content(content)
+                                .summary(summary)
+                                .readTime(readTime)
+                                .imgUrl(imageUrl)
+                                .references(referencesJson)
+                                .user(user)
+                                .category(category)
+                                .viewCount((long) new Random().nextInt(1000))
+                                .createdAt(LocalDateTime.now())
+                                .build();
+
+                        postRepository.save(post);
+                        seededPerCategory.put(category, seededPerCategory.get(category) + 1);
+                        seededCount++;
+
+                    } catch (Exception innerEx) {
+                        System.out.println("❌ Skipping invalid post: " + innerEx.getMessage());
+                    }
+                }
+
+            } catch (Exception e) {
+                System.out.println("❌ Exception during TechCrunch seeding page " + page + ": " + e.getMessage());
+            }
+        }
+
+        System.out.println("✅ Seeded " + seededCount + " posts into categories: " +
+                seededPerCategory.entrySet().stream()
+                        .map(e -> e.getKey().getName() + " (" + e.getValue() + ")")
+                        .collect(Collectors.joining(", "))
+        );
     }
 }

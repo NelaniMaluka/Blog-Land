@@ -3,7 +3,9 @@ package com.nelani.blog_land_backend;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableScheduling
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "com.nelani.blog_land_backend.repository")
 public class BlogLandBackendApplication {
