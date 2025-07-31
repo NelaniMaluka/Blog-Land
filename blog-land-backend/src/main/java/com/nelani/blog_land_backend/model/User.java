@@ -37,32 +37,33 @@ public class User {
     @Column(nullable = false)
     private String lastname;
 
-    private String provider; // GOOGLE or LOCAL
+    private Provider provider; // GOOGLE or LOCAL
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
-    // Add profile icon URL field
     private String profileIconUrl;
 
-    // Add user location
     private String location;
 
     @Enumerated(EnumType.STRING)
     private ExperienceLevel experience;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Comment> comments;
+
+    @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "author_socials", joinColumns = @JoinColumn(name = "author_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
             "author_id", "platform" }))
     @Column(name = "url")
     @MapKeyColumn(name = "platform")
     private Map<String, String> socials = new HashMap<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<Post> posts = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<Comment> comments;
 
     @Override
     public String toString() {

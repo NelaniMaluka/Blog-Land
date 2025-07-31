@@ -1,6 +1,7 @@
 package com.nelani.blog_land_backend.config;
 
 import com.nelani.blog_land_backend.model.ExperienceLevel;
+import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.Role;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
@@ -75,7 +76,7 @@ public class UserSeeder {
                         .email(email)
                         .password(passwordEncoder.encode("password@123"))
                         .location(location)
-                        .provider("LOCAL")
+                        .provider(Provider.LOCAL)
                         .role(Role.USER)
                         .profileIconUrl(null)
                         .experience(experience) // Enum injected here

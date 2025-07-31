@@ -24,7 +24,7 @@ public class Contact {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(nullable = false)
-    String fullname;
+    String fullName;
 
     @Column(nullable = false)
     String email;

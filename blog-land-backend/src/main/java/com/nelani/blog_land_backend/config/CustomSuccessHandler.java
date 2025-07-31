@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.config;
 
+import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             newUser.setEmail(email);
             newUser.setFirstname(firstName);
             newUser.setLastname(lastName);
-            newUser.setProvider("GOOGLE");
+            newUser.setProvider(Provider.GOOGLE);
             return userRepo.save(newUser);
         });
 

@@ -1,9 +1,11 @@
-package com.nelani.blog_land_backend.Util;
+package com.nelani.blog_land_backend.Util.Validation;
+
+import com.nelani.blog_land_backend.model.Provider;
 
 public class FormValidation {
 
-    public static String validatedEmail(String providedEmail) {
-        String email = FormValidation.trimAndValidate(providedEmail, "Email");
+    public static String assertValidatedEmail(String providedEmail) {
+        String email = FormValidation.assertRequiredField(providedEmail, "Email");
 
         // Validate email format
         if (!FormValidation.isValidEmail(email)) {
@@ -14,8 +16,8 @@ public class FormValidation {
         return email;
     }
 
-    public static String validatedPassword(String providedPassword) {
-        String password = FormValidation.trimAndValidate(providedPassword, "Password");
+    public static String assertValidatedPassword(String providedPassword) {
+        String password = FormValidation.assertRequiredField(providedPassword, "Password");
 
         // Checks if the password is valid
         if (!FormValidation.isValidPassword(password)) {
@@ -26,8 +28,8 @@ public class FormValidation {
         return password;
     }
 
-    public static String validatedPassword(String providedPassword, String fieldName) {
-        String password = FormValidation.trimAndValidate(providedPassword, "Password");
+    public static String assertValidatedPassword(String providedPassword, String fieldName) {
+        String password = FormValidation.assertRequiredField(providedPassword, "Password");
 
         // Checks if the password is valid
         if (!FormValidation.isValidPassword(password)) {
@@ -48,24 +50,25 @@ public class FormValidation {
         return password.matches(passwordRegex);
     }
 
-    public static String trimAndValidate(String field, String fieldName) {
+    public static String assertRequiredField(String field, String fieldName) {
         if (field == null || field.trim().isEmpty()) {
             throw new IllegalArgumentException(fieldName + " is required.");
         }
         return field.trim();
     }
 
-    public static Long trimAndValidate(Long field, String fieldName) {
+    public static Long assertRequiredField(Long field, String fieldName) {
         if (field == null) {
             throw new IllegalArgumentException(fieldName + field + " is required.");
         }
         return field;
     }
 
-    public static int trimAndValidate(Integer field, String fieldName) {
+    public static Provider assertRequiredField(Provider field, String fieldName) {
         if (field == null) {
             throw new IllegalArgumentException(fieldName + field + " is required.");
         }
         return field;
     }
+
 }

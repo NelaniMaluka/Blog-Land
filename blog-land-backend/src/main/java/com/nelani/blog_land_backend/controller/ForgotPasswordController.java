@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.Util.ResponseBuilder;
+import com.nelani.blog_land_backend.Util.Builders.ResponseBuilder;
 import com.nelani.blog_land_backend.service.ForgotPasswordService;
 
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,8 @@ public class ForgotPasswordController {
     @PostMapping("/request-password-reset")
     public ResponseEntity<?> requestPasswordReset(@RequestBody Map<String, String> payload) {
         try {
-            return forgotPasswordService.requestPasswordReset(payload);
+            forgotPasswordService.requestPasswordReset(payload);
+            return ResponseEntity.ok("Success, Password reset link sent to your email.");
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
@@ -35,7 +36,8 @@ public class ForgotPasswordController {
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> payload) {
         try {
-            return forgotPasswordService.changePassword(payload);
+            forgotPasswordService.changePassword(payload);
+            return ResponseEntity.ok("Success, Your password was changed successfully! You're all set.");
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {

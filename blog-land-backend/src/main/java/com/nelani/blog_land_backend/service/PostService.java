@@ -1,22 +1,25 @@
 package com.nelani.blog_land_backend.service;
 
 import com.nelani.blog_land_backend.dto.PostDto;
-import org.springframework.http.ResponseEntity;
+import com.nelani.blog_land_backend.response.PostResponse;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface PostService {
     void incrementViews(Long postId);
 
-    ResponseEntity<?> searchByKeyword(String query);
+    List<PostResponse> searchByKeyword(String query);
 
-    ResponseEntity<?> getByCategoryId(Long categoryId, int page, int size);
+    Page<PostResponse> getByCategoryId(Long categoryId, int page, int size);
 
-    ResponseEntity<?> getLatestPost(int page, int size);
+    List<PostResponse> getLatestPost(int page, int size);
 
-    ResponseEntity<?> getByUserId(int page, int size);
+    Page<PostResponse> getByUserId(int page, int size);
 
-    ResponseEntity<?> addPost(PostDto postDto);
+    void addPost(PostDto postDto);
 
-    ResponseEntity<?> updatePost(PostDto postDto);
+    void updatePost(PostDto postDto);
 
-    ResponseEntity<?> deletePost(PostDto postDto);
+    void deletePost(PostDto postDto);
 }

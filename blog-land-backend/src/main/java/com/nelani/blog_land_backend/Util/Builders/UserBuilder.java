@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.Util;
+package com.nelani.blog_land_backend.Util.Builders;
 
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.response.UserResponse;
@@ -7,7 +7,6 @@ public class UserBuilder {
 
     public static UserResponse buildLoggedInUser(User user){
         UserResponse userResponse = new UserResponse();
-        userResponse.setId(user.getId());
         userResponse.setEmail(user.getEmail());
         userResponse.setFirstname(user.getFirstname());
         userResponse.setLastname(user.getLastname());

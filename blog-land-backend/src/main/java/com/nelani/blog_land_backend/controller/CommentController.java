@@ -1,7 +1,7 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.Util.PostBuilder;
-import com.nelani.blog_land_backend.Util.ResponseBuilder;
+import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
+import com.nelani.blog_land_backend.Util.Builders.ResponseBuilder;
 import com.nelani.blog_land_backend.dto.CommentDto;
 import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.repository.CommentRepository;
@@ -26,12 +26,11 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @GetMapping("/get-all/comments")
+    @GetMapping("/get/comments")
     public ResponseEntity<?> getAllComments(@RequestParam int page, @RequestParam int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<Comment> postPage = commentRepository.findAll(pageable);
-
             Page<CommentResponse> responsePage = postPage.map(PostBuilder::mapComment);
             return ResponseEntity.ok(responsePage);
         } catch (Exception e) {
@@ -39,11 +38,12 @@ public class CommentController {
         }
     }
 
-    @GetMapping("/get-all/category")
+    @GetMapping("/get/category")
     public ResponseEntity<?> getAllCommentsByCategory(@RequestParam Long postId, @RequestParam int page,
             @RequestParam int size) {
         try {
-            return commentService.getByPostId(postId, page, size);
+            Page<CommentResponse> responsePage = commentService.getByPostId(postId, page, size);
+            return ResponseEntity.ok(responsePage);
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
@@ -52,10 +52,11 @@ public class CommentController {
     }
 
     @GetMapping("/get-user-comments")
-    public ResponseEntity<?> getAllCommentsByUserId(@RequestParam Long userId, @RequestParam int page,
+    public ResponseEntity<?> getAllCommentsByUserId( @RequestParam int page,
             @RequestParam int size) {
         try {
-            return commentService.getByUserId(userId, page, size);
+            Page<CommentResponse> responsePage = commentService.getByUserId( page, size);
+            return ResponseEntity.ok(responsePage);
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
@@ -66,7 +67,8 @@ public class CommentController {
     @PostMapping("/add-user-comment")
     public ResponseEntity<?> addCommentByUserId(@RequestBody CommentDto commentDto) {
         try {
-            return commentService.addComment(commentDto);
+            commentService.addComment(commentDto);
+            return ResponseEntity.ok("Success, Your comment was successfully added");
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
@@ -77,7 +79,8 @@ public class CommentController {
     @PutMapping("/update-user-comments")
     public ResponseEntity<?> updateUserComment(@RequestBody CommentDto commentDto) {
         try {
-            return commentService.updateComment(commentDto);
+            commentService.updateComment(commentDto);
+            return ResponseEntity.ok("Success, Your Comment was successfully updated");
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
@@ -88,7 +91,8 @@ public class CommentController {
     @DeleteMapping("/delete-user-comment")
     public ResponseEntity<?> deleteUserComment(@RequestBody CommentDto commentDto) {
         try {
-            return commentService.deleteComment(commentDto);
+            commentService.deleteComment(commentDto);
+            return ResponseEntity.ok("Success, Your comment was successfully deleted");
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {

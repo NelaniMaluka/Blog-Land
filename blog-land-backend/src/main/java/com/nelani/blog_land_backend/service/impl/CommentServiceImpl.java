@@ -1,9 +1,10 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.FormValidation;
-import com.nelani.blog_land_backend.Util.PostBuilder;
-import com.nelani.blog_land_backend.Util.ResponseBuilder;
-import com.nelani.blog_land_backend.Util.UserValidation;
+import com.nelani.blog_land_backend.Util.Validation.CommentValidation;
+import com.nelani.blog_land_backend.Util.Validation.FormValidation;
+import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
+import com.nelani.blog_land_backend.Util.Validation.PostValidation;
+import com.nelani.blog_land_backend.Util.Validation.UserValidation;
 import com.nelani.blog_land_backend.dto.CommentDto;
 import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.model.Post;
@@ -19,8 +20,6 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,81 +44,54 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> getByPostId(Long postId, int page, int size) {
-        // Trimand validate
-        Long id = FormValidation.trimAndValidate(postId, "Post Id");
+    public  Page<CommentResponse> getByPostId(Long postId, int page, int size) {
+        // Validate fields
+        Long id = FormValidation.assertRequiredField(postId, "Post Id");
 
         // Validate post existence
-        Optional<Post> optionalCategory = postRepository.findById(id);
-        if (optionalCategory.isEmpty()) {
-            return ResponseBuilder.invalid("Validation Error",
-                    "Post with ID " + id + " does not exist.");
-        }
-
-        Pageable pageable = PageRequest.of(page, size);
+        Optional<Post> optionalPost = postRepository.findById(id);
+        PostValidation.assertPostExists(optionalPost);
 
         // Fetch paginated comment by post
-        Page<Comment> postPage = commentRepository.findByPostId(id, pageable);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comment> commentPage = commentRepository.findByPostId(id, pageable);
 
         // Convert to CommentResponse while retaining pagination metadata
-        Page<CommentResponse> responsePage = postPage.map(PostBuilder::mapComment);
-
-        return ResponseEntity.ok(responsePage);
+        return commentPage.map(PostBuilder::mapComment);
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> getByUserId(Long userId, int page, int size) {
-        // Trim and validate
-        Long id = FormValidation.trimAndValidate(userId, "User Id");
-
+    public  Page<CommentResponse> getByUserId( int page, int size) {
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
-        // Checks if the token and user id match
-        if (!user.getId().equals(userId)) {
-            return ResponseBuilder.invalid("Authorization Error",
-                    "The user ID provided does not match the authenticated account. Please verify your credentials.");
-        }
+        // Fetch paginated comment by user
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comment> commentPage = commentRepository.findByUserId(user.getId(), pageable);
 
         // Checks if users have posts
-        if (user.getComments().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        if (commentPage.isEmpty()) {
+            return Page.empty(pageable);
         }
 
-        Pageable pageable = PageRequest.of(page, size);
-
-        // Fetch paginated comment by post
-        Page<Comment> postPage = commentRepository.findByUserId(id, pageable);
-
         // Convert to CommentResponse while retaining pagination metadata
-        Page<CommentResponse> responsePage = postPage.map(PostBuilder::mapComment);
-
-        return ResponseEntity.ok(responsePage);
+        return commentPage.map(PostBuilder::mapComment);
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> addComment(CommentDto commentDto) {
-        // Trim and validate
-        String content = FormValidation.trimAndValidate(commentDto.getContent(), "Comment Id");
-        Long userId = FormValidation.trimAndValidate(commentDto.getUserId(), "User ID");
-        Long postId = FormValidation.trimAndValidate(commentDto.getPostId(), "Category Id");
+    public void addComment(CommentDto commentDto) {
+        // Validate fields
+        Long postId = FormValidation.assertRequiredField(commentDto.getPostId(), "Post Id");
+        String content = FormValidation.assertRequiredField(commentDto.getContent(), "Content");
 
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
-        // Checks if the token and user id match
-        if (!user.getId().equals(userId)) {
-            return ResponseBuilder.invalid("Authorization Error",
-                    "The user ID provided does not match the authenticated account. Please verify your credentials.");
-        }
-
-        // Checks if the comment exists
+        // Checks if the post exists
         Optional<Post> post = postRepository.findById(postId);
-        if (post.isEmpty()) {
-            return ResponseBuilder.invalid("validation.error", "post.notFound");
-        }
+        PostValidation.assertPostExists(post);
 
         // Build new post
         Comment newComment = Comment.builder()
@@ -129,107 +101,66 @@ public class CommentServiceImpl implements CommentService {
                 .build();
 
         user.getComments().add(newComment);
-        userRepository.save(user);
-
-        return ResponseEntity.ok("Success, Your comment was successfully added");
+        userRepository.save(user); // Save the new comment
     };
 
     @Override
     @Transactional
-    public ResponseEntity<?> updateComment(CommentDto commentDto) {
-        // Trim and validate
-        Long id = FormValidation.trimAndValidate(commentDto.getId(), "Post Id");
-        String content = FormValidation.trimAndValidate(commentDto.getContent(), "Comment Id");
-        Long userId = FormValidation.trimAndValidate(commentDto.getUserId(), "User ID");
-        Long postId = FormValidation.trimAndValidate(commentDto.getPostId(), "Category Id");
+    public void updateComment(CommentDto commentDto) {
+        // Validate fields
+        Long commentId = FormValidation.assertRequiredField(commentDto.getId(), "Comment Id");
+        String content = FormValidation.assertRequiredField(commentDto.getContent(), "Content");
+        Long postId = FormValidation.assertRequiredField(commentDto.getPostId(), "Post Id");
 
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
-        // Checks if the token and user id match
-        if (!user.getId().equals(userId)) {
-            return ResponseBuilder.invalid("Authorization Error",
-                    "The user ID provided does not match the authenticated account. Please verify your credentials.");
-        }
-
         // Checks if the post exists
         Optional<Post> post = postRepository.findById(postId);
-        if (post.isEmpty()) {
-            return ResponseBuilder.invalid("validation.error", "post.notFound");
-        }
+        PostValidation.assertPostExists(post);
 
         // Checks if the Comment exists
-        Optional<Comment> comment = commentRepository.findById(id);
-        if (comment.isEmpty()) {
-            return ResponseBuilder.invalid("Comment not found",
-                    "No post with ID " + id + " exists.");
-        }
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        CommentValidation.assertCommentExists(comment);
 
         // Checks if the comment belongs to the user
-        if (!comment.get().getUser().getId().equals(userId)) {
-            return ResponseBuilder.unauthorized("Authorization Error",
-                    "The user ID provided does not match the author's id . Please verify your credentials.");
-        }
+        CommentValidation.assertCommentBelongsToUser(comment.get(), user);
 
-        // Build new comment
+        // Update existing comment
         Comment updatedComment = comment.get();
         updatedComment.setContent(content);
-        updatedComment.setUser(user);
-        updatedComment.setPost(post.get());
 
-        commentRepository.save(updatedComment);
-
-        return ResponseEntity.ok("Success, Your Comment was successfully updated");
+        commentRepository.save(updatedComment); // Save comment
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> deleteComment(CommentDto commentDto) {
-        // Trim and validate
-        Long id = FormValidation.trimAndValidate(commentDto.getId(), "Comment Id");
-        Long userId = FormValidation.trimAndValidate(commentDto.getUserId(), "User Id");
+    public void deleteComment(CommentDto commentDto) {
+        // Validate fields
+        Long commentId = FormValidation.assertRequiredField(commentDto.getId(), "Comment Id");
 
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
-        // Checks if the token and user id match
-        if (!user.getId().equals(userId)) {
-            return ResponseBuilder.invalid("Authorization Error",
-                    "The user ID provided does not match the authenticated account. Please verify your credentials.");
-        }
-
         // Checks if the comment exists
-        Optional<Comment> comment = commentRepository.findById(id);
-        if (comment.isEmpty()) {
-            return ResponseBuilder.invalid("Comment not found",
-                    "No comment with ID " + id + " exists.");
-        }
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        CommentValidation.assertCommentExists(comment);
 
-        // Checks if the post belongs to the user
-        if (!comment.get().getUser().getId().equals(userId)) {
-            return ResponseBuilder.unauthorized("Authorization Error",
-                    "The user ID provided does not match the author's id . Please verify your credentials.");
-        }
+        // Checks if the comment belongs to the user
+        CommentValidation.assertCommentBelongsToUser(comment.get(), user);
 
         Comment existingComment = comment.get();
 
-        try {
-            // Ensure the comment is managed
-            Comment managedComment = entityManager.contains(existingComment)
-                    ? existingComment
-                    : entityManager.merge(existingComment);
+        // Ensure the comment is managed
+        Comment managedComment = entityManager.contains(existingComment)
+                ? existingComment
+                : entityManager.merge(existingComment);
 
-            // Let cascade and orphanRemoval do the cleanup
-            entityManager.remove(managedComment);
+        // Let cascade and orphanRemoval do the cleanup
+        entityManager.remove(managedComment);
 
-            // Flush to trigger SQL operations
-            entityManager.flush();
-            entityManager.clear();
-
-        } catch (Exception e) {
-            throw new RuntimeException("Comment deletion failed.");
-        }
-
-        return ResponseEntity.ok("Success, Your comment was successfully deleted");
+        // Flush to trigger SQL operations
+        entityManager.flush();
+        entityManager.clear();
     }
 }

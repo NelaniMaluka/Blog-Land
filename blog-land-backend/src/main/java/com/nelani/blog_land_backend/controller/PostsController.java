@@ -1,7 +1,8 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.Util.PostBuilder;
-import com.nelani.blog_land_backend.Util.ResponseBuilder;
+import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
+import com.nelani.blog_land_backend.Util.Builders.ResponseBuilder;
+import com.nelani.blog_land_backend.Util.Validation.PostValidation;
 import com.nelani.blog_land_backend.dto.PostDto;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.repository.PostRepository;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -31,7 +33,8 @@ public class PostsController {
     @GetMapping("/api/search")
     public ResponseEntity<?> searchPosts(@RequestParam String query) {
         try {
-            return postService.searchByKeyword(query);
+            List<PostResponse> rankedResults =postService.searchByKeyword(query);
+            return ResponseEntity.ok(rankedResults);
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
@@ -39,11 +42,10 @@ public class PostsController {
         }
     }
 
-    @GetMapping("/get-all/random-post")
+    @GetMapping("/get/random-post")
     public ResponseEntity<?> getRandomPost() {
         try {
-            // Gets random post
-            Post post = postRepository.findRandomPost();
+            Post post = postRepository.findRandomPost();  // Gets random post
 
             // Formats the random post and returns it
             PostResponse response = PostBuilder.generateUserPostWithUserInfo(post);
@@ -53,23 +55,23 @@ public class PostsController {
         }
     }
 
-    @GetMapping("/get-all/latest-post")
+    @GetMapping("/get/latest-post")
     public ResponseEntity<?> getLatestPost(@RequestParam int page, @RequestParam int size) {
         try {
-            return postService.getLatestPost(page, size);
+            List<PostResponse> postResponses = postService.getLatestPost(page, size);
+            return ResponseEntity.ok(postResponses);
         } catch (Exception e) {
             return ResponseBuilder.serverError();
         }
     }
 
-    @GetMapping("/get-all/popular-post")
+    @GetMapping("/get/popular-post")
     public ResponseEntity<?> getTrendingPost(@RequestParam int page, @RequestParam int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<Post> popularPosts = postRepository.findAllByOrderByViewCountDesc(pageable);
 
             Page<PostResponse> responsePage = popularPosts.map(PostBuilder::generatePost);
-
             return ResponseEntity.ok(responsePage);
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
@@ -78,25 +80,21 @@ public class PostsController {
         }
     }
 
-    @GetMapping("/get-all/{id}/post")
+    @GetMapping("/get/{id}/post")
     public ResponseEntity<?> getPost(@PathVariable Long id) {
         try {
             // Checks if the post exists
             Optional<Post> post = postRepository.findById(id);
-            if (post.isEmpty()) {
-                return ResponseBuilder.invalid("Post not found",
-                        "No post with ID " + id + " exists.");
-            }
+            PostValidation.assertPostExists(post);
 
             PostResponse response = PostBuilder.generateUserPostWithUserInfo(post.get());
-
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseBuilder.serverError();
         }
     }
 
-    @GetMapping("/get-all/posts")
+    @GetMapping("/get/posts")
     public ResponseEntity<?> getAllPosts(@RequestParam int page, @RequestParam int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
@@ -111,11 +109,12 @@ public class PostsController {
         }
     }
 
-    @GetMapping("/get-all/category")
+    @GetMapping("/get/category")
     public ResponseEntity<?> getAllPostsByCategory(@RequestParam Long categoryId, @RequestParam int page,
             @RequestParam int size) {
         try {
-            return postService.getByCategoryId(categoryId, page, size);
+            Page<PostResponse> responsePage= postService.getByCategoryId(categoryId, page, size);
+            return ResponseEntity.ok(responsePage);
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
@@ -126,7 +125,8 @@ public class PostsController {
     @GetMapping("/get-user-posts")
     public ResponseEntity<?> getAllPostsByUserId(@RequestParam int page, @RequestParam int size) {
         try {
-            return postService.getByUserId(page, size);
+            Page<PostResponse> responsePage = postService.getByUserId(page, size);
+            return ResponseEntity.ok(responsePage);
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
@@ -134,7 +134,7 @@ public class PostsController {
         }
     }
 
-    @PostMapping("/get-all/posts/{postId}/view")
+    @PostMapping("/get/posts/{postId}/view")
     public ResponseEntity<?> incrementViewCount(@PathVariable Long postId) {
         try {
             postService.incrementViews(postId);
@@ -149,7 +149,8 @@ public class PostsController {
     @PostMapping("/add-user-posts")
     public ResponseEntity<?> addAllPostsByUserId(@RequestBody PostDto postDto) {
         try {
-            return postService.addPost(postDto);
+            postService.addPost(postDto);
+            return ResponseEntity.ok("Success, Your post was successfully added");
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
@@ -160,7 +161,8 @@ public class PostsController {
     @PutMapping("/update-user-post")
     public ResponseEntity<?> updateUserPost(@RequestBody PostDto postDto) {
         try {
-            return postService.updatePost(postDto);
+            postService.updatePost(postDto);
+            return ResponseEntity.ok("Success, Your post was successfully updated");
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {
@@ -171,7 +173,8 @@ public class PostsController {
     @DeleteMapping("/delete-user-post")
     public ResponseEntity<?> deleteUserPost(@RequestBody PostDto postDto) {
         try {
-            return postService.deletePost(postDto);
+            postService.deletePost(postDto);
+            return ResponseEntity.ok("Success, Your post was successfully deleted");
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {

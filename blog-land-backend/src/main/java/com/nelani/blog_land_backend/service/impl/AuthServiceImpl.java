@@ -1,14 +1,13 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.FormValidation;
-import com.nelani.blog_land_backend.Util.ResponseBuilder;
+import com.nelani.blog_land_backend.Util.Validation.FormValidation;
+import com.nelani.blog_land_backend.Util.Validation.UserValidation;
 import com.nelani.blog_land_backend.config.JwtUtil;
+import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.service.AuthService;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,64 +28,44 @@ public class AuthServiceImpl implements AuthService {
                 this.jwtUtils = jwtUtils;
         }
 
-        @Override
-        public ResponseEntity<?> registerUser(User user) {
-                // Trim and validate fields
-                String email = FormValidation.validatedEmail(user.getEmail());
-                String firstname = FormValidation.trimAndValidate(user.getFirstname(), "Firstname");
-                String lastname = FormValidation.trimAndValidate(user.getLastname(), "Lastname");
-                String password = FormValidation.validatedPassword(user.getPassword());
+        public String registerUser(User user) {
+                // Validate fields
+                String email = FormValidation.assertValidatedEmail(user.getEmail());
+                String firstname = FormValidation.assertRequiredField(user.getFirstname(), "Firstname");
+                String lastname = FormValidation.assertRequiredField(user.getLastname(), "Lastname");
+                String password = FormValidation.assertValidatedPassword(user.getPassword());
 
-                // Checks if a user exists with that email
-                if (userRepo.findByEmail(email).isPresent()) {
-                        return ResponseBuilder.invalid("User Creation Error",
-                                        "User already exists with the provided username.");
-                }
+                // Checks if a user exists with the provided email
+                Optional<User> optionalUser = userRepo.findByEmail(email);
+                UserValidation.assertUserDoesNotExist(optionalUser, "User already exists with the provided email.");
 
-                // Encodes the password and saves it to the database
+                // Encodes the password and sets the provider to local
                 user.setPassword(passwordEncoder.encode(password));
-                user.setProvider("LOCAL");
-                userRepo.save(user);
+                user.setProvider(Provider.LOCAL);
 
-                // Generates Jwt token
-                String token = jwtUtils.generateJwtToken(user);
+                userRepo.save(user); // Saves the user
 
-                return ResponseEntity.ok(token);
+                return jwtUtils.generateJwtToken(user); // return jwt token
         }
 
         @Override
-        public ResponseEntity<?> loginUser(Map<String, String> payload) {
-                // Clear security context Holder
+        public String loginUser(Map<String, String> payload) {
                 SecurityContextHolder.clearContext();
 
-                // Trim and validate fields
-                String email = FormValidation.validatedEmail(payload.get("email"));
-                String password = FormValidation.validatedPassword(payload.get("password"));
+                // Validate fields
+                String email = FormValidation.assertValidatedEmail(payload.get("email"));
+                String password = FormValidation.assertValidatedPassword(payload.get("password"));
 
-                // Finds the user
-                Optional<User> optionalUser = userRepo.findByEmail(email);
-                if (optionalUser.isEmpty()) {
-                        return ResponseBuilder.unauthorized("Login Failed",
-                                        "The email you entered is incorrect. Please try again.");
-                }
+                // Checks if a user doesn't exist with the provided email
+                Optional<User> user = userRepo.findByEmail(email);
+                UserValidation.assertUserExists(user, "Invalid email address.");
 
-                User user = optionalUser.get();
+                // Checks if the user is local
+                UserValidation.assertUserIsLocal(user.get(), "OAuth login required for this account.");
 
-                // Validates user registration method
-                if (!user.getProvider().equals("LOCAL")) {
-                        return ResponseBuilder.unauthorized("Authentication Method Error",
-                                        "OAuth login required for this account.");
-                }
+                // Checks if the passwords match
+                UserValidation.assertUserPasswordsMatch(user.get(),passwordEncoder, password, "Incorrect password.");
 
-                // Validates user credentials
-                if (!passwordEncoder.matches(password, user.getPassword())) {
-                        return ResponseBuilder.unauthorized("Login Failed",
-                                        "The password you entered is incorrect. Please try again.");
-                }
-
-                // Generate JwtToken
-                String token = jwtUtils.generateJwtToken(user);
-
-                return ResponseEntity.status(HttpStatus.CREATED).body(token);
+                return jwtUtils.generateJwtToken(user.get()); // returns jwt token
         }
 }

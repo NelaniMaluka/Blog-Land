@@ -1,9 +1,10 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.FormValidation;
-import com.nelani.blog_land_backend.Util.PostBuilder;
-import com.nelani.blog_land_backend.Util.ResponseBuilder;
-import com.nelani.blog_land_backend.Util.UserValidation;
+import com.nelani.blog_land_backend.Util.Validation.CategoryValidation;
+import com.nelani.blog_land_backend.Util.Validation.FormValidation;
+import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
+import com.nelani.blog_land_backend.Util.Validation.PostValidation;
+import com.nelani.blog_land_backend.Util.Validation.UserValidation;
 import com.nelani.blog_land_backend.dto.PostDto;
 import com.nelani.blog_land_backend.dto.TechCrunchPostDto;
 import com.nelani.blog_land_backend.model.*;
@@ -18,7 +19,6 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,12 +47,13 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> searchByKeyword(String keyword) {
+    public  List<PostResponse> searchByKeyword(String keyword) {
+        // Get the first 5 posts from the keyword
         Pageable pageable = PageRequest.of(0, 5);
         Page<Post> posts = postRepository.searchByKeyword(keyword, pageable);
 
         // Rank results using custom scoring
-        List<PostResponse> rankedResults = posts.stream()
+        return posts.stream()
                 .map(post -> {
                     int score = calculateRelevanceScore(post, keyword);
                     return PostResponse.builder()
@@ -65,60 +66,57 @@ public class PostServiceImpl implements PostService {
                 .sorted(Comparator.comparingInt(PostResponse::getScore).reversed())
                 .limit(5)
                 .collect(Collectors.toList());
-
-        return ResponseEntity.ok(rankedResults);
     }
 
     @Override
     @Transactional
     public void incrementViews(Long postId) {
+        // Checks if the post  exists
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post not found"));
+
+        // Adds a view to the post
         post.setViewCount(post.getViewCount() + 1);
-        postRepository.save(post);
+        postRepository.save(post); // Saves the post with the updated views
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> getByCategoryId(Long categoryId, int page, int size) {
-        // Trim and validate
-        Long id = FormValidation.trimAndValidate(categoryId, "Category Id");
+    public Page<PostResponse>  getByCategoryId(Long categoryId, int page, int size) {
+        // Validate Fields
+        Long category_id = FormValidation.assertRequiredField(categoryId, "Category Id");
 
-        // Validate category existence
-        Optional<Category> optionalCategory = categoryRepository.findById(id);
-        if (optionalCategory.isEmpty()) {
-            return ResponseBuilder.invalid("Validation Error",
-                    "Category with ID " + id + " does not exist.");
-        }
-
-        Pageable pageable = PageRequest.of(page, size);
+        // Checks if the category exists
+        Optional<Category> optionalCategory = categoryRepository.findById(category_id);
+        CategoryValidation.assertCategoryExists(optionalCategory);
 
         // Fetch paginated posts by category
-        Page<Post> postPage = postRepository.findByCategoryIdOrderByCreatedAtDesc(id, pageable);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postPage = postRepository.findByCategoryIdOrderByCreatedAtDesc(category_id, pageable);
 
         // Convert to PostResponse while retaining pagination metadata
-        Page<PostResponse> responsePage = postPage.map(PostBuilder::generatePost);
-
-        return ResponseEntity.ok(responsePage);
+        return postPage.map(PostBuilder::generatePost);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getLatestPost(int page, int size) {
-        try {
+    public List<PostResponse> getLatestPost(int page, int size) {
+            // Techcrunch api
             String apiUrl = "https://techcrunch.com/wp-json/wp/v2/posts?per_page=" + size + "&page=" + page + "&_embed";
             RestTemplate restTemplate = new RestTemplate();
 
             ResponseEntity<TechCrunchPostDto[]> response = restTemplate.getForEntity(apiUrl, TechCrunchPostDto[].class);
             TechCrunchPostDto[] externalPosts = response.getBody();
 
-            List<PostResponse> postResponses = Arrays.stream(externalPosts).map(dto -> {
+            // Generates a list of the latest blog posts
+            return Arrays.stream(externalPosts).map(dto -> {
                 String author = dto.get_embedded().getAuthor()[0].getName();
                 String title = dto.getTitle().getRendered();
                 String content = dto.getContent().getRendered();
                 String summary = dto.getExcerpt().getRendered();
                 LocalDateTime createdAt = LocalDateTime.parse(dto.getDate());
 
+                // Builds response data
                 return PostResponse.builder()
                         .title(title)
                         .content(content)
@@ -129,70 +127,47 @@ public class PostServiceImpl implements PostService {
                         .readTime(PostBuilder.calculateReadTime(content))
                         .build();
             }).toList();
-
-            return ResponseEntity.ok(postResponses);
-
-        } catch (Exception e) {
-            return ResponseBuilder.serverError();
-        }
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> getByUserId(int page, int size) {
+    public Page<PostResponse> getByUserId(int page, int size) {
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
-        // Checks if users have posts
-        if (user.getPosts().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-
-        Pageable pageable = PageRequest.of(page, size);
-
         // Fetch paginated posts by category
+        Pageable pageable = PageRequest.of(page, size);
         Page<Post> postPage = postRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
 
-        // Convert to PostResponse while retaining pagination metadata
-        Page<PostResponse> responsePage = postPage.map(PostBuilder::generatePost);
+        // Checks if the user has posts
+        if (postPage.isEmpty()) {
+            return Page.empty(pageable);
+        }
 
-        return ResponseEntity.ok(responsePage);
+        // Convert to PostResponse while retaining pagination metadata
+        return postPage.map(PostBuilder::generatePost);
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> addPost(PostDto postDto) {
-        // Trim and validate
-        String title = FormValidation.trimAndValidate(postDto.getTitle(), "Title");
-        String content = FormValidation.trimAndValidate(postDto.getContent(), "Content");
-        Long userId = FormValidation.trimAndValidate(postDto.getUserId(), "User Id");
-        Long categoryId = FormValidation.trimAndValidate(postDto.getCategoryId(), "Category Id");
-        String summary = FormValidation.trimAndValidate(postDto.getSummary(), "Summary");
-        String imgUrl = FormValidation.trimAndValidate(postDto.getImgUrl(), "Img Url");
+    public void addPost(PostDto postDto) {
+        // Validate Fields
+        String title = FormValidation.assertRequiredField(postDto.getTitle(), "Title");
+        String content = FormValidation.assertRequiredField(postDto.getContent(), "Content");
+        Long categoryId = FormValidation.assertRequiredField(postDto.getCategoryId(), "Category Id");
+        String summary = FormValidation.assertRequiredField(postDto.getSummary(), "Summary");
+        String imgUrl = FormValidation.assertRequiredField(postDto.getImgUrl(), "Img Url");
         String references = postDto.getReferences();
 
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
-        // Checks if the token and user id match
-        if (!user.getId().equals(userId)) {
-            return ResponseBuilder.invalid("Authorization Error",
-                    "The user ID provided does not match the authenticated account. Please verify your credentials.");
-        }
-
         // Checks if the category exists
         Optional<Category> category = categoryRepository.findById(categoryId);
-        if (category.isEmpty()) {
-            return ResponseBuilder.invalid("validation.error", "category.notFound");
-        }
+        CategoryValidation.assertCategoryExists(category);
 
         // Checks if the user has a post with the same title
-        for (Post post : user.getPosts()) {
-            if (post.getTitle().equals(title)) {
-                return ResponseBuilder.invalid("Validation error",
-                        "You cannot use the same title twice");
-            }
-        }
+        PostValidation.assertUserHasPostWithSameTitle(user.getPosts(), title);
 
         // Build new post
         Post newPost = Post.builder()
@@ -207,54 +182,37 @@ public class PostServiceImpl implements PostService {
         newPost.setContent(content);
 
         user.getPosts().add(newPost);
-        userRepository.save(user);
-
-        return ResponseEntity.ok("Success, Your post was successfully added");
+        userRepository.save(user); // Save the new post
     };
 
     @Override
     @Transactional
-    public ResponseEntity<?> updatePost(PostDto postDto) {
-        // Trim and validate
-        Long id = FormValidation.trimAndValidate(postDto.getId(), "Post Id");
-        String title = FormValidation.trimAndValidate(postDto.getTitle(), "Title");
-        String content = FormValidation.trimAndValidate(postDto.getContent(), "Content");
-        Long userId = FormValidation.trimAndValidate(postDto.getUserId(), "User ID");
-        Long categoryId = FormValidation.trimAndValidate(postDto.getCategoryId(), "Category Id");
-        String summary = FormValidation.trimAndValidate(postDto.getSummary(), "Summary");
-        String imgUrl = FormValidation.trimAndValidate(postDto.getImgUrl(), "Img Url");
+    public void updatePost(PostDto postDto) {
+        // Validate fields
+        Long postId = FormValidation.assertRequiredField(postDto.getId(), "Post Id");
+        String title = FormValidation.assertRequiredField(postDto.getTitle(), "Title");
+        String content = FormValidation.assertRequiredField(postDto.getContent(), "Content");
+        Long categoryId = FormValidation.assertRequiredField(postDto.getCategoryId(), "Category Id");
+        String summary = FormValidation.assertRequiredField(postDto.getSummary(), "Summary");
+        String imgUrl = FormValidation.assertRequiredField(postDto.getImgUrl(), "Img Url");
         String references = postDto.getReferences();
         LocalDateTime updatedAt = LocalDateTime.now();
 
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
-        // Checks if the token and user id match
-        if (!user.getId().equals(userId)) {
-            return ResponseBuilder.invalid("Authorization Error",
-                    "The user ID provided does not match the authenticated account. Please verify your credentials.");
-        }
-
         // Checks if the category exists
         Optional<Category> category = categoryRepository.findById(categoryId);
-        if (category.isEmpty()) {
-            return ResponseBuilder.invalid("validation.error", "category.notFound");
-        }
+        CategoryValidation.assertCategoryExists(category);
 
         // Checks if the post exists
-        Optional<Post> post = postRepository.findById(id);
-        if (post.isEmpty()) {
-            return ResponseBuilder.invalid("Post not found",
-                    "No post with ID " + id + " exists.");
-        }
+        Optional<Post> post = postRepository.findById(postId);
+        PostValidation.assertPostExists(post);
 
         // Checks if the post belongs to the user
-        if (!post.get().getUser().getId().equals(userId)) {
-            return ResponseBuilder.unauthorized("Authorization Error",
-                    "The user ID provided does not match the author's id . Please verify your credentials.");
-        }
+        PostValidation.assertPostBelongsToUser(post.get(), user);
 
-        // Build new post
+        // Update existing post
         Post updatedPost = post.get();
         updatedPost.setTitle(title);
         updatedPost.setContent(content);
@@ -263,52 +221,31 @@ public class PostServiceImpl implements PostService {
         updatedPost.setSummary(summary);
         updatedPost.setUpdatedAt(updatedAt);
 
-        postRepository.save(updatedPost);
-
-        return ResponseEntity.ok("Success, Your post was successfully updated");
+        postRepository.save(updatedPost); // Save updated post
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> deletePost(PostDto postDto) {
-        // Trim and validate
-        Long id = FormValidation.trimAndValidate(postDto.getId(), "Post Id");
-        Long userId = FormValidation.trimAndValidate(postDto.getUserId(), "User Id");
+    public void deletePost(PostDto postDto) {
+        // Validate fields
+        Long postId = FormValidation.assertRequiredField(postDto.getId(), "Post Id");
 
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
-        // Checks if the token and user id match
-        if (!user.getId().equals(userId)) {
-            return ResponseBuilder.invalid("Authorization Error",
-                    "The user ID provided does not match the authenticated account. Please verify your credentials.");
-        }
-
         // Checks if the post exists
-        Optional<Post> post = postRepository.findById(id);
-        if (post.isEmpty()) {
-            return ResponseBuilder.invalid("Post not found",
-                    "No post with ID " + id + " exists.");
-        }
+        Optional<Post> post = postRepository.findById(postId);
+        PostValidation.assertPostExists(post);
 
         // Checks if the post belongs to the user
-        if (!post.get().getUser().getId().equals(userId)) {
-            return ResponseBuilder.unauthorized("Authorization Error",
-                    "The user ID provided does not match the author's id . Please verify your credentials.");
-        }
+        PostValidation.assertPostBelongsToUser(post.get(), user);
 
         Post existingPost = post.get();
         User postOwner = existingPost.getUser();
 
-        try {
-            postOwner.getPosts().remove(existingPost); // triggers orphanRemoval
-            entityManager.flush(); // should cascade delete comments and likes
-            entityManager.clear(); // refresh context
-        } catch (Exception e) {
-            throw new RuntimeException("Post deletion failed.");
-        }
-
-        return ResponseEntity.ok("Success, Your post was successfully deleted");
+        postOwner.getPosts().remove(existingPost); // triggers orphanRemoval
+        entityManager.flush(); // should cascade delete comments and likes
+        entityManager.clear(); // refresh context
     }
 
     private int calculateRelevanceScore(Post post, String keyword) {

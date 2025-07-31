@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/oauth2/**", "/api/v1/auth/oauth2/callback", "/error",
                                 "/h2-console/**", "/api/contact-us/**", "/api/newsletter/**", "/api/category/**",
-                                "/api/post/get-all/**", "/api/comments/get-all/**", "/api/like/get-all/**", "/api/post/api/search/**").permitAll()
+                                "/api/post/get/**", "/api/comments/get/**", "/api/post/api/search/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2.successHandler(customSuccessHandler))

@@ -1,7 +1,8 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.FormValidation;
-import com.nelani.blog_land_backend.Util.ResponseBuilder;
+import com.nelani.blog_land_backend.Util.Validation.FormValidation;
+import com.nelani.blog_land_backend.Util.Validation.PasswordTokenValidation;
+import com.nelani.blog_land_backend.Util.Validation.UserValidation;
 import com.nelani.blog_land_backend.model.PasswordResetToken;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.PasswordResetTokenRepository;
@@ -13,7 +14,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,36 +41,27 @@ public class ForgotPasswordRequestImpl implements ForgotPasswordService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> requestPasswordReset(Map<String, String> payload){
-        // Validate the email
-        String email = FormValidation.validatedEmail(payload.get("email"));
+    public void requestPasswordReset(Map<String, String> payload){
+        // Validate fields
+        String email = FormValidation.assertValidatedEmail(payload.get("email"));
 
         // Check if the user exists
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.isEmpty()){
-            return ResponseBuilder.invalid("User Not Found",
-                    "No account is associated with that email.");
-        }
+        UserValidation.assertUserExists(optionalUser, "No account is associated with that email.");
 
         // Checks if user is Local
-        if (!optionalUser.get().getProvider().equals("LOCAL")){
-            return ResponseBuilder.unauthorized("Authentication Type Error",
-                    "OAuth user's can not change their password.");
-        }
+        UserValidation.assertUserIsLocal(optionalUser.get(),"OAuth user's can not change their password.");
 
         // Checks if there is an active token
         LocalDateTime now = LocalDateTime.now();
         Optional<PasswordResetToken> activeToken = passwordResetTokenRepository
                 .findByUserAndUsedFalseAndExpiryDateAfter(optionalUser.get(), now);
 
-        if (activeToken.isPresent()) {
-            return ResponseBuilder.invalid("Token Already Issued",
-                    "A password reset link has already been sent. Please check your email or wait for the link to expire.");
-        }
+        // Checks if there is an active reset token
+        PasswordTokenValidation.assertTokenIsActive(activeToken.get());
 
         // Generate request token
         SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-
         String token = Jwts.builder()
                 .setSubject(optionalUser.get().getEmail())
                 .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000))
@@ -79,6 +70,7 @@ public class ForgotPasswordRequestImpl implements ForgotPasswordService {
 
         String hashedToken = DigestUtils.sha256Hex(token);
 
+        // Generate password reset object
         LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(15);
         PasswordResetToken resetToken = PasswordResetToken.builder()
                 .token(hashedToken)
@@ -88,68 +80,47 @@ public class ForgotPasswordRequestImpl implements ForgotPasswordService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        passwordResetTokenRepository.save(resetToken);
+        passwordResetTokenRepository.save(resetToken); // save the password reset object
 
-        // Generate redirect email
-        emailService.sendPasswordResetEmail(optionalUser.get().getEmail(), token);
-
-        return ResponseEntity.ok("Success, Password reset link sent to your email.");
+        emailService.sendPasswordResetEmail(optionalUser.get().getEmail(), token); // Generate redirect email
     };
 
     @Override
     @Transactional
-    public ResponseEntity<?> changePassword(Map<String, String> payload){
-
-        // Trim and validate fields
-        String token = FormValidation.trimAndValidate(payload.get("token"), "Token");
-        String newPassword = FormValidation.validatedPassword(payload.get("newPassword"), "New Password");
-        String repeatPassword = FormValidation.validatedPassword(payload.get("repeatPassword"), "Repeat Password");
+    public void changePassword(Map<String, String> payload){
+        // Validate fields
+        String token = FormValidation.assertRequiredField(payload.get("token"), "Token");
+        String newPassword = FormValidation.assertValidatedPassword(payload.get("newPassword"), "New Password");
+        String repeatPassword = FormValidation.assertValidatedPassword(payload.get("repeatPassword"), "Repeat Password");
 
         // Checks if repeat password and new password match
-        if (!newPassword.equals(repeatPassword)) {
-            return ResponseBuilder.invalid("Validation Error",
-                    "Repeat password does not match the new password.");
-        }
+        UserValidation.assertNewAndRepeatPasswordsMatch(newPassword, repeatPassword);
 
         // Checks it the token is valid
         String hashedToken = DigestUtils.sha256Hex(token);
         Optional<PasswordResetToken> tokenEntity = passwordResetTokenRepository.findByToken(hashedToken);
-        if (tokenEntity.isEmpty()){
-            return ResponseBuilder.invalid("Invalid Token",
-                    "Your password reset link is invalid. Please request a new one.");
-        }
+        PasswordTokenValidation.assertTokenExists(tokenEntity.get());
 
         // Checks if the token hasn't expired
-        if (tokenEntity.get().getExpiryDate().equals(LocalDateTime.now())){
-            return ResponseBuilder.unauthorized("Expired Token",
-                    "Your password reset link is expired. Please request a new one.");
-        }
+        PasswordTokenValidation.assertTokenExpired(tokenEntity.get());
 
         // Checks if the token hasn't been used
-        if (tokenEntity.get().isUsed()){
-            return ResponseBuilder.unauthorized("Invalid Token",
-                    "Your password reset link has already been used. Please request a new one");
-        }
+        PasswordTokenValidation.assertTokenIsUsed(tokenEntity.get());
 
+        // Get the user from the token
         User user = tokenEntity.get().getUser();
 
         // Checks if user password and new password don't match
-        if (passwordEncoder.matches(newPassword, user.getPassword())) {
-            return ResponseBuilder.invalid("Validation Error",
-                    "You cannot reuse your current password. Please choose a new password.");
-        }
+        UserValidation.assertNewAndOldPasswordsMatch(user, passwordEncoder, newPassword);
 
         // Update the users password
         user.setPassword(passwordEncoder.encode(newPassword));
 
-        // Save the user with the new password
-        userRepository.save(user);
+        userRepository.save(user); // Save the user with the new password
 
         // Update the forgot password entity
         PasswordResetToken passwordResetToken = tokenEntity.get();
         passwordResetToken.setUsed(true);
         passwordResetTokenRepository.save(passwordResetToken);
-
-        return ResponseEntity.ok("Success, Your password was changed successfully! You're all set.");
     };
 }

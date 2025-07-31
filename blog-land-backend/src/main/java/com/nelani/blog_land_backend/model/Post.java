@@ -41,6 +41,7 @@ public class Post {
     @Column(nullable = false)
     private String imgUrl;
 
+    @Builder.Default
     @Column(nullable = false)
     private Long viewCount = 0L;
 
@@ -59,6 +60,7 @@ public class Post {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Comment> comments = new ArrayList<>();
 
@@ -83,4 +85,3 @@ public class Post {
     }
 
 }
-

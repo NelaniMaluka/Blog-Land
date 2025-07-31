@@ -1,10 +1,12 @@
 package com.nelani.blog_land_backend.service;
 
 import com.nelani.blog_land_backend.model.User;
-import org.springframework.http.ResponseEntity;
+import com.nelani.blog_land_backend.response.UserResponse;
 
 public interface UserService {
-    ResponseEntity<?> getUserDetails();
-    ResponseEntity<?> updateUserDetails(User user);
-    ResponseEntity<?> deleteUserDetails(Long id);
+    UserResponse getUserDetails();
+
+    String updateUserDetails(User user);
+
+    void deleteUserDetails();
 }

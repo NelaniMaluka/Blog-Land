@@ -14,7 +14,6 @@ public class PostDto {
     private String title;
     private String content;
     private LocalDateTime updatedAt;
-    private Long userId;
     private Long categoryId;
     private String summary;
     private String imgUrl;

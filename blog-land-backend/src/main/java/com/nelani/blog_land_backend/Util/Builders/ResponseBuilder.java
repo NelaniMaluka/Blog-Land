@@ -1,10 +1,11 @@
-package com.nelani.blog_land_backend.Util;
+package com.nelani.blog_land_backend.Util.Builders;
 
 import com.nelani.blog_land_backend.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class ResponseBuilder {
+
     public static ResponseEntity<?> invalid(String title, String message) {
         return ResponseEntity
                 .badRequest()
@@ -30,4 +31,5 @@ public class ResponseBuilder {
                 .body(new ErrorResponse("Internal Server Error",
                         "An unexpected error occurred. Please try again later."));
     }
+
 }

@@ -1,9 +1,10 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.Util.ResponseBuilder;
+import com.nelani.blog_land_backend.Util.Builders.ResponseBuilder;
 import com.nelani.blog_land_backend.model.Newsletter;
 import com.nelani.blog_land_backend.service.NewsletterService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,8 @@ public class NewsletterController {
     @PostMapping()
     public ResponseEntity<?> addNewsletter(@RequestBody Newsletter newsletter) {
         try {
-            return newsletterService.addEmail(newsletter);
+            newsletterService.addEmail(newsletter);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Success, we received your email. Thank you for subscribing to our newsletter.");
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
         } catch (Exception e) {

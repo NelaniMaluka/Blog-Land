@@ -1,13 +1,11 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.ResponseBuilder;
-import com.nelani.blog_land_backend.Util.FormValidation;
+import com.nelani.blog_land_backend.Util.Validation.FormValidation;
+import com.nelani.blog_land_backend.Util.Validation.NewsletterValidation;
 import com.nelani.blog_land_backend.model.Newsletter;
 import com.nelani.blog_land_backend.repository.NewsletterRepository;
 import com.nelani.blog_land_backend.service.NewsletterService;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,22 +20,13 @@ public class NewsletterServiceImpl implements NewsletterService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> addEmail(Newsletter newsletter) {
-        // trim and validate fields
-        String email = FormValidation.validatedEmail(newsletter.getEmail());
+    public void addEmail(Newsletter newsletter) {
+        // Validate fields
+        String email = FormValidation.assertValidatedEmail(newsletter.getEmail());
 
-        // Check if email is already subscribed
-        if (newsletterRepository.findByEmail(email).isPresent()) {
-            return ResponseBuilder.invalid("Invalid Request",
-                    "The provided email is already subscribed to our newsletter");
-        }
-        ;
+        // Check if the email is already subscribed
+        NewsletterValidation.assertEmailIsSubsribed(newsletterRepository, email);
 
-        newsletter.setEmail(email);
-
-        // Save the newsletter email
-        newsletterRepository.save(newsletter);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Success, we received your email. Thank you for subscribing to our newsletter.");
+        newsletterRepository.save(newsletter); // Save the newsletter email
     }
-
 }

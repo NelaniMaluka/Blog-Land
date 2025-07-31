@@ -1,12 +1,17 @@
 package com.nelani.blog_land_backend.service;
 
 import com.nelani.blog_land_backend.dto.CommentDto;
-import org.springframework.http.ResponseEntity;
+import com.nelani.blog_land_backend.response.CommentResponse;
+import org.springframework.data.domain.Page;
 
 public interface CommentService {
-    ResponseEntity<?> getByPostId(Long postId , int page, int size);
-    ResponseEntity<?> getByUserId(Long userId , int page, int size);
-    ResponseEntity<?> addComment(CommentDto commentDto);
-    ResponseEntity<?> updateComment(CommentDto commentDto);
-    ResponseEntity<?> deleteComment(CommentDto commentDto);
+    Page<CommentResponse> getByPostId(Long postId, int page, int size);
+
+    Page<CommentResponse> getByUserId(int page, int size);
+
+    void addComment(CommentDto commentDto);
+
+    void updateComment(CommentDto commentDto);
+
+    void deleteComment(CommentDto commentDto);
 }

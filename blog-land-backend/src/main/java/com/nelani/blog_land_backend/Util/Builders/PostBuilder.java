@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.Util;
+package com.nelani.blog_land_backend.Util.Builders;
 
 import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.model.Post;
@@ -46,7 +46,6 @@ public class PostBuilder {
         return comments.stream()
                 .map(c -> new CommentResponse(
                         c.getId(),
-                        c.getUser().getId(),
                         c.getPost().getId(),
                         c.getContent(),
                         c.getUser().getFirstname() + " " + c.getUser().getLastname(),
@@ -58,7 +57,6 @@ public class PostBuilder {
     public static CommentResponse mapComment(Comment comment) {
         CommentResponse response = new CommentResponse();
         response.setId(comment.getId());
-        response.setUserId(comment.getUser().getId());
         response.setPostId(comment.getPost().getId());
         response.setContent(comment.getContent());
         response.setAuthor(comment.getUser().getFirstname() + " " + comment.getUser().getLastname());
