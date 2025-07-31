@@ -58,14 +58,14 @@ public class AuthServiceImpl implements AuthService {
 
                 // Checks if a user doesn't exist with the provided email
                 Optional<User> user = userRepo.findByEmail(email);
-                UserValidation.assertUserExists(user, "Invalid email address.");
+                User existingUser = UserValidation.assertUserExist(user, "Invalid email address.");
 
                 // Checks if the user is local
-                UserValidation.assertUserIsLocal(user.get(), "OAuth login required for this account.");
+                UserValidation.assertUserIsLocal(existingUser, "OAuth login required for this account.");
 
                 // Checks if the passwords match
-                UserValidation.assertUserPasswordsMatch(user.get(),passwordEncoder, password, "Incorrect password.");
+                UserValidation.assertUserPasswordsMatch(existingUser,passwordEncoder, password, "Incorrect password.");
 
-                return jwtUtils.generateJwtToken(user.get()); // returns jwt token
+                return jwtUtils.generateJwtToken(existingUser); // returns jwt token
         }
 }

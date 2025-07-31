@@ -109,7 +109,8 @@ public class PostServiceImpl implements PostService {
             TechCrunchPostDto[] externalPosts = response.getBody();
 
             // Generates a list of the latest blog posts
-            return Arrays.stream(externalPosts).map(dto -> {
+        if (externalPosts == null) throw new AssertionError();
+        return Arrays.stream(externalPosts).map(dto -> {
                 String author = dto.get_embedded().getAuthor()[0].getName();
                 String title = dto.getTitle().getRendered();
                 String content = dto.getContent().getRendered();

@@ -58,7 +58,7 @@ public class ForgotPasswordRequestImpl implements ForgotPasswordService {
                 .findByUserAndUsedFalseAndExpiryDateAfter(optionalUser.get(), now);
 
         // Checks if there is an active reset token
-        PasswordTokenValidation.assertTokenIsActive(activeToken.get());
+        PasswordTokenValidation.assertTokenIsActive(activeToken);
 
         // Generate request token
         SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
@@ -102,7 +102,7 @@ public class ForgotPasswordRequestImpl implements ForgotPasswordService {
         PasswordTokenValidation.assertTokenExists(tokenEntity.get());
 
         // Checks if the token hasn't expired
-        PasswordTokenValidation.assertTokenExpired(tokenEntity.get());
+        PasswordTokenValidation.assertTokenNotExpired(tokenEntity.get());
 
         // Checks if the token hasn't been used
         PasswordTokenValidation.assertTokenIsUsed(tokenEntity.get());

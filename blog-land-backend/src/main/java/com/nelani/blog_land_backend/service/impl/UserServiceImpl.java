@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         UserValidation.assertUserEmailsMatch(user, email, "Provided email does not match the user's registered email.");
 
         // Restricts email change to local users
-        UserValidation.assertUserIsLocal(user, "OAuth user's can not change their email.");
+        UserValidation.assertUserIsNotLocal(user, email, "OAuth user's can not change their email.");
 
         // Validates user provider
         UserValidation.assertUserProvider(user, provider, "The provided authentication type is not valid.");

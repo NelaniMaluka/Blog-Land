@@ -91,13 +91,13 @@ public class CommentServiceImpl implements CommentService {
 
         // Checks if the post exists
         Optional<Post> post = postRepository.findById(postId);
-        PostValidation.assertPostExists(post);
+        Post existingPost = PostValidation.assertPostExist(post);
 
         // Build new post
         Comment newComment = Comment.builder()
                 .content(content)
                 .user(user)
-                .post(post.get())
+                .post(existingPost)
                 .build();
 
         user.getComments().add(newComment);
@@ -121,16 +121,15 @@ public class CommentServiceImpl implements CommentService {
 
         // Checks if the Comment exists
         Optional<Comment> comment = commentRepository.findById(commentId);
-        CommentValidation.assertCommentExists(comment);
+        Comment existingComment = CommentValidation.assertCommentExist(comment);
 
         // Checks if the comment belongs to the user
-        CommentValidation.assertCommentBelongsToUser(comment.get(), user);
+        CommentValidation.assertCommentBelongsToUser(existingComment, user);
 
         // Update existing comment
-        Comment updatedComment = comment.get();
-        updatedComment.setContent(content);
+        existingComment.setContent(content);
 
-        commentRepository.save(updatedComment); // Save comment
+        commentRepository.save(existingComment); // Save comment
     }
 
     @Override
@@ -144,23 +143,17 @@ public class CommentServiceImpl implements CommentService {
 
         // Checks if the comment exists
         Optional<Comment> comment = commentRepository.findById(commentId);
-        CommentValidation.assertCommentExists(comment);
+        Comment existingComment = CommentValidation.assertCommentExist(comment);
 
         // Checks if the comment belongs to the user
-        CommentValidation.assertCommentBelongsToUser(comment.get(), user);
+        CommentValidation.assertCommentBelongsToUser(existingComment, user);
 
-        Comment existingComment = comment.get();
+        User commentOwner = existingComment.getUser();
+        existingComment.setUser(null); // break the link from comment to user
 
-        // Ensure the comment is managed
-        Comment managedComment = entityManager.contains(existingComment)
-                ? existingComment
-                : entityManager.merge(existingComment);
-
-        // Let cascade and orphanRemoval do the cleanup
-        entityManager.remove(managedComment);
-
-        // Flush to trigger SQL operations
-        entityManager.flush();
-        entityManager.clear();
+        commentOwner.getComments().remove(existingComment); // triggers orphanRemoval
+        commentRepository.delete(existingComment);
+        entityManager.flush(); // should cascade delete comments and likes
+        entityManager.clear(); // refresh context
     }
 }

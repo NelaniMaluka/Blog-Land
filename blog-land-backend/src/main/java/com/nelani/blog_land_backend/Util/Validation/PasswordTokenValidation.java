@@ -3,6 +3,7 @@ package com.nelani.blog_land_backend.Util.Validation;
 import com.nelani.blog_land_backend.model.PasswordResetToken;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class PasswordTokenValidation {
 
@@ -12,8 +13,8 @@ public class PasswordTokenValidation {
         }
     }
 
-    public static void assertTokenIsActive(PasswordResetToken token){
-        if (token == null && !token.isUsed()) {
+    public static void assertTokenIsActive(Optional<PasswordResetToken> tokenOpt){
+        if (tokenOpt.isPresent() && !tokenOpt.get().isUsed()) {
             throw new IllegalArgumentException("A password reset link has already been sent. Please check your email or wait for the link to expire.");
         }
     }
@@ -24,9 +25,9 @@ public class PasswordTokenValidation {
         }
     }
 
-    public static void assertTokenExpired(PasswordResetToken token) {
-        if (token.getExpiryDate().equals(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Your password reset link is expired. Please request a new one.");
+    public static void assertTokenNotExpired(PasswordResetToken token) {
+        if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Your password reset link has expired. Please request a new one.");
         }
     }
 
