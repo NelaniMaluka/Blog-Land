@@ -11,7 +11,7 @@ public interface PostService {
 
     List<PostResponse> searchByKeyword(String query);
 
-    Page<PostResponse> getByCategoryId(Long categoryId, int page, int size);
+    Page<PostResponse> getByCategoryId(Long categoryId, int page, int size, String order);
 
     List<PostResponse> getLatestPost(int page, int size);
 

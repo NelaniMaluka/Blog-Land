@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.repository;
 
+import com.nelani.blog_land_backend.model.Category;
 import com.nelani.blog_land_backend.model.Post;
 
 import org.springframework.data.domain.Page;
@@ -11,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     long count();
+
+    long countByCategory(Category category);
 
     @Query(value = "SELECT * FROM posts ORDER BY RAND() LIMIT 1", nativeQuery = true)
     Post findRandomPost();
@@ -28,7 +31,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<Post> findByCategoryIdOrderByCreatedAtDesc(Long categoryId, Pageable pageable);
+    Page<Post> findByCategoryId(Long categoryId, Pageable pageable);
 
     Page<Post> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 

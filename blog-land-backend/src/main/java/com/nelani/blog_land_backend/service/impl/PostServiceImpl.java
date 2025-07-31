@@ -19,6 +19,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,17 +83,19 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public Page<PostResponse>  getByCategoryId(Long categoryId, int page, int size) {
+    public Page<PostResponse> getByCategoryId(Long categoryId, int page, int size, String order) {
         // Validate Fields
         Long category_id = FormValidation.assertRequiredField(categoryId, "Category Id");
+        String setOrder = (order == null || !order.equals("oldest")) ? "latest" : "oldest";
 
         // Checks if the category exists
         Optional<Category> optionalCategory = categoryRepository.findById(category_id);
         CategoryValidation.assertCategoryExists(optionalCategory);
 
         // Fetch paginated posts by category
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> postPage = postRepository.findByCategoryIdOrderByCreatedAtDesc(category_id, pageable);
+        Sort.Direction direction = setOrder.equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "createdAt"));
+        Page<Post> postPage = postRepository.findByCategoryId(category_id, pageable);
 
         // Convert to PostResponse while retaining pagination metadata
         return postPage.map(PostBuilder::generatePost);

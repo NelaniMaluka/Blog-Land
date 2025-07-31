@@ -111,9 +111,9 @@ public class PostsController {
 
     @GetMapping("/get/category")
     public ResponseEntity<?> getAllPostsByCategory(@RequestParam Long categoryId, @RequestParam int page,
-            @RequestParam int size) {
+            @RequestParam int size,@RequestParam String order) {
         try {
-            Page<PostResponse> responsePage= postService.getByCategoryId(categoryId, page, size);
+            Page<PostResponse> responsePage= postService.getByCategoryId(categoryId, page, size, order);
             return ResponseEntity.ok(responsePage);
         } catch (IllegalArgumentException e) {
             return ResponseBuilder.invalid("Validation Error", e.getMessage());
