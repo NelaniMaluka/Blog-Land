@@ -28,10 +28,5 @@ public class FullSeeder {
             new TechCrunchSeeder().seed(restTemplate, postRepository, userRepository, categoryRepository );
         };
     }
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 }
 
