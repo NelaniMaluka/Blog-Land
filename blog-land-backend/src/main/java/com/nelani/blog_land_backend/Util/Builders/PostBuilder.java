@@ -1,11 +1,15 @@
 package com.nelani.blog_land_backend.Util.Builders;
 
+import com.nelani.blog_land_backend.dto.CategoryWithPostsDTO;
 import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.model.Post;
+import com.nelani.blog_land_backend.response.CategoryPostGroupResponse;
 import com.nelani.blog_land_backend.response.CommentResponse;
 import com.nelani.blog_land_backend.response.PostResponse;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PostBuilder {
 
@@ -39,7 +43,26 @@ public class PostBuilder {
         response.setSummary(post.getSummary());
         response.setCommentCount(post.getComments() != null ? post.getComments().size() : 0);
         response.setUser(UserBuilder.publicUserWithMinimalDetails(post.getUser()));
+        response.setDraft(post.isDraft());
         return response;
+    }
+
+    public static List<CategoryPostGroupResponse> generateUserPostWithUserInfo(List<CategoryWithPostsDTO> categoriesWithPosts) {
+        return categoriesWithPosts.stream()
+                .map(cat -> {
+                    List<PostResponse> formattedPosts = cat.getPosts().stream()
+                            .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
+                            .limit(10)
+                            .map(PostBuilder::generatePost)
+                            .collect(Collectors.toList());
+
+                    return new CategoryPostGroupResponse(
+                            cat.getCategoryId(),
+                            cat.getCategoryName(),
+                            formattedPosts
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
     public static List<CommentResponse> mapComments(List<Comment> comments) {

@@ -52,6 +52,12 @@ public class Post {
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isDraft = false;
+
+    private LocalDateTime scheduledAt;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

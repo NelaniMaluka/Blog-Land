@@ -18,4 +18,7 @@ public class PostDto {
     private String summary;
     private String imgUrl;
     private String references;
+    private boolean draft;
+    private LocalDateTime scheduledAt;
+
 }

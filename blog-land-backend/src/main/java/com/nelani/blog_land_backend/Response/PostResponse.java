@@ -33,4 +33,5 @@ public class PostResponse {
     private UserResponse user;
     private int commentCount;
     private List<CommentResponse> comments;
+    private boolean isDraft;
 }
