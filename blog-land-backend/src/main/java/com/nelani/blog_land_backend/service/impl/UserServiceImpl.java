@@ -1,6 +1,7 @@
 package com.nelani.blog_land_backend.service.impl;
 
 import com.nelani.blog_land_backend.Util.Builders.UserBuilder;
+import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
 import com.nelani.blog_land_backend.Util.Validation.UserValidation;
 import com.nelani.blog_land_backend.model.ExperienceLevel;
 import com.nelani.blog_land_backend.model.Provider;
@@ -9,8 +10,10 @@ import com.nelani.blog_land_backend.Util.Validation.FormValidation;
 import com.nelani.blog_land_backend.config.JwtUtil;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
+import com.nelani.blog_land_backend.service.ModerationClient;
 import com.nelani.blog_land_backend.service.UserService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,9 @@ import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private ModerationClient moderationClient;
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
@@ -66,6 +72,9 @@ public class UserServiceImpl implements UserService {
         user.setLocation(location);
         user.setExperience(experienceLevel);
         user.setSocials(socials);
+
+        // Moderate content
+        ModerationValidator.userModeration(user, moderationClient);
 
         userRepository.save(user); // save the user
 

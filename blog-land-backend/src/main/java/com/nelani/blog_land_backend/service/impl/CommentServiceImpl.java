@@ -1,10 +1,7 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.Validation.CommentValidation;
-import com.nelani.blog_land_backend.Util.Validation.FormValidation;
+import com.nelani.blog_land_backend.Util.Validation.*;
 import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
-import com.nelani.blog_land_backend.Util.Validation.PostValidation;
-import com.nelani.blog_land_backend.Util.Validation.UserValidation;
 import com.nelani.blog_land_backend.dto.CommentDto;
 import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.model.Post;
@@ -15,8 +12,10 @@ import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.response.CommentResponse;
 import com.nelani.blog_land_backend.service.CommentService;
 
+import com.nelani.blog_land_backend.service.ModerationClient;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +29,9 @@ public class CommentServiceImpl implements CommentService {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    private ModerationClient moderationClient;
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
@@ -100,6 +102,9 @@ public class CommentServiceImpl implements CommentService {
                 .post(existingPost)
                 .build();
 
+        // Moderate content
+        ModerationValidator.commentModeration(newComment, moderationClient);
+
         user.getComments().add(newComment);
         userRepository.save(user); // Save the new comment
     };
@@ -128,6 +133,9 @@ public class CommentServiceImpl implements CommentService {
 
         // Update existing comment
         existingComment.setContent(content);
+
+        // Moderate content
+        ModerationValidator.commentModeration(existingComment, moderationClient);
 
         commentRepository.save(existingComment); // Save comment
     }

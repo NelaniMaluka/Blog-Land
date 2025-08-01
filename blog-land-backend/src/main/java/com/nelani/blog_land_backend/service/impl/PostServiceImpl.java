@@ -1,21 +1,22 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.Validation.CategoryValidation;
-import com.nelani.blog_land_backend.Util.Validation.FormValidation;
+import com.nelani.blog_land_backend.Util.Validation.*;
 import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
-import com.nelani.blog_land_backend.Util.Validation.PostValidation;
-import com.nelani.blog_land_backend.Util.Validation.UserValidation;
+import com.nelani.blog_land_backend.dto.CategoryWithPostsDTO;
 import com.nelani.blog_land_backend.dto.PostDto;
 import com.nelani.blog_land_backend.dto.TechCrunchPostDto;
 import com.nelani.blog_land_backend.model.*;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
+import com.nelani.blog_land_backend.repository.CustomPostRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.response.PostResponse;
+import com.nelani.blog_land_backend.service.ModerationClient;
 import com.nelani.blog_land_backend.service.PostService;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,15 +36,26 @@ public class PostServiceImpl implements PostService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private ModerationClient moderationClient;
+
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CustomPostRepository customPostRepository;
 
-    public PostServiceImpl(CategoryRepository categoryRepository, PostRepository postRepository,
-            UserRepository userRepository) {
+    public PostServiceImpl(CategoryRepository categoryRepository, PostRepository postRepository, UserRepository userRepository, CustomPostRepository customPostRepository) {
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.customPostRepository = customPostRepository;
+    }
+
+    @Override
+    @Transactional
+    public List<CategoryWithPostsDTO> getTopCategoriesWithPosts() {
+        // Gets the top 6 categories with minimum 5 posts
+        return customPostRepository.findTopCategoriesWithPosts();
     }
 
     @Override
@@ -161,6 +173,8 @@ public class PostServiceImpl implements PostService {
         Long categoryId = FormValidation.assertRequiredField(postDto.getCategoryId(), "Category Id");
         String summary = FormValidation.assertRequiredField(postDto.getSummary(), "Summary");
         String imgUrl = FormValidation.assertRequiredField(postDto.getImgUrl(), "Img Url");
+        boolean isDraft = postDto.isDraft();
+        LocalDateTime scheduledAt = postDto.getScheduledAt();
         String references = postDto.getReferences();
 
         // Get current authenticated user
@@ -173,6 +187,8 @@ public class PostServiceImpl implements PostService {
         // Checks if the user has a post with the same title
         PostValidation.assertUserHasPostWithSameTitle(user.getPosts(), title);
 
+        // Check if there is any harmfull content
+
         // Build new post
         Post newPost = Post.builder()
                 .title(title)
@@ -181,9 +197,14 @@ public class PostServiceImpl implements PostService {
                 .imgUrl(imgUrl)
                 .references(references)
                 .summary(summary)
+                .isDraft(isDraft)
+                .scheduledAt(scheduledAt)
                 .viewCount(0L)
                 .build();
         newPost.setContent(content);
+
+        // Moderate content
+        ModerationValidator.postModeration(newPost, moderationClient);
 
         user.getPosts().add(newPost);
         userRepository.save(user); // Save the new post
@@ -199,6 +220,8 @@ public class PostServiceImpl implements PostService {
         Long categoryId = FormValidation.assertRequiredField(postDto.getCategoryId(), "Category Id");
         String summary = FormValidation.assertRequiredField(postDto.getSummary(), "Summary");
         String imgUrl = FormValidation.assertRequiredField(postDto.getImgUrl(), "Img Url");
+        boolean isDraft = postDto.isDraft();
+        LocalDateTime scheduledAt = postDto.getScheduledAt();
         String references = postDto.getReferences();
         LocalDateTime updatedAt = LocalDateTime.now();
 
@@ -224,6 +247,11 @@ public class PostServiceImpl implements PostService {
         updatedPost.setReferences(references);
         updatedPost.setSummary(summary);
         updatedPost.setUpdatedAt(updatedAt);
+        updatedPost.setDraft(isDraft);
+        updatedPost.setScheduledAt(scheduledAt);
+
+        // Moderate content
+        ModerationValidator.postModeration(updatedPost, moderationClient);
 
         postRepository.save(updatedPost); // Save updated post
     }

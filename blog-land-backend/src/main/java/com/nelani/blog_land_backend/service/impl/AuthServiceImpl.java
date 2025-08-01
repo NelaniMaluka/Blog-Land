@@ -1,6 +1,7 @@
 package com.nelani.blog_land_backend.service.impl;
 
 import com.nelani.blog_land_backend.Util.Validation.FormValidation;
+import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
 import com.nelani.blog_land_backend.Util.Validation.UserValidation;
 import com.nelani.blog_land_backend.config.JwtUtil;
 import com.nelani.blog_land_backend.model.Provider;
@@ -8,6 +9,8 @@ import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.service.AuthService;
 
+import com.nelani.blog_land_backend.service.ModerationClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,9 @@ import java.util.Optional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
+
+        @Autowired
+        private ModerationClient moderationClient;
 
         private final UserRepository userRepo;
         private final PasswordEncoder passwordEncoder;
@@ -43,6 +49,9 @@ public class AuthServiceImpl implements AuthService {
                 user.setPassword(passwordEncoder.encode(password));
                 user.setProvider(Provider.LOCAL);
 
+                // Moderate content
+                ModerationValidator.userModeration(user, moderationClient);
+
                 userRepo.save(user); // Saves the user
 
                 return jwtUtils.generateJwtToken(user); // return jwt token
@@ -64,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
                 UserValidation.assertUserIsLocal(existingUser, "OAuth login required for this account.");
 
                 // Checks if the passwords match
-                UserValidation.assertUserPasswordsMatch(existingUser,passwordEncoder, password, "Incorrect password.");
+                UserValidation.assertUserPasswordsMatch(existingUser, passwordEncoder, password, "Incorrect password.");
 
                 return jwtUtils.generateJwtToken(existingUser); // returns jwt token
         }
