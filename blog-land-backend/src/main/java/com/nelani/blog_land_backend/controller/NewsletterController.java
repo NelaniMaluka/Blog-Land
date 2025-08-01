@@ -1,6 +1,5 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.Util.Builders.ResponseBuilder;
 import com.nelani.blog_land_backend.model.Newsletter;
 import com.nelani.blog_land_backend.service.NewsletterService;
 
@@ -20,14 +19,8 @@ public class NewsletterController {
 
     @PostMapping()
     public ResponseEntity<?> addNewsletter(@RequestBody Newsletter newsletter) {
-        try {
-            newsletterService.addEmail(newsletter);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Success, we received your email. Thank you for subscribing to our newsletter.");
-        } catch (IllegalArgumentException e) {
-            return ResponseBuilder.invalid("Validation Error", e.getMessage());
-        } catch (Exception e) {
-            return ResponseBuilder.serverError();
-        }
+        newsletterService.addEmail(newsletter);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Success, we received your email. Thank you for subscribing to our newsletter.");
     }
-
 }

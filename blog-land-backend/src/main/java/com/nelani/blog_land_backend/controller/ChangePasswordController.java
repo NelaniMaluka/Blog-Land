@@ -1,6 +1,5 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.Util.Builders.ResponseBuilder;
 import com.nelani.blog_land_backend.dto.PasswordDto;
 import com.nelani.blog_land_backend.service.ChangePasswordService;
 
@@ -22,13 +21,7 @@ public class ChangePasswordController {
 
     @PostMapping("/change")
     public ResponseEntity<?> changePassword(@RequestBody PasswordDto passwordDto) {
-        try {
             changePasswordService.changePasswordWithOldPassword(passwordDto);
             return ResponseEntity.ok("Success, Your password was changed successfully! You're all set.");
-        } catch (IllegalArgumentException e) {
-            return ResponseBuilder.invalid("Validation Error", e.getMessage());
-        } catch (Exception e) {
-            return ResponseBuilder.serverError();
-        }
     }
 }

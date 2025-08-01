@@ -1,6 +1,5 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.Util.Builders.ResponseBuilder;
 import com.nelani.blog_land_backend.model.Contact;
 import com.nelani.blog_land_backend.service.ContactService;
 
@@ -23,14 +22,8 @@ public class ContactController {
 
     @PostMapping
     public ResponseEntity<?> getContactMessage(@RequestBody Contact contact) {
-        try {
             contactService.getInfo(contact);
             return ResponseEntity.status(HttpStatus.CREATED).body("Success, we received your message. Thank you for reaching out.");
-        } catch (IllegalArgumentException e) {
-            return ResponseBuilder.invalid("Validation Error", e.getMessage());
-        } catch (Exception e) {
-            return ResponseBuilder.serverError();
-        }
     }
 
 }

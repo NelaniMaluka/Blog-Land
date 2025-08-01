@@ -1,6 +1,5 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.Util.Builders.ResponseBuilder;
 import com.nelani.blog_land_backend.dto.CategoryDto;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
 
@@ -27,7 +26,6 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<?> getCategories() {
-        try {
             List<CategoryDto> categoryDtos = categoryRepository.findAll()
                     .stream()
                     .map(category -> {
@@ -37,8 +35,5 @@ public class CategoryController {
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(categoryDtos);
-        } catch (Exception e) {
-            return ResponseBuilder.serverError();
-        }
     }
 }

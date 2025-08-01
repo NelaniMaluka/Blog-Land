@@ -1,6 +1,5 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.Util.Builders.ResponseBuilder;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.service.UserService;
@@ -20,38 +19,20 @@ public class UserController {
 
     @GetMapping()
     public ResponseEntity<?> getUseDetails() {
-        try {
             UserResponse userResponse = userService.getUserDetails();
             return ResponseEntity.ok(userResponse);
-        } catch (IllegalArgumentException e) {
-            return ResponseBuilder.invalid("Validation Error", e.getMessage());
-        } catch (Exception e) {
-            return ResponseBuilder.serverError();
-        }
     }
 
     @PutMapping("/update-user")
     public ResponseEntity<?> updateUseDetails(@RequestBody User user) {
-        try {
             String newToken = userService.updateUserDetails(user);
             return ResponseEntity.ok(newToken);
-        } catch (IllegalArgumentException e) {
-            return ResponseBuilder.invalid("Validation Error", e.getMessage());
-        } catch (Exception e) {
-            return ResponseBuilder.serverError();
-        }
     }
 
     @DeleteMapping("/delete-user")
     public ResponseEntity<?> deleteUseDetails() {
-        try {
             userService.deleteUserDetails();
             return ResponseEntity.ok("Success, Successfully deleted your account");
-        } catch (IllegalArgumentException e) {
-            return ResponseBuilder.invalid("Validation Error", e.getMessage());
-        } catch (Exception e) {
-            return ResponseBuilder.serverError();
-        }
     }
 
 }
