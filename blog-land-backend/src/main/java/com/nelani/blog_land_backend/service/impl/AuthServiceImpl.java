@@ -3,14 +3,12 @@ package com.nelani.blog_land_backend.service.impl;
 import com.nelani.blog_land_backend.Util.Validation.FormValidation;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
 import com.nelani.blog_land_backend.Util.Validation.UserValidation;
-import com.nelani.blog_land_backend.config.JwtUtil;
+import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.service.AuthService;
 
-import com.nelani.blog_land_backend.service.ModerationClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,14 +19,14 @@ import java.util.Optional;
 @Service
 public class AuthServiceImpl implements AuthService {
 
-        @Autowired
-        private ModerationClient moderationClient;
-
+        private final ModerationValidator moderationValidator;
         private final UserRepository userRepo;
         private final PasswordEncoder passwordEncoder;
         private final JwtUtil jwtUtils;
 
-        public AuthServiceImpl(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtUtil jwtUtils) {
+        public AuthServiceImpl(ModerationValidator moderationValidator, UserRepository userRepo,
+                        PasswordEncoder passwordEncoder, JwtUtil jwtUtils) {
+                this.moderationValidator = moderationValidator;
                 this.userRepo = userRepo;
                 this.passwordEncoder = passwordEncoder;
                 this.jwtUtils = jwtUtils;
@@ -50,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
                 user.setProvider(Provider.LOCAL);
 
                 // Moderate content
-                ModerationValidator.userModeration(user, moderationClient);
+                moderationValidator.userModeration(user);
 
                 userRepo.save(user); // Saves the user
 
@@ -67,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
 
                 // Checks if a user doesn't exist with the provided email
                 Optional<User> user = userRepo.findByEmail(email);
-                User existingUser = UserValidation.assertUserExist(user, "Invalid email address.");
+                User existingUser = UserValidation.assertUserExist(user, "No user found with the provided email.");
 
                 // Checks if the user is local
                 UserValidation.assertUserIsLocal(existingUser, "OAuth login required for this account.");

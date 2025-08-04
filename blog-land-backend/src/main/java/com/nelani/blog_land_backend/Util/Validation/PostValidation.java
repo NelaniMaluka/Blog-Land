@@ -28,7 +28,7 @@ public class PostValidation {
     public static void assertUserHasPostWithSameTitle(List<Post> posts, String title) {
         for (Post post : posts) {
             if (post.getTitle().equals(title)) {
-                throw new IllegalArgumentException("You cannot use the same title twice");
+                throw new IllegalArgumentException("You cannot use the same title twice.");
             }
         }
     }

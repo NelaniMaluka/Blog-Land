@@ -1,5 +1,7 @@
 package com.nelani.blog_land_backend.config;
 
+import com.nelani.blog_land_backend.Util.JwtUtil;
+import com.nelani.blog_land_backend.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,11 +17,20 @@ public class SecurityConfig {
 
     @Autowired
     private CustomSuccessHandler customSuccessHandler;
-    @Autowired
-    private UnifiedAuthenticationFilter unifiedAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public JwtUtil jwtUtil() {
+        return new JwtUtil();
+    }
+
+    @Bean
+    public UnifiedAuthenticationFilter unifiedAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
+        return new UnifiedAuthenticationFilter(jwtUtil, userRepository);
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   UnifiedAuthenticationFilter unifiedAuthenticationFilter) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -38,5 +49,3 @@ public class SecurityConfig {
                 .build();
     }
 }
-
-

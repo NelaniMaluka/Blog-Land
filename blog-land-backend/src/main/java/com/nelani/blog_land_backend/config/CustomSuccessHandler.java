@@ -1,25 +1,35 @@
 package com.nelani.blog_land_backend.config;
 
+import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
+
 
 import java.io.IOException;
 
 @Component
 public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
-    @Autowired
     private UserRepository userRepo;
+    private final JwtUtil jwtUtil;
+
     @Autowired
-    private JwtUtil jwtUtils;
+    public CustomSuccessHandler(UserRepository userRepo, @Lazy JwtUtil jwtUtil) {
+        this.userRepo = userRepo;
+        this.jwtUtil = jwtUtil;
+    }
+
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -39,7 +49,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             return userRepo.save(newUser);
         });
 
-        String token = jwtUtils.generateJwtToken(user);
+        String token = jwtUtil.generateJwtToken(user);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

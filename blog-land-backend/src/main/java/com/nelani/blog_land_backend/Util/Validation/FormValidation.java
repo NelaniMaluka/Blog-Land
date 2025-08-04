@@ -59,14 +59,14 @@ public class FormValidation {
 
     public static Long assertRequiredField(Long field, String fieldName) {
         if (field == null) {
-            throw new IllegalArgumentException(fieldName + field + " is required.");
+            throw new IllegalArgumentException(fieldName + " is required.");
         }
         return field;
     }
 
     public static Provider assertRequiredField(Provider field, String fieldName) {
         if (field == null) {
-            throw new IllegalArgumentException(fieldName + field + " is required.");
+            throw new IllegalArgumentException(fieldName + " is required.");
         }
         return field;
     }

@@ -4,6 +4,7 @@ import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.service.ModerationClient;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -13,40 +14,41 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Component
 public class ModerationValidator {
 
-    public static void commentModeration(Comment comment, ModerationClient moderationClient){
+    private final ModerationClient moderationClient;
+
+    public ModerationValidator(ModerationClient moderationClient) {
+        this.moderationClient = moderationClient;
+    }
+
+    public void commentModeration(Comment comment) {
         moderationClient.validateContent(comment.getContent());
     }
 
-    public static void postModeration(Post post, ModerationClient moderationClient){
+    public void postModeration(Post post) {
         moderationClient.validateContent(post.getTitle());
         moderationClient.validateContent(post.getContent());
         moderationClient.validateContent(post.getSummary());
-        if(isValid(post.getReferences())) moderateReferences(post.getReferences(), moderationClient);
+        if (isValid(post.getReferences())) moderateReferences(post.getReferences());
     }
 
-    public static void userModeration(User user, ModerationClient moderationClient){
+    public void userModeration(User user) {
         moderationClient.validateContent(user.getFirstname());
         moderationClient.validateContent(user.getLastname());
-        if(isValid(user.getLocation())) moderationClient.validateContent(user.getLocation());
+        if (isValid(user.getLocation())) moderationClient.validateContent(user.getLocation());
 
         if (user.getSocials() != null) {
             for (Map.Entry<String, String> entry : user.getSocials().entrySet()) {
-                String platform = entry.getKey();
                 String url = entry.getValue();
-
-                // Option 1: Moderate the raw URL string
                 moderationClient.validateContent(url);
-
-                // Option 2 (recommended): Fetch preview/title and moderate that
-                String preview = fetchPageTitleOrSnippet(url);
-                moderationClient.validateContent(preview);
+                moderationClient.validateContent(fetchPageTitleOrSnippet(url));
             }
         }
     }
 
-    public static String fetchPageTitleOrSnippet(String url) {
+    private String fetchPageTitleOrSnippet(String url) {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
@@ -62,47 +64,37 @@ public class ModerationValidator {
 
             return (title + " " + description).trim();
         } catch (Exception e) {
-            return url; // fallback if fetch fails
+            return url;
         }
     }
 
-    private static String extractTagContent(String html, String tag) {
+    private String extractTagContent(String html, String tag) {
         int start = html.indexOf("<" + tag + ">");
         int end = html.indexOf("</" + tag + ">");
-        if (start != -1 && end != -1 && end > start) {
-            return html.substring(start + tag.length() + 2, end).trim();
-        }
-        return "";
+        return (start != -1 && end != -1 && end > start)
+                ? html.substring(start + tag.length() + 2, end).trim()
+                : "";
     }
 
-    private static String extractMetaDescription(String html) {
-        Pattern pattern = Pattern.compile("<meta\\s+name=[\"']description[\"']\\s+content=[\"'](.*?)[\"']", Pattern.CASE_INSENSITIVE);
+    private String extractMetaDescription(String html) {
+        Pattern pattern = Pattern.compile("<meta\\s+name=[\"']description[\"']\\s+content=[\"'](.*?)[\"']",
+                Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(html);
-        if (matcher.find()) {
-            return matcher.group(1).trim();
-        }
-        return "";
+        return matcher.find() ? matcher.group(1).trim() : "";
     }
 
-    private static void moderateReferences(String references, ModerationClient moderationClient) {
+    private void moderateReferences(String references) {
         if (references == null || references.isBlank()) return;
-
-        String[] urls = references.split("/\\\\\\*\\\\"); // Escaped regex for /*\
-
+        String[] urls = references.split("/\\\\\\*\\\\");
         for (String url : urls) {
             url = url.trim();
             if (url.isEmpty()) continue;
-
-            // Moderate raw URL
             moderationClient.validateContent(url);
-
-            // Fetch and moderate page title/snippet
-            String preview = fetchPageTitleOrSnippet(url);
-            moderationClient.validateContent(preview);
+            moderationClient.validateContent(fetchPageTitleOrSnippet(url));
         }
     }
 
-    private static boolean isValid(String value) {
+    private boolean isValid(String value) {
         return value != null && !value.isBlank();
     }
 }

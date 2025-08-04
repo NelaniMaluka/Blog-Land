@@ -11,12 +11,9 @@ import com.nelani.blog_land_backend.repository.CustomPostRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.response.PostResponse;
-import com.nelani.blog_land_backend.service.ModerationClient;
 import com.nelani.blog_land_backend.service.PostService;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,22 +30,22 @@ import java.util.stream.Collectors;
 @Service
 public class PostServiceImpl implements PostService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Autowired
-    private ModerationClient moderationClient;
-
+    private final EntityManager entityManager;
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CustomPostRepository customPostRepository;
+    private final ModerationValidator moderationValidator;
 
-    public PostServiceImpl(CategoryRepository categoryRepository, PostRepository postRepository, UserRepository userRepository, CustomPostRepository customPostRepository) {
+    public PostServiceImpl(EntityManager entityManager, CategoryRepository categoryRepository,
+            PostRepository postRepository, UserRepository userRepository, CustomPostRepository customPostRepository,
+            ModerationValidator moderationValidator) {
+        this.entityManager = entityManager;
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.customPostRepository = customPostRepository;
+        this.moderationValidator = moderationValidator;
     }
 
     @Override
@@ -60,7 +57,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public  List<PostResponse> searchByKeyword(String keyword) {
+    public List<PostResponse> searchByKeyword(String keyword) {
         // Get the first 5 posts from the keyword
         Pageable pageable = PageRequest.of(0, 5);
         Page<Post> posts = postRepository.searchByKeyword(keyword, pageable);
@@ -84,7 +81,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void incrementViews(Long postId) {
-        // Checks if the post  exists
+        // Checks if the post exists
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post not found"));
 
@@ -116,33 +113,34 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional(readOnly = true)
     public List<PostResponse> getLatestPost(int page, int size) {
-            // Techcrunch api
-            String apiUrl = "https://techcrunch.com/wp-json/wp/v2/posts?per_page=" + size + "&page=" + page + "&_embed";
-            RestTemplate restTemplate = new RestTemplate();
+        // Techcrunch api
+        String apiUrl = "https://techcrunch.com/wp-json/wp/v2/posts?per_page=" + size + "&page=" + page + "&_embed";
+        RestTemplate restTemplate = new RestTemplate();
 
-            ResponseEntity<TechCrunchPostDto[]> response = restTemplate.getForEntity(apiUrl, TechCrunchPostDto[].class);
-            TechCrunchPostDto[] externalPosts = response.getBody();
+        ResponseEntity<TechCrunchPostDto[]> response = restTemplate.getForEntity(apiUrl, TechCrunchPostDto[].class);
+        TechCrunchPostDto[] externalPosts = response.getBody();
 
-            // Generates a list of the latest blog posts
-        if (externalPosts == null) throw new AssertionError();
+        // Generates a list of the latest blog posts
+        if (externalPosts == null)
+            throw new AssertionError();
         return Arrays.stream(externalPosts).map(dto -> {
-                String author = dto.get_embedded().getAuthor()[0].getName();
-                String title = dto.getTitle().getRendered();
-                String content = dto.getContent().getRendered();
-                String summary = dto.getExcerpt().getRendered();
-                LocalDateTime createdAt = LocalDateTime.parse(dto.getDate());
+            String author = dto.get_embedded().getAuthor()[0].getName();
+            String title = dto.getTitle().getRendered();
+            String content = dto.getContent().getRendered();
+            String summary = dto.getExcerpt().getRendered();
+            LocalDateTime createdAt = LocalDateTime.parse(dto.getDate());
 
-                // Builds response data
-                return PostResponse.builder()
-                        .title(title)
-                        .content(content)
-                        .summary(summary)
-                        .author(author)
-                        .source("TechCrunch")
-                        .createdAt(createdAt)
-                        .readTime(PostBuilder.calculateReadTime(content))
-                        .build();
-            }).toList();
+            // Builds response data
+            return PostResponse.builder()
+                    .title(title)
+                    .content(content)
+                    .summary(summary)
+                    .author(author)
+                    .source("TechCrunch")
+                    .createdAt(createdAt)
+                    .readTime(PostBuilder.calculateReadTime(content))
+                    .build();
+        }).toList();
     }
 
     @Override
@@ -187,8 +185,6 @@ public class PostServiceImpl implements PostService {
         // Checks if the user has a post with the same title
         PostValidation.assertUserHasPostWithSameTitle(user.getPosts(), title);
 
-        // Check if there is any harmfull content
-
         // Build new post
         Post newPost = Post.builder()
                 .title(title)
@@ -204,7 +200,7 @@ public class PostServiceImpl implements PostService {
         newPost.setContent(content);
 
         // Moderate content
-        ModerationValidator.postModeration(newPost, moderationClient);
+        moderationValidator.postModeration(newPost);
 
         user.getPosts().add(newPost);
         userRepository.save(user); // Save the new post
@@ -241,6 +237,7 @@ public class PostServiceImpl implements PostService {
 
         // Update existing post
         Post updatedPost = post.get();
+        updatedPost.setCategory(category.get());
         updatedPost.setTitle(title);
         updatedPost.setContent(content);
         updatedPost.setImgUrl(imgUrl);
@@ -251,7 +248,7 @@ public class PostServiceImpl implements PostService {
         updatedPost.setScheduledAt(scheduledAt);
 
         // Moderate content
-        ModerationValidator.postModeration(updatedPost, moderationClient);
+        moderationValidator.postModeration(updatedPost);
 
         postRepository.save(updatedPost); // Save updated post
     }

@@ -12,10 +12,7 @@ import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.response.CommentResponse;
 import com.nelani.blog_land_backend.service.CommentService;
 
-import com.nelani.blog_land_backend.service.ModerationClient;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,26 +24,24 @@ import java.util.Optional;
 @Service
 public class CommentServiceImpl implements CommentService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Autowired
-    private ModerationClient moderationClient;
-
+    private final EntityManager entityManager;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final ModerationValidator moderationValidator;
 
-    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository,
-            UserRepository userRepository) {
+    public CommentServiceImpl(EntityManager entityManager, CommentRepository commentRepository,
+            PostRepository postRepository, UserRepository userRepository, ModerationValidator moderationValidator) {
+        this.entityManager = entityManager;
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.moderationValidator = moderationValidator;
     }
 
     @Override
     @Transactional
-    public  Page<CommentResponse> getByPostId(Long postId, int page, int size) {
+    public Page<CommentResponse> getByPostId(Long postId, int page, int size) {
         // Validate fields
         Long id = FormValidation.assertRequiredField(postId, "Post Id");
 
@@ -64,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public  Page<CommentResponse> getByUserId( int page, int size) {
+    public Page<CommentResponse> getByUserId(int page, int size) {
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
@@ -103,7 +98,7 @@ public class CommentServiceImpl implements CommentService {
                 .build();
 
         // Moderate content
-        ModerationValidator.commentModeration(newComment, moderationClient);
+        moderationValidator.commentModeration(newComment);
 
         user.getComments().add(newComment);
         userRepository.save(user); // Save the new comment
@@ -135,7 +130,7 @@ public class CommentServiceImpl implements CommentService {
         existingComment.setContent(content);
 
         // Moderate content
-        ModerationValidator.commentModeration(existingComment, moderationClient);
+        moderationValidator.commentModeration(existingComment);
 
         commentRepository.save(existingComment); // Save comment
     }

@@ -1,14 +1,12 @@
-package com.nelani.blog_land_backend.config;
+package com.nelani.blog_land_backend.Util;
 
 import com.nelani.blog_land_backend.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 
-@Component
 public class JwtUtil {
 
     // Securely generated secret key

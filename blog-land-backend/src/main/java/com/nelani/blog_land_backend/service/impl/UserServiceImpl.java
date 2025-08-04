@@ -7,13 +7,11 @@ import com.nelani.blog_land_backend.model.ExperienceLevel;
 import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.Util.Validation.FormValidation;
-import com.nelani.blog_land_backend.config.JwtUtil;
+import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
-import com.nelani.blog_land_backend.service.ModerationClient;
 import com.nelani.blog_land_backend.service.UserService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +20,12 @@ import java.util.Map;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private ModerationClient moderationClient;
-
+    private final ModerationValidator moderationValidator;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
-    public UserServiceImpl(UserRepository userRepository, JwtUtil jwtUtil) {
+    public UserServiceImpl(ModerationValidator moderationValidator, UserRepository userRepository, JwtUtil jwtUtil) {
+        this.moderationValidator = moderationValidator;
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
     }
@@ -64,7 +61,8 @@ public class UserServiceImpl implements UserService {
         UserValidation.assertUserIsNotLocal(user, email, "OAuth user's can not change their email.");
 
         // Validates user provider
-        UserValidation.assertUserProvider(user, provider, "The provided authentication type is not valid.");
+        UserValidation.assertUserProvider(user, provider, "This account was registered with " + user.getProvider()
+                + " . Please log in using your " + user.getProvider() + " provider.");
 
         user.setFirstname(firstname);
         user.setLastname(lastname);
@@ -74,7 +72,7 @@ public class UserServiceImpl implements UserService {
         user.setSocials(socials);
 
         // Moderate content
-        ModerationValidator.userModeration(user, moderationClient);
+        moderationValidator.userModeration(user);
 
         userRepository.save(user); // save the user
 
