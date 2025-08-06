@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.config;
+package com.nelani.blog_land_backend.seeder;
 
 import com.nelani.blog_land_backend.model.Category;
 import com.nelani.blog_land_backend.repository.CategoryRepository;

@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.config;
+package com.nelani.blog_land_backend.service;
 
 import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.model.Provider;

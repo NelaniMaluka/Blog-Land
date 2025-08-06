@@ -11,6 +11,7 @@ import com.nelani.blog_land_backend.response.PostResponse;
 import com.nelani.blog_land_backend.service.PostService;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
@@ -69,7 +70,7 @@ public class PostsController {
             return ResponseEntity.ok(responsePage);
     }
 
-    @GetMapping("/get/{id}/post")
+    @GetMapping("/get/post/{id}")
     public ResponseEntity<?> getPost(@PathVariable Long id) {
             // Checks if the post exists
             Optional<Post> post = postRepository.findById(id);
@@ -80,9 +81,12 @@ public class PostsController {
     }
 
     @GetMapping("/get/posts")
-    public ResponseEntity<?> getAllPosts(@RequestParam int page, @RequestParam int size) {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<Post> postPage = postRepository.findAllByOrderByCreatedAtDesc(pageable);
+    public ResponseEntity<?> getAllPosts(@RequestParam int page, @RequestParam int size, @RequestParam String order) {
+            String setOrder = (order == null || !order.equals("oldest")) ? "latest" : "oldest";
+
+            Sort.Direction direction = setOrder.equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC;
+            Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "createdAt"));
+            Page<Post> postPage = postRepository.findAll(pageable);
 
             Page<PostResponse> responsePage = postPage.map(PostBuilder::generatePost);
             return ResponseEntity.ok(responsePage);
@@ -90,7 +94,7 @@ public class PostsController {
 
     @GetMapping("/get/category")
     public ResponseEntity<?> getAllPostsByCategory(@RequestParam Long categoryId, @RequestParam int page,
-            @RequestParam int size,@RequestParam String order) {
+            @RequestParam int size, @RequestParam String order) {
             Page<PostResponse> responsePage= postService.getByCategoryId(categoryId, page, size, order);
             return ResponseEntity.ok(responsePage);
     }
@@ -101,7 +105,7 @@ public class PostsController {
             return ResponseEntity.ok(responsePage);
     }
 
-    @PostMapping("/get/posts/{postId}/view")
+    @PostMapping("/get/posts/view/{postId}")
     public ResponseEntity<?> incrementViewCount(@PathVariable Long postId) {
             postService.incrementViews(postId);
             return ResponseEntity.ok().build();

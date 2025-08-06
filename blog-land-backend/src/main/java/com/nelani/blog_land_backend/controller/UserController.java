@@ -17,7 +17,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping()
+    @GetMapping("/get-user")
     public ResponseEntity<?> getUseDetails() {
             UserResponse userResponse = userService.getUserDetails();
             return ResponseEntity.ok(userResponse);

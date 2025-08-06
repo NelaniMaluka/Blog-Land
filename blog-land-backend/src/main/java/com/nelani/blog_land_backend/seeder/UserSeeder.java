@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.config;
+package com.nelani.blog_land_backend.seeder;
 
 import com.nelani.blog_land_backend.model.ExperienceLevel;
 import com.nelani.blog_land_backend.model.Provider;

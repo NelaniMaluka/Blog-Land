@@ -1,6 +1,5 @@
-package com.nelani.blog_land_backend.config;
+package com.nelani.blog_land_backend.exception;
 
-import com.nelani.blog_land_backend.exception.UnauthorizedException;
 import com.nelani.blog_land_backend.response.ErrorResponse;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;

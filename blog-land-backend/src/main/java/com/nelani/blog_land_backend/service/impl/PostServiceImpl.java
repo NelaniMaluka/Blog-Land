@@ -104,7 +104,9 @@ public class PostServiceImpl implements PostService {
         // Fetch paginated posts by category
         Sort.Direction direction = setOrder.equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "createdAt"));
-        Page<Post> postPage = postRepository.findByCategoryId(category_id, pageable);
+        Page<Post> postPage = setOrder.equals("latest")
+                ? postRepository.findPublishedPostsLatest(pageable)
+                : postRepository.findPublishedPostsOldest(pageable);
 
         // Convert to PostResponse while retaining pagination metadata
         return postPage.map(PostBuilder::generatePost);

@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.config;
+package com.nelani.blog_land_backend.seeder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nelani.blog_land_backend.model.Category;

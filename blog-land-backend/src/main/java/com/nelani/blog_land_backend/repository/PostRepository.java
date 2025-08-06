@@ -48,10 +48,14 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "(p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP) ORDER BY p.viewCount DESC")
     Page<Post> findAllByOrderByViewCountDesc(Pageable pageable);
 
-    // Created date sorted, only published
     @Query("SELECT p FROM Post p WHERE p.isDraft = false AND " +
             "(p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP) ORDER BY p.createdAt DESC")
-    Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<Post> findPublishedPostsLatest(Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.isDraft = false AND " +
+            "(p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP) ORDER BY p.createdAt ASC")
+    Page<Post> findPublishedPostsOldest(Pageable pageable);
+
 
     // Category filter, only published
     @Query("SELECT p FROM Post p WHERE p.category.id = :categoryId AND " +
