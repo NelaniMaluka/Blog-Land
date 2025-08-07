@@ -16,11 +16,20 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Foldit', sans-serif;
+  font-family: 'Solway', serif;
 }
 
 .container {
   width: 90%;
   max-width: 1600px;
   margin: auto;
+}
+
+@media (max-width: 600px) {
+  html {
+    font-size: 25px;
+    font-family: 'Roboto', sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+  }
 }

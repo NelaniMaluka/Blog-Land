@@ -1,7 +1,125 @@
 .form {
   align-items: center;
   text-align: center;
-  padding: 1.5rem;
-  width: 500px;
-  height: 600px;
+  padding: 1.3rem 0.4rem;
+  width: 400px;
+  height: max-content;
+  padding-bottom: 1.6rem;
+}
+
+.title {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.inputGroup {
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.label {
+  font-size: 0.5rem;
+  font-weight: 500;
+  margin: 20px 0 0 0;
+  display: block;
+}
+
+.valid {
+  color: green;
+}
+
+.invalid {
+  color: red;
+}
+
+.textField :global(.MuiOutlinedInput-root) {
+  border-radius: 10px;
+  height: 40px;
+}
+
+.textField :global(.MuiOutlinedInput-root input) {
+  padding: 16.5px 14px;
+  font-size: 0.6rem;
+  color: black;
+}
+
+.validField :global(.MuiOutlinedInput-root fieldset) {
+  border-width: 1px;
+  border-style: solid;
+  border-color: green;
+}
+
+.invalidField :global(.MuiOutlinedInput-root fieldset) {
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(245, 0, 0);
+}
+
+.dividerContainer {
+  display: flex;
+  align-items: center;
+  width: 75%;
+  margin: 30px auto 20px;
+}
+
+.divider {
+  flex: 1;
+  border-color: #ccc;
+  border-width: 1px;
+  margin: 0;
+}
+
+.orText {
+  margin: 0 6px;
+  font-size: 0.6rem;
+  color: #666;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: black !important;
+  background-clip: content-box !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+@media (max-width: 600px) {
+  .dialogPaper {
+    width: 90vh;
+    max-width: 500px;
+    margin: 0 auto;
+    border-radius: 10px;
+    padding: 10px 0;
+  }
+
+  .form {
+    padding: 5px 0;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    height: max-content;
+  }
+
+  .label {
+    margin: 10px 0 0 0;
+  }
+
+  .textField :global(.MuiOutlinedInput-root) {
+    border-radius: 10px;
+    height: 35px;
+  }
+
+  .textField :global(.MuiOutlinedInput-root input) {
+    padding: 10.5px 10px;
+    font-size: 0.5rem;
+  }
+
+  .orText {
+    margin: 0 5px;
+    font-size: 0.5rem;
+  }
 }

@@ -21,6 +21,7 @@ export enum ExperienceLevel {
 // ---------- Response Interfaces ----------
 
 export interface UserResponse {
+  token: string;
   email: string;
   firstname: string;
   lastname: string;

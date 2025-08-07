@@ -55,4 +55,7 @@ a {
   .navbar_Link_mobile {
     display: none;
   }
+  .navbar_Logo a {
+    margin-left: 0rem;
+  }
 }
