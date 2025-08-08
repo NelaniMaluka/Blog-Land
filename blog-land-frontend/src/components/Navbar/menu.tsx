@@ -15,7 +15,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 
 import { useCategories } from '../../hooks/useCategory';
-import { CategoryResponse } from '../../types/api';
+import { CategoryResponse } from '../../types/categoryType';
 import { useEffect } from 'react';
 
 import { useTheme, useMediaQuery } from '@mui/material';
