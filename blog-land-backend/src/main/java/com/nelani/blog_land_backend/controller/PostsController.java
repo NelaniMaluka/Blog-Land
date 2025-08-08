@@ -33,8 +33,8 @@ public class PostsController {
     }
 
     @GetMapping("/api/search")
-    public ResponseEntity<?> searchPosts(@RequestParam String query) {
-            List<PostResponse> rankedResults =postService.searchByKeyword(query);
+    public ResponseEntity<?> searchPosts(@RequestParam String keyword) {
+            List<PostResponse> rankedResults =postService.searchByKeyword(keyword);
             return ResponseEntity.ok(rankedResults);
     }
 
@@ -124,8 +124,8 @@ public class PostsController {
     }
 
     @DeleteMapping("/delete-user-post")
-    public ResponseEntity<?> deleteUserPost(@RequestBody PostDto postDto) {
-            postService.deletePost(postDto);
+    public ResponseEntity<?> deleteUserPost(@RequestParam Long id) {
+            postService.deletePost(id);
             return ResponseEntity.ok("Success, Your post was successfully deleted");
     }
 

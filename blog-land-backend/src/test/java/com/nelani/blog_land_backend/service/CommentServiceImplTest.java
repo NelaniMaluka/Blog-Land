@@ -333,8 +333,7 @@ public class CommentServiceImplTest {
         @Test
         void deleteComment_ShouldDeleteComment() {
                 // Arrange
-                CommentDto commentDto = new CommentDto();
-                commentDto.setId(1L);
+                Long commentId = 1L;
 
                 // Get the user from SecurityContext (set up in @BeforeEach)
                 User authenticatedUser = (User) SecurityContextHolder.getContext()
@@ -359,7 +358,7 @@ public class CommentServiceImplTest {
                 doNothing().when(entityManager).clear();
 
                 // Act
-                commentService.deleteComment(commentDto);
+                commentService.deleteComment(commentId);
 
                 // Assert
                 verify(commentRepository).delete(existingComment);
@@ -370,13 +369,12 @@ public class CommentServiceImplTest {
         @Test
         void deleteComment_ShouldThrowException_WhenNoCommentExists() {
                 // Arrange
-                CommentDto commentDto = new CommentDto();
-                commentDto.setId(1L);
+                Long commentId = 1L;
 
                 // Act + Assert
                 IllegalArgumentException exception = assertThrows(
                                 IllegalArgumentException.class,
-                                () -> commentService.deleteComment(commentDto));
+                                () -> commentService.deleteComment(commentId));
 
                 assertEquals("Comment does not exist.", exception.getMessage());
 

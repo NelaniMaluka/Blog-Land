@@ -60,8 +60,8 @@ public class CommentController {
     }
 
     @DeleteMapping("/delete-user-comment")
-    public ResponseEntity<?> deleteUserComment(@RequestBody CommentDto commentDto) {
-            commentService.deleteComment(commentDto);
+    public ResponseEntity<?> deleteUserComment(@RequestParam Long id) {
+            commentService.deleteComment(id);
             return ResponseEntity.ok("Success, Your comment was successfully deleted");
     }
 

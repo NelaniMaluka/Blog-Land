@@ -25,14 +25,14 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class ForgotPasswordRequestImpl implements ForgotPasswordService {
+public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
 
-    public ForgotPasswordRequestImpl(PasswordEncoder passwordEncoder, EmailService emailService, UserRepository userRepository, PasswordResetTokenRepository passwordResetTokenRepository, UserRepository userRepository1) {
+    public ForgotPasswordServiceImpl(PasswordEncoder passwordEncoder, EmailService emailService, UserRepository userRepository, PasswordResetTokenRepository passwordResetTokenRepository, UserRepository userRepository1) {
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.userRepository = userRepository;

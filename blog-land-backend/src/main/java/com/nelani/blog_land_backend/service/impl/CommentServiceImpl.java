@@ -137,9 +137,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void deleteComment(CommentDto commentDto) {
+    public void deleteComment(Long id) {
         // Validate fields
-        Long commentId = FormValidation.assertRequiredField(commentDto.getId(), "Comment Id");
+        Long commentId = FormValidation.assertRequiredField(id, "Comment Id");
 
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();

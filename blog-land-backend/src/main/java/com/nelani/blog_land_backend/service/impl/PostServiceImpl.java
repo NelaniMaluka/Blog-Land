@@ -257,9 +257,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deletePost(PostDto postDto) {
+    public void deletePost(Long id) {
         // Validate fields
-        Long postId = FormValidation.assertRequiredField(postDto.getId(), "Post Id");
+        Long postId = FormValidation.assertRequiredField(id, "Post Id");
 
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();

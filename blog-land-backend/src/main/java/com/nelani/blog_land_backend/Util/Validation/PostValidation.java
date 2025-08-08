@@ -15,7 +15,7 @@ public class PostValidation {
     }
 
     public static Post assertPostExist(Optional<Post> post) {
-        return post.orElseThrow(() -> new IllegalArgumentException("Comment does not exist."));
+        return post.orElseThrow(() -> new IllegalArgumentException("Post does not exist."));
     }
 
     public static void assertPostBelongsToUser(Post post, User user) {

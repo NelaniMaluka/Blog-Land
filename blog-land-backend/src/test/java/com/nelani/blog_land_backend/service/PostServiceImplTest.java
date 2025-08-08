@@ -670,8 +670,7 @@ public class PostServiceImplTest {
 
         @Test
         void deletePost_ShouldDeletePost() {
-                PostDto postDto = new PostDto();
-                postDto.setId(1L);
+                Long postId = 1L;
 
                 // Get the user from SecurityContext (set up in @BeforeEach)
                 User authenticatedUser = (User) SecurityContextHolder.getContext()
@@ -689,7 +688,7 @@ public class PostServiceImplTest {
                 doNothing().when(entityManager).clear();
 
                 // Act
-                postService.deletePost(postDto);
+                postService.deletePost(postId);
 
                 // Assert
                 verify(entityManager, times(1)).flush();
@@ -700,13 +699,12 @@ public class PostServiceImplTest {
         @Test
         void deletePost_ShouldThrowException_WhenNoPostExists() {
                 // Arrange
-                PostDto postDto = new PostDto();
-                postDto.setId(1L);
+                Long postId = 1L;
 
                 // Act + Assert
                 IllegalArgumentException exception = assertThrows(
                                 IllegalArgumentException.class,
-                                () -> postService.deletePost(postDto));
+                                () -> postService.deletePost(postId));
 
                 assertEquals("Post does not exist.", exception.getMessage());
 
