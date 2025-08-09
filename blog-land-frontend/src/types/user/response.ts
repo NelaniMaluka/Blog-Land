@@ -20,12 +20,11 @@ export enum ExperienceLevel {
 
 export interface AuthState {
   token: string | null;
-  user: User | null;
+  user: UserResponse | null;
   isAuthenticated: boolean;
 }
 
-export interface User {
-  token: string;
+export interface UserResponse {
   email: string;
   firstname: string;
   lastname: string;

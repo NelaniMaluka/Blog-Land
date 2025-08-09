@@ -1,10 +1,9 @@
 import apiClient from './apiClient';
+import { AddContactRequest } from '../types/contact/requests';
 
-export const sendContactMessage = async (fullName: string, email: string, message: string) => {
+export const sendContactMessage = async (payload: AddContactRequest) => {
   const response = await apiClient.post('/contact-us', {
-    fullName,
-    email,
-    message,
+    payload,
   });
   return response;
 };

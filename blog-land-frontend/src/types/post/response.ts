@@ -1,11 +1,12 @@
-import { User } from './userType';
+import { CommentResponse } from '../comment/response';
+import { UserResponse } from '../user/response';
 
 export enum Order {
   LATEST = 'LATEST',
   OLDEST = 'OLDEST',
 }
 
-export interface Post {
+export interface PostResponse {
   id: number;
   title: string;
   content: string;
@@ -20,14 +21,14 @@ export interface Post {
   references?: string | null;
   author: string;
   source?: string | null;
-  user: User;
+  user: UserResponse;
   commentCount: number;
-  comments?: Comment[];
+  comments?: CommentResponse[];
   isDraft: boolean;
 }
 
-export interface PostWithCategory {
+export interface PostWithCategoryResponse {
   categoryId: number;
   categoryName: string;
-  posts: Post;
+  posts: PostResponse;
 }

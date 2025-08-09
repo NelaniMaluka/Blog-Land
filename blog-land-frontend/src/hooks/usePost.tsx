@@ -1,40 +1,95 @@
-// hooks/usePost.tsx
-import { useState, useCallback } from 'react';
-import { searchPosts } from '../services/postService';
-import axios, { AxiosResponse } from 'axios';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import {
+  fetchSearchedPosts,
+  fetchRandomPost,
+  fetchPost,
+  fetchAllPosts,
+  fetchTopPosts,
+  fetchTrendingPosts,
+  fetchPostByCategory,
+  fetchAllUserPosts,
+  submitView,
+} from '../services/postService';
+import { useDebounce } from './useDebounce';
+import { Order } from '../types/post/response';
+import { useMutation } from '@tanstack/react-query';
+import { addViewToPost } from '../api/postApi';
 
-export const useSearch = <T,>() => {
-  const [searchData, setSearchData] = useState<T[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export const useSearchPost = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedTerm = useDebounce(searchTerm, 300);
 
-  const getSearch = useCallback(async (keyword: string) => {
-    setLoading(true);
-    setError(null);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['search', debouncedTerm],
+    queryFn: () => fetchSearchedPosts(debouncedTerm),
+    enabled: !!debouncedTerm,
+  });
 
-    try {
-      const response: AxiosResponse<T[]> = await searchPosts(keyword);
-      setSearchData(response.data);
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        if (err.response) {
-          if (err.response.status >= 500) {
-            setError('Internal Server Error');
-          } else {
-            setError(`Error ${err.response.status}: ${err.message}`);
-          }
-        } else if (err.request) {
-          setError('No response from server.');
-        } else {
-          setError(`Request error: ${err.message}`);
-        }
-      } else {
-        setError('Unexpected error occurred.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  return {
+    searchTerm,
+    setSearchTerm,
+    results: data,
+    isLoading,
+    isError,
+    error,
+  };
+};
 
-  return { searchData, loading, error, setError, getSearch };
+export const useGetRandomPost = () => {
+  return useQuery({ queryKey: ['randomPost'], queryFn: () => fetchRandomPost() });
+};
+
+export const useGetPost = (id: number) => {
+  return useQuery({
+    queryKey: ['singlePost', id],
+    queryFn: () => fetchPost(id),
+    enabled: !!id,
+  });
+};
+
+export const useGetAllPost = (page: number, size: number, order: Order) => {
+  return useQuery({
+    queryKey: ['allPosts', page, size, order],
+    queryFn: () => fetchAllPosts(page, size, order),
+  });
+};
+
+export const useGetTopPosts = () => {
+  return useQuery({
+    queryKey: ['topPosts'],
+    queryFn: () => fetchTopPosts(),
+  });
+};
+
+export const useGetTrendingPosts = (page: number, size: number) => {
+  return useQuery({
+    queryKey: ['trendingPosts', page, size],
+    queryFn: () => fetchTrendingPosts(page, size),
+  });
+};
+
+export const useGetCategoryPosts = (
+  categoryId: number,
+  page: number,
+  size: number,
+  order: Order
+) => {
+  return useQuery({
+    queryKey: ['categoryPosts', categoryId, page, size, order],
+    queryFn: () => fetchPostByCategory(categoryId, page, size, order),
+  });
+};
+
+export const useGetAllUserPost = (page: number, size: number) => {
+  return useQuery({
+    queryKey: ['userPosts', page, size],
+    queryFn: () => fetchAllUserPosts(page, size),
+  });
+};
+
+export const useAddViewCount = () => {
+  return useMutation({
+    mutationFn: submitView,
+  });
 };

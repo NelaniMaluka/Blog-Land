@@ -1,8 +1,8 @@
-export interface Comment {
+export interface CommentResponse {
   id: number;
   postId: number;
   content: string;
   author: string;
   profileImgUrl?: string | null;
-  createdAt: string; // LocalDateTime → string
+  createdAt: string;
 }

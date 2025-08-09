@@ -1,5 +1,6 @@
 import apiClient from './apiClient';
-import { Order } from '../types/postType';
+import { Order } from '../types/post/response';
+import { AddPostRequest, UpdatePostRequest } from '../types/post/request';
 
 export const searchPosts = async (keyword: string) => {
   const response = await apiClient.get('/post/api/search', {
@@ -18,9 +19,9 @@ export const getPost = async (id: number) => {
   return response;
 };
 
-export const getAllPosts = async (page: number, size: number, order: Order) => {
+export const getAllPosts = async (payload: { page: number; size: number; order: Order }) => {
   const response = await apiClient.get('/post/get/posts', {
-    params: { page, size, order },
+    params: { ...payload },
   });
   return response;
 };
@@ -30,35 +31,35 @@ export const getTopPosts = async () => {
   return response;
 };
 
-export const getLatestPosts = async (page: number, size: number) => {
+export const getLatestPosts = async (payload: { page: number; size: number }) => {
   const response = await apiClient.get('/post/get/latest-post', {
-    params: { page, size },
+    params: { ...payload },
   });
   return response;
 };
 
-export const getTrendingPosts = async (page: number, size: number) => {
+export const getTrendingPosts = async (payload: { page: number; size: number }) => {
   const response = await apiClient.get('/post/get/popular-post', {
-    params: { page, size },
+    params: { ...payload },
   });
   return response;
 };
 
-export const getPostsByCategory = async (
-  categoryId: number,
-  page: number,
-  size: number,
-  order: Order
-) => {
+export const getPostsByCategory = async (payload: {
+  categoryId: number;
+  page: number;
+  size: number;
+  order: Order;
+}) => {
   const response = await apiClient.get('/post/get/category', {
-    params: { categoryId, page, size, order },
+    params: { ...payload },
   });
   return response;
 };
 
-export const getAllUserPosts = async (page: number, size: number) => {
+export const getAllUserPosts = async (payload: { page: number; size: number }) => {
   const response = await apiClient.get('/post/get-user-posts', {
-    params: { page, size },
+    params: { ...payload },
   });
   return response;
 };
@@ -68,46 +69,16 @@ export const addViewToPost = async (id: number) => {
   return response;
 };
 
-export const addPost = async (
-  title: string,
-  content: string,
-  categoryId: number,
-  summary: string,
-  imgUrl: string,
-  draft: boolean,
-  scheduledAt: string
-) => {
+export const addPost = async (payload: AddPostRequest) => {
   const response = await apiClient.post('/post/add-user-posts', {
-    title,
-    content,
-    categoryId,
-    summary,
-    imgUrl,
-    draft,
-    scheduledAt,
+    payload,
   });
   return response;
 };
 
-export const updatePost = async (
-  id: number,
-  title: string,
-  content: string,
-  categoryId: number,
-  summary: string,
-  imgUrl: string,
-  draft: boolean,
-  scheduledAt: string
-) => {
+export const updatePost = async (payload: UpdatePostRequest) => {
   const response = await apiClient.put('/post/update-user-post', {
-    id,
-    title,
-    content,
-    categoryId,
-    summary,
-    imgUrl,
-    draft,
-    scheduledAt,
+    payload,
   });
   return response;
 };

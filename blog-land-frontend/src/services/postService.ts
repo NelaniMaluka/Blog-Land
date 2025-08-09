@@ -1,4 +1,4 @@
-import { Post, Order, PostWithCategory } from '../types/postType';
+import { PostResponse, Order, PostWithCategoryResponse } from '../types/post/response';
 import {
   searchPosts,
   getRandomPost,
@@ -14,9 +14,13 @@ import {
   updatePost,
   deletePost,
 } from '../api/postApi';
-import { getAxiosErrorMessage } from '../utils/errorUtils';
+import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
+import { idSchema } from '../schemas/generalSchema';
+import { paginationSchema, paginationWithCategoryIdSchema } from '../schemas/paginationSchema';
+import { AddPostRequest, UpdatePostRequest } from '../types/post/request';
+import { addPostSchema, updatePostSchema } from '../schemas/postSchema';
 
-export const fetchSearchedPosts = async (keyword: string): Promise<Post[]> => {
+export const fetchSearchedPosts = async (keyword: string): Promise<PostResponse[]> => {
   try {
     const response = await searchPosts(keyword);
     return response?.data;
@@ -25,7 +29,7 @@ export const fetchSearchedPosts = async (keyword: string): Promise<Post[]> => {
   }
 };
 
-export const fetchRandomPost = async (): Promise<Post> => {
+export const fetchRandomPost = async (): Promise<PostResponse> => {
   try {
     const response = await getRandomPost();
     return response?.data;
@@ -34,25 +38,33 @@ export const fetchRandomPost = async (): Promise<Post> => {
   }
 };
 
-export const fetchPost = async (id: number): Promise<Post> => {
+export const fetchPost = async (id: number): Promise<PostResponse> => {
+  const validPayload = validateOrThrow(idSchema, id);
+
   try {
-    const response = await getPost(id);
+    const response = await getPost(validPayload.id);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get post'));
   }
 };
 
-export const fetchAllPosts = async (page: number, size: number, order: Order): Promise<Post[]> => {
+export const fetchAllPosts = async (payload: {
+  page: number;
+  size: number;
+  order?: Order;
+}): Promise<PostResponse[]> => {
+  const validPayload = validateOrThrow(paginationSchema, payload);
+
   try {
-    const response = await getAllPosts(page, size, order);
+    const response = await getAllPosts(validPayload);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed the get all posts'));
   }
 };
 
-export const fetchTopPosts = async (): Promise<PostWithCategory[]> => {
+export const fetchTopPosts = async (): Promise<PostWithCategoryResponse[]> => {
   try {
     const response = await getTopPosts();
     return response?.data;
@@ -61,41 +73,58 @@ export const fetchTopPosts = async (): Promise<PostWithCategory[]> => {
   }
 };
 
-export const fetchLatestPosts = async (page: number, size: number): Promise<Post[]> => {
+export const fetchLatestPosts = async (payload: {
+  page: number;
+  size: number;
+}): Promise<PostResponse[]> => {
+  const validPayload = validateOrThrow(paginationSchema, payload);
+
   try {
-    const response = await getLatestPosts(page, size);
+    const response = await getLatestPosts(validPayload);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get latest post'));
   }
 };
 
-export const fetchTrendingPosts = async (page: number, size: number): Promise<Post[]> => {
+export const fetchTrendingPosts = async (payload: {
+  page: number;
+  size: number;
+}): Promise<PostResponse[]> => {
+  const validPayload = validateOrThrow(paginationSchema, payload);
+
   try {
-    const response = await getTrendingPosts(page, size);
+    const response = await getTrendingPosts(validPayload);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get trending posts'));
   }
 };
 
-export const fetchPostByCategory = async (
-  categoryId: number,
-  page: number,
-  size: number,
-  order: Order
-): Promise<Post[]> => {
+export const fetchPostByCategory = async (payload: {
+  categoryId: number;
+  page: number;
+  size: number;
+  order: Order;
+}): Promise<PostResponse[]> => {
+  const validPayload = validateOrThrow(paginationWithCategoryIdSchema, payload);
+
   try {
-    const response = await getPostsByCategory(categoryId, page, size, order);
+    const response = await getPostsByCategory(validPayload);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get category posts'));
   }
 };
 
-export const fetchAllUserPosts = async (page: number, size: number): Promise<Post[]> => {
+export const fetchAllUserPosts = async (payload: {
+  page: number;
+  size: number;
+}): Promise<PostResponse[]> => {
+  const validPayload = validateOrThrow(paginationSchema, payload);
+
   try {
-    const response = await getAllUserPosts(page, size);
+    const response = await getAllUserPosts(validPayload);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get user posts'));
@@ -111,44 +140,22 @@ export const submitView = async (id: number): Promise<{ message: string }> => {
   }
 };
 
-export const submitPost = async (
-  title: string,
-  content: string,
-  categoryId: number,
-  summary: string,
-  imgUrl: string,
-  draft: boolean,
-  scheduledAt: string
-): Promise<{ message: string }> => {
+export const submitPost = async (payload: AddPostRequest): Promise<{ message: string }> => {
+  const validPayload = validateOrThrow(addPostSchema, payload);
+
   try {
-    const response = await addPost(title, content, categoryId, summary, imgUrl, draft, scheduledAt);
+    const response = await addPost(validPayload);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to submit post'));
   }
 };
 
-export const updatePosts = async (
-  id: number,
-  title: string,
-  content: string,
-  categoryId: number,
-  summary: string,
-  imgUrl: string,
-  draft: boolean,
-  scheduledAt: string
-): Promise<{ message: string }> => {
+export const updatePosts = async (payload: UpdatePostRequest): Promise<{ message: string }> => {
+  const validPayload = validateOrThrow(updatePostSchema, payload);
+
   try {
-    const response = await updatePost(
-      id,
-      title,
-      content,
-      categoryId,
-      summary,
-      imgUrl,
-      draft,
-      scheduledAt
-    );
+    const response = await updatePost(validPayload);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to update posts'));
@@ -156,8 +163,10 @@ export const updatePosts = async (
 };
 
 export const deletePosts = async (id: number): Promise<{ message: string }> => {
+  const validPayload = validateOrThrow(idSchema, id);
+
   try {
-    const response = await deletePost(id);
+    const response = await deletePost(validPayload.id);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to delete post'));

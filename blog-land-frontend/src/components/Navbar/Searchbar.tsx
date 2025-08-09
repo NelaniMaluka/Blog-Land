@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import { useState, useEffect } from 'react';
 import { useSearch } from '../../hooks/usePost';
-import { PostResponse } from '../../types/categoryType';
+import { PostResponse } from '../../types/category/response';
 import ErrorMessage from '../Snackbars/Snackbar';
 
 export default function SearchBar() {

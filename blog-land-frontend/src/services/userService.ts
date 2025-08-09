@@ -1,9 +1,10 @@
 import { getUserDetails, updateUserDetails, deleteUserDetails } from '../api/userApi';
-import { User } from '../types/userType';
-import { Provider, ExperienceLevel } from '../types/userType';
-import { getAxiosErrorMessage } from '../utils/errorUtils';
+import { UserResponse } from '../types/user/response';
+import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
+import { UpdateUserRequest } from '../types/user/request';
+import { updateUserSchema } from '../schemas/userSchema';
 
-export const fetchUser = async (): Promise<User> => {
+export const fetchUser = async (): Promise<UserResponse> => {
   try {
     const response = await getUserDetails();
     return response?.data;
@@ -12,27 +13,11 @@ export const fetchUser = async (): Promise<User> => {
   }
 };
 
-export const updateUser = async (
-  firstname: string,
-  lastname: string,
-  email: string,
-  provider: Provider,
-  profileIconUrl: string,
-  location: string,
-  experience: ExperienceLevel,
-  socials: Record<string, string>
-): Promise<{ message: string }> => {
+export const updateUser = async (payload: UpdateUserRequest): Promise<{ message: string }> => {
+  const validPayload = validateOrThrow(updateUserSchema, payload);
+
   try {
-    const response = await updateUserDetails(
-      firstname,
-      lastname,
-      email,
-      provider,
-      profileIconUrl,
-      location,
-      experience,
-      socials
-    );
+    const response = await updateUserDetails(validPayload);
     return response?.data;
   } catch (error) {
     throw new Error(

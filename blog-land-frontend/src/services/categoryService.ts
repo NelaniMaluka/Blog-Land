@@ -1,8 +1,8 @@
 import { getAllCategories } from '../api/categoryApi';
-import { Category } from '../types/categoryType';
+import { CategoryResponse } from '../types/category/response';
 import { getAxiosErrorMessage } from '../utils/errorUtils';
 
-export const fetchCategories = async (): Promise<Category[]> => {
+export const fetchCategories = async (): Promise<CategoryResponse[]> => {
   try {
     const categories = await getAllCategories();
     return categories.data;

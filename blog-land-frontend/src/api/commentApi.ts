@@ -1,25 +1,23 @@
 import apiClient from './apiClient';
+import { AddCommentRequest, UpdateCommentRequest } from '../types/comment/requests';
 
-export const getAllUserComments = async (page: number, size: number) => {
+export const getAllUserComments = async (payload: { page: number; size: number }) => {
   const response = await apiClient.get('/comments/get-user-comments', {
-    params: { page, size },
+    params: { ...payload },
   });
   return response;
 };
 
-export const addComment = async (postId: number, content: string) => {
+export const addComment = async (payload: AddCommentRequest) => {
   const response = await apiClient.post('/comments/add-user-comment', {
-    postId,
-    content,
+    payload,
   });
   return response;
 };
 
-export const updateComment = async (id: number, postId: number, content: string) => {
+export const updateComment = async (payload: UpdateCommentRequest) => {
   const response = await apiClient.post('/comments/update-user-comments', {
-    id,
-    postId,
-    content,
+    payload,
   });
   return response;
 };
