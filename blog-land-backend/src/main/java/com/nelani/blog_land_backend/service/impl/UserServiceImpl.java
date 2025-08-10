@@ -86,4 +86,5 @@ public class UserServiceImpl implements UserService {
         User user = UserValidation.getOrThrowUnauthorized();
         userRepository.delete(user); // Deletes user
     }
+
 }

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,8 +27,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UnifiedAuthenticationFilter unifiedAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
-        return new UnifiedAuthenticationFilter(jwtUtil, userRepository);
+    public UnifiedAuthenticationFilter unifiedAuthenticationFilter(JwtUtil jwtUtil,
+                                                                   UserRepository userRepository,
+                                                                   RedisTemplate<String, String> redisTemplate) {
+        return new UnifiedAuthenticationFilter(jwtUtil, userRepository, redisTemplate);
     }
 
     @Bean
