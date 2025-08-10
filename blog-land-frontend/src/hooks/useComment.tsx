@@ -1,9 +1,33 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchAllUserComments } from '../services/commentService';
+import { useMutation } from '@tanstack/react-query';
+import {
+  fetchAllUserComments,
+  submitComment,
+  updateComments,
+  deleteComments,
+} from '../services/commentService';
 
-export const useGetAllUserComments = (page: number, size: number) => {
+export const useGetAllUserComments = (payload: { page: number; size: number }) => {
   return useQuery({
-    queryKey: ['userComments', page, size],
-    queryFn: () => fetchAllUserComments(page, size),
+    queryKey: ['userComments', payload],
+    queryFn: () => fetchAllUserComments(payload),
+  });
+};
+
+export const useAddComment = () => {
+  return useMutation({
+    mutationFn: submitComment,
+  });
+};
+
+export const useUpdateComment = () => {
+  return useMutation({
+    mutationFn: updateComments,
+  });
+};
+
+export const useDeleteComment = () => {
+  return useMutation({
+    mutationFn: deleteComments,
   });
 };

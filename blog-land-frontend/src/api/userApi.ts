@@ -15,3 +15,8 @@ export const deleteUserDetails = async () => {
   const response = await apiClient.delete('/user/delete-user', {});
   return response;
 };
+
+export const logoutUser = async () => {
+  const response = await apiClient.post('/user/log-out', {});
+  return response;
+};

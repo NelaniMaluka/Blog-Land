@@ -6,15 +6,18 @@ import {
   fetchPost,
   fetchAllPosts,
   fetchTopPosts,
+  fetchLatestPosts,
   fetchTrendingPosts,
   fetchPostByCategory,
   fetchAllUserPosts,
   submitView,
+  submitPost,
+  updatePosts,
+  deletePosts,
 } from '../services/postService';
 import { useDebounce } from './useDebounce';
 import { Order } from '../types/post/response';
 import { useMutation } from '@tanstack/react-query';
-import { addViewToPost } from '../api/postApi';
 
 export const useSearchPost = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,10 +51,10 @@ export const useGetPost = (id: number) => {
   });
 };
 
-export const useGetAllPost = (page: number, size: number, order: Order) => {
+export const useGetAllPost = (payload: { page: number; size: number; order: Order }) => {
   return useQuery({
-    queryKey: ['allPosts', page, size, order],
-    queryFn: () => fetchAllPosts(page, size, order),
+    queryKey: ['allPosts', payload],
+    queryFn: () => fetchAllPosts(payload),
   });
 };
 
@@ -62,34 +65,59 @@ export const useGetTopPosts = () => {
   });
 };
 
-export const useGetTrendingPosts = (page: number, size: number) => {
+export const useGetLatestPosts = (payload: { page: number; size: number }) => {
   return useQuery({
-    queryKey: ['trendingPosts', page, size],
-    queryFn: () => fetchTrendingPosts(page, size),
+    queryKey: ['latestPosts', payload],
+    queryFn: () => fetchLatestPosts(payload),
   });
 };
 
-export const useGetCategoryPosts = (
-  categoryId: number,
-  page: number,
-  size: number,
-  order: Order
-) => {
+export const useGetTrendingPosts = (payload: { page: number; size: number }) => {
   return useQuery({
-    queryKey: ['categoryPosts', categoryId, page, size, order],
-    queryFn: () => fetchPostByCategory(categoryId, page, size, order),
+    queryKey: ['trendingPosts', payload],
+    queryFn: () => fetchTrendingPosts(payload),
   });
 };
 
-export const useGetAllUserPost = (page: number, size: number) => {
+export const useGetCategoryPosts = (payload: {
+  categoryId: number;
+  page: number;
+  size: number;
+  order: Order;
+}) => {
   return useQuery({
-    queryKey: ['userPosts', page, size],
-    queryFn: () => fetchAllUserPosts(page, size),
+    queryKey: ['categoryPosts', payload],
+    queryFn: () => fetchPostByCategory(payload),
+  });
+};
+
+export const useGetAllUserPost = (payload: { page: number; size: number }) => {
+  return useQuery({
+    queryKey: ['userPosts', payload],
+    queryFn: () => fetchAllUserPosts(payload),
   });
 };
 
 export const useAddViewCount = () => {
   return useMutation({
     mutationFn: submitView,
+  });
+};
+
+export const useAddPost = () => {
+  return useMutation({
+    mutationFn: submitPost,
+  });
+};
+
+export const useUpdatePost = () => {
+  return useMutation({
+    mutationFn: updatePosts,
+  });
+};
+
+export const useDeletePost = () => {
+  return useMutation({
+    mutationFn: deletePosts,
   });
 };

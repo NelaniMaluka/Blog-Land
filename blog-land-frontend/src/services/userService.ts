@@ -1,4 +1,4 @@
-import { getUserDetails, updateUserDetails, deleteUserDetails } from '../api/userApi';
+import { getUserDetails, updateUserDetails, deleteUserDetails, logoutUser } from '../api/userApi';
 import { UserResponse } from '../types/user/response';
 import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
 import { UpdateUserRequest } from '../types/user/request';
@@ -32,5 +32,14 @@ export const deleteUser = async (): Promise<{ message: string }> => {
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to delete user'));
+  }
+};
+
+export const submitLogoutUser = async (): Promise<{ message: string }> => {
+  try {
+    const response = await logoutUser();
+    return response?.data;
+  } catch (error) {
+    throw new Error(getAxiosErrorMessage(error, 'Failed to logout user'));
   }
 };

@@ -20,7 +20,13 @@
 }
 
 .navbar_Logo a {
-  margin-left: 1rem;
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+  transition: transform 0.3s ease;
+}
+
+.navbar_Logo a:hover {
+  transform: scale(1.05);
 }
 
 .navbar_Links {
@@ -49,6 +55,11 @@ a {
 
 .navbar_Link_mobile {
   display: block;
+  transition: transform 0.3s ease;
+}
+
+.navbar_Link_mobile:hover {
+  transform: scale(1.05);
 }
 
 @media (max-width: 900px) {

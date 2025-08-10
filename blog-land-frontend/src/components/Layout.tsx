@@ -2,7 +2,8 @@ import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar/Navbar';
 import { ReactNode } from 'react';
 import { useState } from 'react';
-import DrawerMobileNavigation from './Navbar/menu';
+import DrawerMobileNavigation from './Navbar/menu/menu';
+import { GlobalPreloadQueries } from '../features/GlobalPreloadQueries';
 
 interface LayoutProps {
   noLayout?: boolean;
@@ -16,6 +17,7 @@ export default function Layout({ noLayout, children }: LayoutProps) {
     <div>
       {!noLayout && (
         <>
+          <GlobalPreloadQueries />
           <Navbar setOpen={setOpen} />,
           <DrawerMobileNavigation open={open} setOpen={setOpen} />
         </>
