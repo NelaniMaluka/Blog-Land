@@ -12,19 +12,18 @@ import { Order } from '../types/post/response';
 import { store } from '../store/store';
 
 export function GlobalPreloadQueries() {
-  // Runs these on page load
-  useGetCategories();
+  const isAuthenticated = store.getState().auth.isAuthenticated;
 
+  useGetCategories();
   useGetAllPost({ page: 0, size: 10, order: Order.LATEST });
   useGetTopPosts();
   useGetLatestPosts({ page: 1, size: 10 });
   useGetTrendingPosts({ page: 0, size: 10 });
 
-  if (store.getState().auth.isAuthenticated) {
-    useGetUser();
-    useGetAllUserPost({ page: 0, size: 10 });
-    useGetAllUserComments({ page: 0, size: 10 });
-  }
+  // Always call, but disable fetching if not authenticated
+  useGetUser({ enabled: isAuthenticated });
+  useGetAllUserPost({ page: 0, size: 10, options: { enabled: isAuthenticated } });
+  useGetAllUserComments({ page: 0, size: 10, options: { enabled: isAuthenticated } });
 
   return null;
 }

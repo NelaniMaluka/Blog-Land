@@ -3,7 +3,7 @@ import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
 import { RegisterRequest, LoginRequest } from '../types/auth/requests';
 import { registerSchema, loginSchema } from '../schemas/authSchema';
 
-export const createUser = async (payload: RegisterRequest): Promise<{ jwtToken: string }> => {
+export const createUser = async (payload: RegisterRequest): Promise<string> => {
   const validPayload = validateOrThrow(registerSchema, payload);
 
   try {
@@ -16,7 +16,7 @@ export const createUser = async (payload: RegisterRequest): Promise<{ jwtToken: 
   }
 };
 
-export const authenticateUser = async (payload: LoginRequest): Promise<{ jwtToken: string }> => {
+export const authenticateUser = async (payload: LoginRequest): Promise<string> => {
   const validPayload = validateOrThrow(loginSchema, payload);
 
   try {

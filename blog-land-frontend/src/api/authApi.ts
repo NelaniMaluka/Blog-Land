@@ -4,6 +4,7 @@ import { LoginRequest } from '../types/auth/requests';
 
 export const registerUser = async (payload: RegisterRequest) => {
   const response = await apiClient.post('/auth/register', payload);
+
   return response;
 };
 

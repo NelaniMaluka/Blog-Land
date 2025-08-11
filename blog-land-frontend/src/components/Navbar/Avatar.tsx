@@ -9,19 +9,25 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArticleIcon from '@mui/icons-material/Article';
 import CommentIcon from '@mui/icons-material/Comment';
 
-import RegisterDialog from '../LogIn/forms/Register';
-import LoginDialog from '../LogIn/forms/Login';
+import RegisterDialog from '../forms/Register';
+import LoginDialog from '../forms/Login';
+import { useLogoutUser } from '../../hooks/useUser';
 import { store } from '../../store/store';
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openRegister, setOpenRegister] = React.useState(false);
   const [openLogin, setOpenLogin] = React.useState(false);
+  const logout = useLogoutUser();
 
   const open = Boolean(anchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleLogout = () => {
+    logout.mutate();
   };
 
   const handleCloseMenu = () => {
@@ -87,6 +93,17 @@ export default function AvatarMenu() {
               >
                 <CommentIcon sx={{ fontSize: '0.8rem' }} />
                 My Comments
+              </MenuItem>,
+              <MenuItem
+                key="logout"
+                onClick={() => {
+                  handleLogout();
+                  handleCloseMenu();
+                }}
+                sx={{ display: 'flex', alignItems: 'center', fontSize: '0.6rem', gap: 1 }}
+              >
+                <CommentIcon sx={{ fontSize: '0.8rem' }} />
+                Logout
               </MenuItem>,
             ]
           : [

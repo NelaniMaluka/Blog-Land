@@ -15,22 +15,30 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 
 interface ErrorMessageProps {
   message: string;
-  open: boolean;
-  onClose: () => void;
 }
 
-export default function ErrorMessage({ message, open, onClose }: ErrorMessageProps) {
+export default function ErrorMessage({ message }: ErrorMessageProps) {
+  const [open, setOpen] = React.useState(true);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setOpen(false);
+    }, 2500); // close after 2.5 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <Snackbar
       open={open}
-      onClose={onClose}
       TransitionComponent={SlideTransition}
       autoHideDuration={2500}
+      onClose={() => setOpen(false)}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       sx={{ display: 'flex', alignItems: 'center' }}
     >
       <Alert
-        onClose={onClose}
+        onClose={() => setOpen(false)}
         severity="error"
         icon={false}
         sx={{
@@ -54,12 +62,12 @@ export default function ErrorMessage({ message, open, onClose }: ErrorMessagePro
             padding: 0,
           },
           '& .MuiAlert-action .MuiIconButton-root': {
-            padding: '2px', // smaller padding
-            fontSize: '1rem', // smaller icon size
-            color: '#fff', // make the "X" white
+            padding: '2px',
+            fontSize: '1rem',
+            color: '#fff',
           },
           '& .MuiAlert-action .MuiSvgIcon-root': {
-            fontSize: '1rem', // shrink the close icon
+            fontSize: '1rem',
           },
         }}
       >

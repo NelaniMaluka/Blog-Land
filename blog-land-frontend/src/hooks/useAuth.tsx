@@ -11,8 +11,7 @@ export function useRegister() {
   return useMutation({
     mutationFn: async (payload: RegisterRequest) => {
       const token = await createUser(payload);
-
-      dispatch(setToken(token.jwtToken));
+      dispatch(setToken(token));
     },
   });
 }
@@ -23,8 +22,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: async (payload: LoginRequest) => {
       const token = await authenticateUser(payload);
-
-      dispatch(setToken(token.jwtToken));
+      dispatch(setToken(token));
     },
   });
 }

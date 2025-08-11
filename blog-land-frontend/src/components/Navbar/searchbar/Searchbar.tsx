@@ -86,13 +86,7 @@ export default function SearchBar() {
         )}
       />
 
-      {isError && (
-        <ErrorMessage
-          message={error?.message || 'Something went wrong'}
-          open={!!error}
-          onClose={() => {}}
-        />
-      )}
+      {isError && <ErrorMessage message={error?.message || 'Something went wrong'} />}
     </>
   );
 }

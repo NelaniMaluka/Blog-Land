@@ -25,7 +25,7 @@ export default function GoogleOAuthButton({ onClick, redirectUrl }: GoogleOAuthB
         margin: 'auto',
         borderRadius: '10px',
         textTransform: 'none',
-        fontSize: '0.5rem',
+        fontSize: '0.45rem',
         fontWeight: 500,
         color: 'white',
         boxShadow: '0 2px 5px rgba(0,0,0,0.3)',

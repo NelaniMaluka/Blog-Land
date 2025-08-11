@@ -40,6 +40,7 @@ export const submitLogoutUser = async (): Promise<{ message: string }> => {
     const response = await logoutUser();
     return response?.data;
   } catch (error) {
+    console.log(error);
     throw new Error(getAxiosErrorMessage(error, 'Failed to logout user'));
   }
 };

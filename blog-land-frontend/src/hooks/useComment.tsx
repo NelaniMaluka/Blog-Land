@@ -7,10 +7,17 @@ import {
   deleteComments,
 } from '../services/commentService';
 
-export const useGetAllUserComments = (payload: { page: number; size: number }) => {
+export const useGetAllUserComments = (payload: {
+  page: number;
+  size: number;
+  options?: { enabled?: boolean };
+}) => {
+  const { page, size, options } = payload;
+
   return useQuery({
     queryKey: ['userComments', payload],
-    queryFn: () => fetchAllUserComments(payload),
+    queryFn: () => fetchAllUserComments({ page, size }),
+    enabled: options?.enabled,
   });
 };
 

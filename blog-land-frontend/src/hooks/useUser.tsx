@@ -1,18 +1,30 @@
 import { useMutation } from '@tanstack/react-query';
 import { fetchUser, updateUser, deleteUser, submitLogoutUser } from '../services/userService';
 import { setUser, logout } from '../store/authSlice';
-import { useDispatch, UseDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { UserResponse } from '../types/user/response';
+import { useEffect } from 'react';
+import { store } from '../store/store';
 
-export function useGetUser() {
+export function useGetUser(options?: { enabled?: boolean }) {
   const dispatch = useDispatch();
+  console.log(store.getState().auth.jwtToken + 'token');
 
-  return useMutation({
-    mutationFn: async () => {
-      const user = await fetchUser();
-
-      dispatch(setUser(user));
-    },
+  const query = useQuery<UserResponse, Error>({
+    queryKey: ['user'],
+    queryFn: fetchUser,
+    enabled: options?.enabled ?? true,
   });
+
+  // Use effect to dispatch when data changes
+  useEffect(() => {
+    if (query.data) {
+      dispatch(setUser(query.data));
+    }
+  }, [query.data, dispatch]);
+
+  return query;
 }
 
 export const useUpdateUser = () => {
@@ -32,9 +44,8 @@ export const useLogoutUser = () => {
 
   return useMutation({
     mutationFn: async () => {
-      const result = await submitLogoutUser();
-
       dispatch(logout());
+      const result = await submitLogoutUser();
     },
   });
 };

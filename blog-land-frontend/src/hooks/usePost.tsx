@@ -91,10 +91,17 @@ export const useGetCategoryPosts = (payload: {
   });
 };
 
-export const useGetAllUserPost = (payload: { page: number; size: number }) => {
+export const useGetAllUserPost = (payload: {
+  page: number;
+  size: number;
+  options?: { enabled?: boolean };
+}) => {
+  const { page, size, options } = payload;
+
   return useQuery({
-    queryKey: ['userPosts', payload],
-    queryFn: () => fetchAllUserPosts(payload),
+    queryKey: ['userPosts', page, size],
+    queryFn: () => fetchAllUserPosts({ page, size }), // only pass page & size
+    enabled: options?.enabled ?? true, // default true
   });
 };
 
