@@ -9,14 +9,15 @@ import LoadingScreen from '../../features/LoadingScreen/LoadingScreen';
 import { useRegister } from '../../hooks/useAuth';
 import ErrorMessage from '../../features/Snackbars/Snackbar';
 import { validateRequired, validateEmail, validatePassword } from '../../utils/validation';
-import LoginDialog from './Login';
+import Fade from '@mui/material/Fade';
 
 interface RegisterDialogProps {
   open: boolean;
   onClose: () => void;
+  onSwitchToLogin: () => void;
 }
 
-export default function RegisterDialog({ open, onClose }: RegisterDialogProps) {
+export default function RegisterDialog({ open, onClose, onSwitchToLogin }: RegisterDialogProps) {
   const [firstname, setFirstname] = React.useState('');
   const [lastname, setLastname] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -61,7 +62,13 @@ export default function RegisterDialog({ open, onClose }: RegisterDialogProps) {
   return (
     <>
       <LoadingScreen isLoading={register.isPending}>
-        <Dialog open={open} onClose={onClose} classes={{ paper: styles.dialogPaper }}>
+        <Dialog
+          open={open}
+          onClose={onClose}
+          classes={{ paper: styles.dialogPaper }}
+          TransitionComponent={Fade}
+          transitionDuration={1200}
+        >
           <form onSubmit={handleSubmit} className={styles.form}>
             <h2 className={styles.title}>Register</h2>
 
@@ -225,8 +232,8 @@ export default function RegisterDialog({ open, onClose }: RegisterDialogProps) {
             />
             <Button
               onClick={() => {
-                setOpenLogin(true);
                 onClose();
+                onSwitchToLogin();
               }}
               variant="contained"
               fullWidth
@@ -249,7 +256,6 @@ export default function RegisterDialog({ open, onClose }: RegisterDialogProps) {
       {register.isError && (
         <ErrorMessage message={register?.error?.message || 'Something went wrong'} />
       )}
-      <LoginDialog open={openLogin} onClose={() => setOpenLogin(false)} />
     </>
   );
 }

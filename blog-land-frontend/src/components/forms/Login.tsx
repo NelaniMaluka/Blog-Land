@@ -8,14 +8,16 @@ import GoogleOAuthButton from '../button/GoogleOAuthButton';
 import LoadingScreen from '../../features/LoadingScreen/LoadingScreen';
 import { useLogin } from '../../hooks/useAuth';
 import { validateEmail, validatePassword } from '../../utils/validation';
-import RegisterDialog from './Register';
+import ErrorMessage from '../../features/Snackbars/Snackbar';
+import Fade from '@mui/material/Fade';
 
 interface LoginDialogProps {
   open: boolean;
   onClose: () => void;
+  onSwitchToRegister: () => void;
 }
 
-export default function LoginDialog({ open, onClose }: LoginDialogProps) {
+export default function LoginDialog({ open, onClose, onSwitchToRegister }: LoginDialogProps) {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [emailTouched, setEmailTouched] = React.useState(false);
@@ -43,7 +45,13 @@ export default function LoginDialog({ open, onClose }: LoginDialogProps) {
   return (
     <>
       <LoadingScreen isLoading={login.isPending}>
-        <Dialog open={open} onClose={onClose} classes={{ paper: styles.dialogPaper }}>
+        <Dialog
+          open={open}
+          onClose={onClose}
+          classes={{ paper: styles.dialogPaper }}
+          TransitionComponent={Fade}
+          transitionDuration={1200}
+        >
           <form onSubmit={handleSubmit} className={styles.form}>
             <h2 className={styles.title}>Log-In</h2>
 
@@ -141,8 +149,8 @@ export default function LoginDialog({ open, onClose }: LoginDialogProps) {
             />
             <Button
               onClick={() => {
-                setOpenRegister(true);
                 onClose();
+                onSwitchToRegister();
               }}
               variant="contained"
               fullWidth
@@ -161,7 +169,7 @@ export default function LoginDialog({ open, onClose }: LoginDialogProps) {
           </form>
         </Dialog>
       </LoadingScreen>
-      <RegisterDialog open={openRegister} onClose={() => setOpenRegister(false)} />
+      {login.isError && <ErrorMessage message={login?.error?.message || 'Something went wrong'} />}
     </>
   );
 }

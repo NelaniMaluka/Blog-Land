@@ -34,6 +34,17 @@ export default function AvatarMenu() {
     setAnchorEl(null);
   };
 
+  // Handlers to switch dialogs:
+  const switchToRegister = () => {
+    setOpenLogin(false);
+    setOpenRegister(true);
+  };
+
+  const switchToLogin = () => {
+    setOpenRegister(false);
+    setOpenLogin(true);
+  };
+
   return (
     <>
       <IconButton
@@ -94,6 +105,7 @@ export default function AvatarMenu() {
                 <CommentIcon sx={{ fontSize: '0.8rem' }} />
                 My Comments
               </MenuItem>,
+
               <MenuItem
                 key="logout"
                 onClick={() => {
@@ -134,8 +146,16 @@ export default function AvatarMenu() {
       </Menu>
 
       {/* Popups */}
-      <RegisterDialog open={openRegister} onClose={() => setOpenRegister(false)} />
-      <LoginDialog open={openLogin} onClose={() => setOpenLogin(false)} />
+      <RegisterDialog
+        open={openRegister}
+        onClose={() => setOpenRegister(false)}
+        onSwitchToLogin={switchToLogin} // pass switch handler here
+      />
+      <LoginDialog
+        open={openLogin}
+        onClose={() => setOpenLogin(false)}
+        onSwitchToRegister={switchToRegister} // pass switch handler here
+      />
     </>
   );
 }
