@@ -7,7 +7,7 @@ import styles from './Form.module.css';
 import GoogleOAuthButton from '../button/GoogleOAuthButton';
 import LoadingScreen from '../../features/LoadingScreen/LoadingScreen';
 import { useLogin } from '../../hooks/useAuth';
-import { validateEmail, validatePassword } from '../../utils/validation';
+import { validateEmail, validatePassword } from '../../utils/validationUtils';
 import ErrorMessage from '../../features/Snackbars/Snackbar';
 import Fade from '@mui/material/Fade';
 

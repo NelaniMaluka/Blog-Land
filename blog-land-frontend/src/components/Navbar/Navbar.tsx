@@ -1,4 +1,5 @@
 import styles from './Navbar.module.css';
+
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';

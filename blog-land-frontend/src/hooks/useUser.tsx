@@ -9,7 +9,7 @@ import { store } from '../store/store';
 
 export function useGetUser(options?: { enabled?: boolean }) {
   const dispatch = useDispatch();
-  console.log(store.getState().auth.jwtToken + 'token');
+  //console.log(store.getState().auth.jwtToken + 'token');
 
   const query = useQuery<UserResponse, Error>({
     queryKey: ['user'],

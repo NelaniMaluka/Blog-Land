@@ -8,7 +8,7 @@ import GoogleOAuthButton from '../button/GoogleOAuthButton';
 import LoadingScreen from '../../features/LoadingScreen/LoadingScreen';
 import { useRegister } from '../../hooks/useAuth';
 import ErrorMessage from '../../features/Snackbars/Snackbar';
-import { validateRequired, validateEmail, validatePassword } from '../../utils/validation';
+import { validateRequired, validateEmail, validatePassword } from '../../utils/validationUtils';
 import Fade from '@mui/material/Fade';
 
 interface RegisterDialogProps {

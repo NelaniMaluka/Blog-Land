@@ -1,0 +1,23 @@
+import { getArticleApi } from '../api/techCrunchApi';
+import { Article } from '../types/techCrunch/response';
+import { getAxiosErrorMessage } from '../utils/errorUtils';
+import { stripHtml, formatDate } from '../utils/formatUtils';
+import he from 'he';
+
+export const fetchArticle = async (): Promise<Article[]> => {
+  try {
+    const response = await getArticleApi();
+
+    const articles: Article[] = response.map((article: any) => ({
+      id: article.id,
+      title: he.decode(stripHtml(article.title.rendered)),
+      summary: he.decode(stripHtml(article.excerpt.rendered)),
+      link: article.link,
+      date: formatDate(article.date),
+    }));
+
+    return articles;
+  } catch (error) {
+    throw new Error(getAxiosErrorMessage(error, 'Failed to get article details from techcrunch'));
+  }
+};

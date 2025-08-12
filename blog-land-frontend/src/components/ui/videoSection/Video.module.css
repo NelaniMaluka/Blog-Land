@@ -1,0 +1,106 @@
+.videoContainer {
+  padding: 2rem 1rem;
+  margin: auto;
+}
+
+.row1 {
+  padding: 1.2rem 0;
+  text-align: center;
+}
+
+.row1 h2 {
+  font-size: 1.6rem;
+  color: #4b4b4b;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.row2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.row2 .video {
+  flex: 1 1 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.row2 .video:hover {
+  transform: scale(1.025);
+}
+
+.row2 .video .frame {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-bottom: 0.5rem;
+}
+
+.row2 .video .category {
+  font-size: 0.6rem;
+  font-weight: 500;
+  min-height: 20px;
+  color: #646464;
+  display: block;
+}
+
+.row2 .video .title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  min-height: 40px;
+  color: #4d4d4d;
+}
+
+.row2 .video .date {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.videoWrapper {
+  position: relative;
+}
+
+.frame {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  border-radius: 16px;
+}
+
+.playButton {
+  font-size: 2.5rem;
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.videoWrapper:hover .overlay {
+  opacity: 1;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .row2 .video {
+    flex: 1 1 100%;
+    max-width: 100%;
+    margin-bottom: 0.9rem;
+  }
+}

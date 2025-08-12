@@ -1,0 +1,95 @@
+.articleContainers {
+  background-color: rgba(226, 226, 226, 0.226);
+  padding-bottom: 2rem;
+}
+
+.row1 {
+  padding: 1.2rem 0;
+  text-align: center;
+}
+
+.row1 h2 {
+  font-size: 1.8rem;
+  color: rgb(75, 75, 75);
+}
+
+.row2 {
+  display: flex;
+  width: 30%;
+}
+
+.row2 {
+  display: flex;
+  width: 100%;
+}
+
+.row2 .article {
+  width: 30%;
+  padding: 0 20px;
+  border-left: 1px solid rgb(107, 107, 107);
+  min-height: 300px;
+}
+
+.row2 .article .date {
+  font-size: 0.5rem;
+}
+
+.row2 .article img {
+  height: 10px;
+}
+
+.row2 .article:first-child {
+  border: none;
+}
+.row2 .article div {
+  min-height: 110px;
+}
+.row2 .article a {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 255, 0.747);
+  padding: 0.4rem 0;
+  line-height: 1.2em;
+}
+
+.row2 .article a:hover {
+  color: rgb(197, 0, 0);
+}
+
+.row2 .article p {
+  margin-top: 0.1rem;
+  font-size: 0.6rem;
+  color: rgb(92, 92, 92);
+}
+
+/* Phones */
+@media (width <= 1023px) {
+  .row1 {
+    padding: 1.2rem 0 0 0;
+    text-align: center;
+  }
+
+  .row2 {
+    display: block;
+  }
+
+  .row2 .article:first-child {
+    border-bottom: 1px solid rgb(90, 90, 90);
+  }
+
+  .row2 .article {
+    width: 90%;
+    border-left: none;
+    border-bottom: 1px solid rgb(90, 90, 90);
+    min-height: 0;
+    padding: 2rem 20px;
+    height: max-content;
+  }
+
+  .row2 .article:last-child {
+    border: none;
+  }
+
+  .row2 .article div {
+    min-height: 80px;
+  }
+}
