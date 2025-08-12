@@ -1,0 +1,66 @@
+.QandAContainer {
+  padding: 4rem;
+}
+
+.row1 {
+  display: flex;
+  padding-bottom: 3rem;
+  align-items: center;
+}
+
+.row1 div {
+  width: 50%;
+  height: max-content;
+}
+
+.row1 p {
+  font-size: 0.7rem;
+  color: rgb(73, 73, 73);
+}
+
+.QandA {
+  box-shadow: none;
+  margin-bottom: 0.9rem;
+}
+
+.question {
+  font-size: 0.9rem;
+}
+
+.text {
+  font-size: 0.7rem;
+  color: rgb(85, 85, 85);
+}
+
+@media (width <= 600px) {
+  .QandAContainer {
+    padding: 2rem 0;
+  }
+
+  .row1 {
+    display: block;
+    padding-bottom: 1.5rem;
+  }
+  .row1 h2 {
+    font-size: 1.4rem;
+  }
+
+  .row1 div {
+    width: 100%;
+  }
+  .row1 div p {
+    margin-top: 0.5rem;
+  }
+
+  .QandA {
+    box-shadow: none;
+    margin-bottom: 0.6rem;
+  }
+  .question {
+    font-size: 0.8rem;
+  }
+
+  .text {
+    font-size: 0.6rem;
+  }
+}

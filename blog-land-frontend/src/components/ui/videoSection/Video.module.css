@@ -97,7 +97,7 @@
 }
 
 /* Mobile adjustments */
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .row2 .video {
     flex: 1 1 100%;
     max-width: 100%;

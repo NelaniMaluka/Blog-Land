@@ -18,7 +18,7 @@ export default function Layout({ noLayout, children }: LayoutProps) {
       {!noLayout && (
         <>
           <GlobalPreloadQueries />
-          <Navbar setOpen={setOpen} />,
+          <Navbar setOpen={setOpen} />
           <DrawerMobileNavigation open={open} setOpen={setOpen} />
         </>
       )}
