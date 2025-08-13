@@ -26,7 +26,7 @@ export default function QandASection() {
           </div>
         </div>
 
-        <Accordion className={styles.QandA}>
+        <Accordion className={styles.QandA} sx={{ boxShadow: 'none' }}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1-content"
@@ -43,7 +43,7 @@ export default function QandASection() {
           </AccordionDetails>
         </Accordion>
 
-        <Accordion className={styles.QandA}>
+        <Accordion className={styles.QandA} sx={{ boxShadow: 'none' }}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel2-content"
@@ -59,7 +59,7 @@ export default function QandASection() {
           </AccordionDetails>
         </Accordion>
 
-        <Accordion className={styles.QandA}>
+        <Accordion className={styles.QandA} sx={{ boxShadow: 'none' }}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel3-content"

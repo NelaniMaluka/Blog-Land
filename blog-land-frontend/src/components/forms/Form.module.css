@@ -93,7 +93,7 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .dialogPaper {
     width: 90vh;
     max-width: 500px;

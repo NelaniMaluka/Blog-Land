@@ -1,5 +1,5 @@
 .videoContainer {
-  padding: 2rem 1rem;
+  padding: 1rem;
   margin: auto;
 }
 
@@ -10,7 +10,6 @@
 
 .row1 h2 {
   font-size: 1.6rem;
-  color: #4b4b4b;
   font-weight: 600;
   margin-bottom: 1rem;
 }

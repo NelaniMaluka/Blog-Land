@@ -15,7 +15,7 @@ export interface PostResponse {
   updatedAt: string;
   categoryId: number;
   summary?: string | null;
-  postImgUrl?: string | null;
+  postImgUrl: string;
   views: number;
   score: number;
   references?: string | null;

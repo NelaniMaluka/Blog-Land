@@ -10,7 +10,6 @@
 
 .row1 h2 {
   font-size: 1.8rem;
-  color: rgb(75, 75, 75);
 }
 
 .row2 {
@@ -49,6 +48,10 @@
   color: rgba(0, 0, 255, 0.747);
   padding: 0.4rem 0;
   line-height: 1.2em;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  height: 90px;
 }
 
 .row2 .article a:hover {
@@ -59,6 +62,10 @@
   margin-top: 0.1rem;
   font-size: 0.6rem;
   color: rgb(92, 92, 92);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  height: 90px;
 }
 
 /* Phones */
@@ -91,5 +98,15 @@
 
   .row2 .article div {
     min-height: 80px;
+  }
+
+  .row2 .article a {
+    height: max-content;
+    display: block;
+  }
+
+  .row2 .article p {
+    height: max-content;
+    display: block;
   }
 }

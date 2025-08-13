@@ -38,6 +38,7 @@ public class PostBuilder {
         response.setReadTime(post.getReadTime());
         response.setCreatedAt(post.getCreatedAt());
         response.setUpdatedAt(post.getUpdatedAt());
+        response.setCategoryId(post.getCategory().getId());
         response.setPostImgUrl(post.getImgUrl());
         response.setViews(post.getViewCount());
         response.setSummary(post.getSummary());

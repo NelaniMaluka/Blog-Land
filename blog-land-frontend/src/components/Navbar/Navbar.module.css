@@ -62,7 +62,7 @@ a {
   transform: scale(1.05);
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .navbar_Link_mobile {
     display: none;
   }

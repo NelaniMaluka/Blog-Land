@@ -16,9 +16,16 @@ import {
 } from '../api/postApi';
 import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
 import { idSchema } from '../schemas/generalSchema';
-import { paginationSchema, paginationWithCategoryIdSchema } from '../schemas/paginationSchema';
+import {
+  paginationSchema,
+  paginationSchemaWithOrder,
+  paginationWithCategoryIdSchema,
+} from '../schemas/paginationSchema';
 import { AddPostRequest, UpdatePostRequest } from '../types/post/request';
 import { addPostSchema, updatePostSchema } from '../schemas/postSchema';
+import { stripHtml, formatDate } from '../utils/formatUtils';
+import he from 'he';
+import { date } from 'zod';
 
 export const fetchSearchedPosts = async (keyword: string): Promise<PostResponse[]> => {
   try {
@@ -54,7 +61,7 @@ export const fetchAllPosts = async (payload: {
   size: number;
   order?: Order;
 }): Promise<PostResponse[]> => {
-  const validPayload = validateOrThrow(paginationSchema, payload);
+  const validPayload = validateOrThrow(paginationSchemaWithOrder, payload);
 
   try {
     const response = await getAllPosts(validPayload);
@@ -95,7 +102,14 @@ export const fetchTrendingPosts = async (payload: {
 
   try {
     const response = await getTrendingPosts(validPayload);
-    return response?.data;
+    const rawPosts = response?.data.content ?? [];
+
+    return rawPosts.map((raw: PostResponse) => ({
+      ...raw,
+      title: he.decode(stripHtml(raw.title)),
+      summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
+      createdAt: formatDate(raw.createdAt),
+    }));
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get trending posts'));
   }
