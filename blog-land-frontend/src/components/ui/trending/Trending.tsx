@@ -5,6 +5,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { formatViews } from '../../../utils/formatUtils';
 import { useGetCategories } from '../../../hooks/useCategory';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { ROUTES } from '../../../constants/routes';
 
 export const TrendingSection = () => {
@@ -52,6 +53,10 @@ export const TrendingSection = () => {
                         min read
                       </span>
                     </div>
+                    <a href={ROUTES.POST(post.id)} className={styles.readMore}>
+                      Read more{' '}
+                      <ArrowForwardIcon className={styles.readMoreIcon} fontSize="small" />
+                    </a>
                   </div>
                 );
               })}

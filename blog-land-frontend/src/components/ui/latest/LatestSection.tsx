@@ -6,6 +6,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { formatViews } from '../../../utils/formatUtils';
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { ROUTES } from '../../../constants/routes';
 
 export const LatestSection = () => {
@@ -54,6 +55,9 @@ export const LatestSection = () => {
                       <AccessTimeIcon fontSize="small" /> {recentData[0].readTime} min read
                     </span>
                   </div>
+                  <a href={ROUTES.POST(recentData[0].id)} className={styles.readMore}>
+                    Read more <ArrowForwardIcon className={styles.readMoreIcon} fontSize="small" />
+                  </a>
                 </div>
               </div>
 
@@ -76,6 +80,10 @@ export const LatestSection = () => {
                           <AccessTimeIcon fontSize="small" /> {post.readTime} min read
                         </span>
                       </div>
+                      <a href={ROUTES.POST(post.id)} className={styles.readMore}>
+                        Read more{' '}
+                        <ArrowForwardIcon className={styles.readMoreIcon} fontSize="small" />
+                      </a>
                     </div>
                   );
                 })}

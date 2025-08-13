@@ -39,10 +39,6 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.post:hover {
-  transform: scale(1.02);
-}
-
 .post img {
   width: 100%;
   height: auto;
@@ -89,6 +85,29 @@
   vertical-align: middle;
   opacity: 0.7;
   height: 0.8rem;
+}
+
+.readMore {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  font-size: 0.6rem;
+  margin-top: 0.5rem;
+  color: rgba(0, 74, 172, 0.829);
+}
+
+.readMore:hover {
+  color: rgba(0, 87, 201, 0.966);
+  text-decoration: underline;
+}
+
+.readMoreIcon {
+  height: 19px !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.readMore:hover .readMoreIcon {
+  transform: scale(1.4) !important;
 }
 
 /* Mobile adjustments */
