@@ -3,6 +3,7 @@ import './App.css';
 import MainRoutes from './routes/MainRoutes';
 import { useEffect } from 'react';
 import Layout from './components/Layout';
+import { ROUTES } from './constants/routes';
 
 // ScrollToTop Component
 const ScrollToTop = () => {
@@ -20,7 +21,7 @@ function App() {
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<Layout noLayout={false} />}>
+        <Route path={ROUTES.HOME} element={<Layout noLayout={false} />}>
           {MainRoutes()}
         </Route>
       </Routes>

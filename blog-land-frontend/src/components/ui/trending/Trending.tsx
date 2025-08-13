@@ -5,6 +5,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { formatViews } from '../../../utils/formatUtils';
 import { useGetCategories } from '../../../hooks/useCategory';
+import { ROUTES } from '../../../constants/routes';
 
 export const TrendingSection = () => {
   const {
@@ -18,6 +19,8 @@ export const TrendingSection = () => {
     error: categoriesError,
   } = useGetCategories();
 
+  if (!trendingData?.length) return null;
+
   return (
     <>
       <LoadingScreen isLoading={trendingLoading || categoriesLoading}>
@@ -25,35 +28,33 @@ export const TrendingSection = () => {
           <div className="container">
             <div className={styles.row1}>
               <h2>Trending</h2>
-              <a href="/trending/posts">View All</a>
+              <a href={ROUTES.TRENDING_POSTS}>View All</a>
             </div>
 
             <div className={styles.row2}>
-              {trendingData?.length
-                ? trendingData.map((post) => {
-                    const category = categoriesData?.find((c) => c.id === post.categoryId);
+              {trendingData.map((post) => {
+                const category = categoriesData?.find((c) => c.id === post.categoryId);
 
-                    return (
-                      <div key={post.id} className={styles.post}>
-                        <img src={post.postImgUrl} alt="img" />
-                        {category && <span className={styles.category}>{category.name}</span>}
-                        <span className={styles.date}>{post.createdAt}</span>
-                        <p className={styles.title}>{post.title}</p>
-                        <p>{post.summary}</p>
-                        <div className={styles.subDetails}>
-                          <span>
-                            <VisibilityIcon fontSize="small" className={styles.icon} />{' '}
-                            {formatViews(post.views)}
-                          </span>
-                          <span>
-                            <AccessTimeIcon fontSize="small" className={styles.icon} />{' '}
-                            {post.readTime} min read
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })
-                : null}
+                return (
+                  <div key={post.id} className={styles.post}>
+                    <img src={post.postImgUrl} alt="img" />
+                    {category && <span className={styles.category}>{category.name}</span>}
+                    <span className={styles.date}>{post.createdAt}</span>
+                    <p className={styles.title}>{post.title}</p>
+                    <p>{post.summary}</p>
+                    <div className={styles.subDetails}>
+                      <span>
+                        <VisibilityIcon fontSize="small" className={styles.icon} />{' '}
+                        {formatViews(post.views)}
+                      </span>
+                      <span>
+                        <AccessTimeIcon fontSize="small" className={styles.icon} /> {post.readTime}{' '}
+                        min read
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

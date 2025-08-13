@@ -52,12 +52,12 @@
 }
 
 .post .category {
-  font-size: 0.5rem;
+  font-size: 0.55rem;
   margin-right: 8px;
 }
 
 .post .date {
-  font-size: 0.45rem;
+  font-size: 0.5rem;
   margin-bottom: 0.4rem;
 }
 
@@ -121,5 +121,15 @@
   .post p {
     display: block;
     height: max-content;
+  }
+
+  .post img {
+    height: 200px;
+  }
+  .row1 a {
+    padding: 10px 15px;
+  }
+  .row1 h2 {
+    font-size: 1.3rem;
   }
 }

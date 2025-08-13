@@ -8,6 +8,7 @@ import AvatarMenu from './Avatar';
 import SearchBar from './searchbar/Searchbar';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
+import { ROUTES } from '../../constants/routes';
 
 interface NavbarProps {
   setOpen: (open: boolean) => void;
@@ -23,7 +24,7 @@ function Navbar({ setOpen }: NavbarProps) {
               <IconButton onClick={() => setOpen(true)} edge="start" sx={{ color: 'inherit' }}>
                 <MenuIcon />
               </IconButton>
-              <a href="/">
+              <a href={ROUTES.HOME}>
                 <h1>Blog-Land</h1>
               </a>
             </div>
@@ -35,19 +36,19 @@ function Navbar({ setOpen }: NavbarProps) {
                 </a>
               </span>
               <span className={styles.navbar_Link_mobile}>
-                <a href="/random/post">
+                <a href={ROUTES.RANDOM_POSTS}>
                   <ShuffleIcon fontSize="small" />
                   <span>Random</span>
                 </a>
               </span>
               <span className={styles.navbar_Link_mobile}>
-                <a href="/latest/posts">
+                <a href={ROUTES.LATEST_POSTS}>
                   <AccessTimeIcon fontSize="small" />
                   <span>Latest</span>
                 </a>
               </span>
               <span className={styles.navbar_Link_mobile}>
-                <a href="/trending/posts">
+                <a href={ROUTES.TRENDING_POSTS}>
                   <WhatshotIcon fontSize="small" />
                   <span>Trending</span>
                 </a>
