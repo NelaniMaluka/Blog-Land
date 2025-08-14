@@ -6,4 +6,7 @@ export const ROUTES = {
   VIEW_ALL: '/posts',
   CATEGORY_POSTS: (name: string) => `/post/category/${name}`,
   POST: (id: number) => `/post/${id}`,
+  ABOUT: '/about',
+  PRIVACY_POLICY: '/privacy-policy',
+  TERMS_AND_CONDITIONS: '/terms-and-conditions',
 };

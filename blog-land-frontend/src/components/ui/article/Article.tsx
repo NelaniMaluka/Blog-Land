@@ -2,7 +2,6 @@ import { useGetArticles } from '../../../hooks/useTechCrunch';
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
 
 import styles from './Article.module.css';
-import techC from '../../../assets/techC.png';
 
 export const Article = () => {
   const { data, isLoading, error } = useGetArticles();
@@ -17,7 +16,7 @@ export const Article = () => {
         {data?.length
           ? data.map((article, index) => (
               <div key={index} className={styles.article}>
-                <img src={techC} alt="Logo" />
+                <img src="techC.png" alt="Logo" />
                 <div>
                   <a href={article.link} target="_blank">
                     {article.title}

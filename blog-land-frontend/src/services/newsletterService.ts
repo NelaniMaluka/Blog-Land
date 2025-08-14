@@ -3,7 +3,7 @@ import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
 import { emailSchema } from '../schemas/generalSchema';
 
 export const submitNewsletterSubscription = async (email: string): Promise<{ message: string }> => {
-  const validPayload = validateOrThrow(emailSchema, email);
+  const validPayload = validateOrThrow(emailSchema, { email });
 
   try {
     const response = await subscribeToNewsletter(validPayload.email);

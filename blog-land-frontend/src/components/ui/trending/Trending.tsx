@@ -1,11 +1,8 @@
 import styles from './TrendingSection.module.css';
 import { useGetTrendingPosts } from '../../../hooks/usePost';
-import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import { formatViews } from '../../../utils/formatUtils';
 import { useGetCategories } from '../../../hooks/useCategory';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
+import { PostCard } from '../../cards/postCard';
 import { ROUTES } from '../../../constants/routes';
 
 export const TrendingSection = () => {
@@ -14,6 +11,7 @@ export const TrendingSection = () => {
     isLoading: trendingLoading,
     error: trendingError,
   } = useGetTrendingPosts({ page: 0, size: 6 });
+
   const {
     data: categoriesData,
     isLoading: categoriesLoading,
@@ -23,47 +21,22 @@ export const TrendingSection = () => {
   if (!trendingData?.length) return null;
 
   return (
-    <>
-      <LoadingScreen isLoading={trendingLoading || categoriesLoading}>
-        <div className={styles.videoContainer}>
-          <div className="container">
-            <div className={styles.row1}>
-              <h2>Trending</h2>
-              <a href={ROUTES.TRENDING_POSTS}>View All</a>
-            </div>
+    <LoadingScreen isLoading={trendingLoading || categoriesLoading}>
+      <div className={styles.videoContainer}>
+        <div className="container">
+          <div className={styles.row1}>
+            <h2>Trending</h2>
+            <a href={ROUTES.TRENDING_POSTS}>View All</a>
+          </div>
 
-            <div className={styles.row2}>
-              {trendingData.map((post) => {
-                const category = categoriesData?.find((c) => c.id === post.categoryId);
-
-                return (
-                  <div key={post.id} className={styles.post}>
-                    <img src={post.postImgUrl} alt="img" />
-                    {category && <span className={styles.category}>{category.name}</span>}
-                    <span className={styles.date}>{post.createdAt}</span>
-                    <p className={styles.title}>{post.title}</p>
-                    <p>{post.summary}</p>
-                    <div className={styles.subDetails}>
-                      <span>
-                        <VisibilityIcon fontSize="small" className={styles.icon} />{' '}
-                        {formatViews(post.views)}
-                      </span>
-                      <span>
-                        <AccessTimeIcon fontSize="small" className={styles.icon} /> {post.readTime}{' '}
-                        min read
-                      </span>
-                    </div>
-                    <a href={ROUTES.POST(post.id)} className={styles.readMore}>
-                      Read more{' '}
-                      <ArrowForwardIcon className={styles.readMoreIcon} fontSize="small" />
-                    </a>
-                  </div>
-                );
-              })}
-            </div>
+          <div className={styles.row2}>
+            {trendingData.map((post) => {
+              const category = categoriesData?.find((c) => c.id === post.categoryId);
+              return <PostCard key={post.id} post={post} categoryName={category?.name} />;
+            })}
           </div>
         </div>
-      </LoadingScreen>
-    </>
+      </div>
+    </LoadingScreen>
   );
 };
