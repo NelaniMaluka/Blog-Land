@@ -1,0 +1,125 @@
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.holder {
+  padding: 0 2rem;
+  margin-top: 0.8rem;
+}
+
+.buttonGroup button {
+  background-color: rgba(0, 74, 172, 0.829);
+  padding: 5px 10px !important;
+  font-size: 0.5rem;
+  color: white;
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.buttonGroup .active {
+  background: #0074cc;
+  transform: scale(1.05);
+  background-color: rgba(0, 87, 201, 0.966);
+}
+
+.postsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 2rem 0 4rem 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Container for the toggle */
+.toggleGroup {
+  display: inline-flex;
+  border-radius: 9999px; /* pill shape */
+  border: 1px solid #444444;
+  overflow: hidden;
+  font-size: 0.5rem;
+}
+
+/* Each toggle option */
+.toggleOption {
+  padding: 0.1rem 0.5rem;
+  cursor: pointer;
+  background-color: white;
+  color: #4e4e4e;
+  transition: background-color 0.3s, color 0.3s;
+  user-select: none;
+}
+
+/* Active state */
+.toggleOption.active {
+  background-color: #3d3d3d;
+  color: white;
+}
+
+/* Hover effect */
+.toggleOption:hover {
+  background-color: rgba(59, 59, 59, 0.1);
+}
+
+.toggleOption {
+  padding: 0.2rem 0.7rem;
+  font-size: 0.56rem;
+}
+
+.buttonGroup {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.buttonGroup button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+  background-color: rgba(0, 74, 172, 0.8);
+  color: white;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.buttonGroup button:hover {
+  background-color: rgba(0, 87, 201, 0.9);
+  transform: scale(1.05);
+}
+
+@media (max-width: 1024px) {
+  .postsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .holder {
+    padding: 0;
+  }
+
+  .holder h2 {
+    font-size: 1.4rem;
+  }
+
+  .postsGrid {
+    grid-template-columns: 1fr;
+  }
+  .toggleOption {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.56rem;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

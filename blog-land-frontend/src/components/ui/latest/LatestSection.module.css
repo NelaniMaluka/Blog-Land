@@ -1,5 +1,5 @@
 .latestContainer {
-  padding: 2rem 0;
+  padding: 2rem 2rem;
 }
 
 .row1 {
@@ -35,7 +35,7 @@
 
 .featuredImg {
   width: 50%;
-  height: 340px;
+  height: 330px;
   object-fit: cover;
   border-radius: 15px;
 }
@@ -145,6 +145,10 @@
 
 /* Mobile */
 @media (max-width: 768px) {
+  .latestContainer {
+    padding: 1rem 0rem;
+  }
+
   .gridPosts {
     grid-template-columns: 1fr;
   }

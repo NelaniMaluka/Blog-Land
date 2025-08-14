@@ -1,5 +1,5 @@
-.videoContainer {
-  padding: 2rem 0;
+.trendingContainer {
+  padding: 2rem 2rem 3rem 2rem;
 }
 
 .row1 {
@@ -30,6 +30,14 @@
   gap: 1rem;
 }
 
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .toggleOption {
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
 @media (width <= 1024px) {
   .row2 {
     grid-template-columns: repeat(2, 1fr);
@@ -37,6 +45,9 @@
 }
 
 @media (width <= 768px) {
+  .trendingContainer {
+    padding: 1rem 0;
+  }
   .row2 {
     grid-template-columns: 1fr;
   }

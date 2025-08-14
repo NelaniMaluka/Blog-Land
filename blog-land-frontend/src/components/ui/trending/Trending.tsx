@@ -22,7 +22,7 @@ export const TrendingSection = () => {
 
   return (
     <LoadingScreen isLoading={trendingLoading || categoriesLoading}>
-      <div className={styles.videoContainer}>
+      <div className={styles.trendingContainer}>
         <div className="container">
           <div className={styles.row1}>
             <h2>Trending</h2>
