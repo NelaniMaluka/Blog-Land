@@ -1,33 +1,67 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PostCard } from '../../cards/postCard';
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
 import styles from './PostLayout.module.css';
 import { Order } from '../../../types/post/response';
+import { useGetCategoryPosts } from '../../../hooks/usePost';
 
 interface PostsLayoutProps {
   title: string;
-  fetchFn: (params?: { order?: Order }) => any;
-  defaultOrder?: Order;
   showOrderButtons?: boolean;
+  defaultOrder?: Order;
+  categoryId?: number;
+  fetchFn?: (params?: { order?: Order }) => { data?: any[]; isLoading: boolean; isError: boolean };
 }
 
 export const PostsLayout: React.FC<PostsLayoutProps> = ({
   title,
-  fetchFn,
-  defaultOrder = Order.LATEST,
   showOrderButtons = true,
+  defaultOrder = Order.LATEST,
+  categoryId,
+  fetchFn,
 }) => {
   const [order, setOrder] = useState<Order>(defaultOrder);
 
-  // If ordering is relevant, pass it; otherwise pass nothing
-  const fetchParams = showOrderButtons ? { order } : undefined;
-  const { data: posts, isLoading } = fetchFn(fetchParams);
+  useEffect(() => setOrder(defaultOrder), [categoryId, defaultOrder]);
+
+  const queryResult = categoryId
+    ? useGetCategoryPosts({ categoryId, page: 0, size: 12, order })
+    : fetchFn
+    ? fetchFn({ order })
+    : { data: [], isLoading: false, isError: false };
+
+  const { data: posts, isLoading, isError } = queryResult;
+
+  if (isError)
+    return (
+      <div className="container">
+        <div className={styles.holder}>
+          <div className={styles.header}>
+            <h2>{title}</h2>
+          </div>
+          <div className={styles.message}>Could not load data.</div>
+        </div>
+      </div>
+    );
+
+  if (!isLoading && (!posts || posts.length === 0))
+    return (
+      <div className="container">
+        <div className={styles.holder}>
+          <div className={styles.header}>
+            <h2>{title}</h2>
+          </div>
+          <div className={styles.message}>No posts yet. Be the first!</div>{' '}
+        </div>
+      </div>
+    );
 
   return (
     <div className="container">
       <div className={styles.holder}>
         <div className={styles.header}>
           <h2>{title}</h2>
+
           {showOrderButtons && (
             <div className={styles.toggleGroup}>
               <div
@@ -46,7 +80,7 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
           )}
         </div>
 
-        <LoadingScreen isLoading={isLoading}>
+        <LoadingScreen isLoading={isLoading ?? false}>
           <div className={styles.postsGrid}>
             {posts?.map((post: any) => (
               <PostCard key={post.id} post={post} categoryName={post.categoryName} />

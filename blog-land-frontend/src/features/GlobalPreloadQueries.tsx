@@ -14,11 +14,10 @@ import { store } from '../store/store';
 export function GlobalPreloadQueries() {
   const isAuthenticated = store.getState().auth.isAuthenticated;
 
-  useGetCategories();
   useGetAllPost({ page: 0, size: 10, order: Order.LATEST });
   useGetTopPosts();
-  useGetLatestPosts({ page: 1, size: 10 });
-  useGetTrendingPosts({ page: 0, size: 10 });
+  useGetLatestPosts({ page: 1, size: 12 });
+  useGetTrendingPosts({ page: 0, size: 12 });
 
   // Always call, but disable fetching if not authenticated
   useGetUser({ enabled: isAuthenticated });

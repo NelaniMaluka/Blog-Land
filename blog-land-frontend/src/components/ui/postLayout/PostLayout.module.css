@@ -69,8 +69,8 @@
 }
 
 .toggleOption {
-  padding: 0.2rem 0.7rem;
-  font-size: 0.56rem;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.5rem;
 }
 
 .buttonGroup {
@@ -94,6 +94,14 @@
   transform: scale(1.05);
 }
 
+.message {
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
 @media (max-width: 1024px) {
   .postsGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -103,10 +111,6 @@
 @media (max-width: 768px) {
   .holder {
     padding: 0;
-  }
-
-  .holder h2 {
-    font-size: 1.4rem;
   }
 
   .postsGrid {

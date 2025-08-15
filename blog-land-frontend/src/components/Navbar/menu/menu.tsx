@@ -13,8 +13,10 @@ import WhatshotIcon from '@mui/icons-material/Whatshot';
 import { useGetCategories } from '../../../hooks/useCategory';
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
 import { useTheme, useMediaQuery } from '@mui/material';
+import { ROUTES } from '../../../constants/routes';
 
 import styles from './menu.module.css';
+import { Link } from 'react-router-dom';
 
 interface DrawerMobileNavigationProps {
   open: boolean;
@@ -47,15 +49,15 @@ export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNa
             <Box
               sx={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '0.7rem 0' }}
             >
-              <a href="/random/post" className={styles.navLink}>
+              <a href={ROUTES.RANDOM_POSTS} className={styles.navLink}>
                 <ShuffleIcon fontSize="small" sx={{ fontSize: '0.9rem', marginRight: '5px' }} />
                 <Typography sx={{ fontSize: '0.9rem' }}>Random</Typography>
               </a>
-              <a href="/latest/posts" className={styles.navLink}>
+              <a href={ROUTES.LATEST_POSTS} className={styles.navLink}>
                 <AccessTimeIcon fontSize="small" sx={{ fontSize: '0.9rem', marginRight: '5px' }} />
                 <Typography sx={{ fontSize: '0.9rem' }}>Latest</Typography>
               </a>
-              <a href="/trending/posts" className={styles.navLink}>
+              <a href={ROUTES.TRENDING_POSTS} className={styles.navLink}>
                 <WhatshotIcon fontSize="small" sx={{ fontSize: '0.9rem', marginRight: '5px' }} />
                 <Typography sx={{ fontSize: '0.9rem' }}>Trending</Typography>
               </a>
@@ -73,26 +75,28 @@ export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNa
               const key =
                 typeof category === 'string'
                   ? `string-${index}-${category}`
-                  : category.categoryId ?? `category-${index}`;
+                  : category.id ?? `category-${index}`;
               return (
-                <ListItemButton key={key} className={styles.listItemButton}>
-                  {/* Left side: icon + text */}
-                  <Box className={styles.listItemLeft}>
-                    <CategoryIcon
-                      fontSize="small"
-                      className={colorClasses[index % colorClasses.length]}
-                      sx={{ height: '0.8rem', minWidth: '1rem' }}
-                    />
-                    <Typography component="span" className={styles.categoryName}>
-                      <span>{typeof category === 'string' ? category : category.name}</span>
-                    </Typography>
-                  </Box>
+                <Link key={category.id} to={`/category/${encodeURIComponent(category.name)}`}>
+                  <ListItemButton key={key} className={styles.listItemButton}>
+                    {/* Left side: icon + text */}
+                    <Box className={styles.listItemLeft}>
+                      <CategoryIcon
+                        fontSize="small"
+                        className={colorClasses[index % colorClasses.length]}
+                        sx={{ height: '0.8rem', minWidth: '1rem' }}
+                      />
+                      <Typography component="span" className={styles.categoryName}>
+                        <span>{typeof category === 'string' ? category : category.name}</span>
+                      </Typography>
+                    </Box>
 
-                  {/* Right side: post count */}
-                  <Typography component="span" className={styles.postCount}>
-                    <span>{category.postCount}</span>
-                  </Typography>
-                </ListItemButton>
+                    {/* Right side: post count */}
+                    <Typography component="span" className={styles.postCount}>
+                      <span>{category.postCount}</span>
+                    </Typography>
+                  </ListItemButton>
+                </Link>
               );
             })
           ) : (

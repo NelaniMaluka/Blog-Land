@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import {
   fetchSearchedPosts,
   fetchRandomPost,
@@ -18,6 +17,8 @@ import {
 import { useDebounce } from './useDebounce';
 import { Order } from '../types/post/response';
 import { useMutation } from '@tanstack/react-query';
+import { PostResponse } from '../types/post/response';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
 export const useSearchPost = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -84,9 +85,9 @@ export const useGetCategoryPosts = (payload: {
   page: number;
   size: number;
   order: Order;
-}) => {
-  return useQuery({
-    queryKey: ['categoryPosts', payload],
+}): UseQueryResult<PostResponse[], Error> => {
+  return useQuery<PostResponse[], Error>({
+    queryKey: ['categoryPosts', payload.categoryId, payload.page, payload.size, payload.order],
     queryFn: () => fetchPostByCategory(payload),
   });
 };

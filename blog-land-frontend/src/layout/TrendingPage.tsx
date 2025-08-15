@@ -1,5 +1,5 @@
 import { useGetTrendingPosts } from '../hooks/usePost';
-import { PostsLayout } from '../components/ui/postLayout/postsLayout';
+import { PostsLayout } from '../components/ui/postLayout/PostsLayout';
 
 export const TrendingPage = () => {
   return (

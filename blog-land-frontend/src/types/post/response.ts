@@ -2,8 +2,8 @@ import { CommentResponse } from '../comment/response';
 import { UserResponse } from '../user/response';
 
 export enum Order {
-  LATEST = 'LATEST',
-  OLDEST = 'OLDEST',
+  LATEST = 'latest',
+  OLDEST = 'oldest',
 }
 
 export interface PostResponse {

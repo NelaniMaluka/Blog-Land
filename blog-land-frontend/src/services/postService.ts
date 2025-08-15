@@ -132,7 +132,14 @@ export const fetchPostByCategory = async (payload: {
 
   try {
     const response = await getPostsByCategory(validPayload);
-    return response?.data;
+    const rawPosts = response?.data.content ?? [];
+
+    return rawPosts.map((raw: PostResponse) => ({
+      ...raw,
+      title: he.decode(stripHtml(raw.title)),
+      summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
+      createdAt: formatDate(raw.createdAt),
+    }));
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get category posts'));
   }
