@@ -101,12 +101,12 @@ public class PostServiceImpl implements PostService {
         Optional<Category> optionalCategory = categoryRepository.findById(category_id);
         CategoryValidation.assertCategoryExists(optionalCategory);
 
-        // Fetch paginated posts by category
+        // Determine sort direction
         Sort.Direction direction = setOrder.equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "createdAt"));
-        Page<Post> postPage = setOrder.equals("latest")
-                ? postRepository.findPublishedPostsLatest(pageable)
-                : postRepository.findPublishedPostsOldest(pageable);
+
+        // Fetch only posts in the given category
+        Page<Post> postPage = postRepository.findByCategoryId(category_id, pageable);
 
         // Convert to PostResponse while retaining pagination metadata
         return postPage.map(PostBuilder::generatePost);
