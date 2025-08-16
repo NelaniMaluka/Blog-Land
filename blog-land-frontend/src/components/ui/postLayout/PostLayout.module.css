@@ -111,7 +111,7 @@
 .pagination :global(.MuiPaginationItem-root) {
   color: #5f5f5f;
   font-weight: 500;
-  font-size: 0.8rem !important;
+  font-size: 0.6rem !important;
 }
 
 .pagination :global(.Mui-selected) {

@@ -10,6 +10,7 @@ import ShuffleIcon from '@mui/icons-material/Shuffle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 import ReorderIcon from '@mui/icons-material/Reorder';
+import ViewListIcon from '@mui/icons-material/ViewList';
 
 import { useGetCategories } from '../../../hooks/useCategory';
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
@@ -52,6 +53,14 @@ export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNa
               <Box
                 sx={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '0.7rem 0' }}
               >
+                <a href={ROUTES.VIEW_ALL} className={styles.navLink}>
+                  <ViewListIcon
+                    fontSize="small"
+                    sx={{ fontSize: '0.7rem', marginRight: '0.5rem' }}
+                  />
+                  <Typography sx={{ fontSize: '0.7rem' }}>View All</Typography>
+                </a>
+
                 <a href={ROUTES.RANDOM_POSTS} className={styles.navLink}>
                   <ShuffleIcon
                     fontSize="small"

@@ -1,11 +1,14 @@
-# Use a lightweight Java image
-FROM eclipse-temurin:17-jdk-jammy
+# Use official OpenJDK 17 image
+FROM openjdk:17-jdk-slim
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy Maven/Gradle build output
-COPY target/*.jar app.jar
+# Copy the built jar
+COPY target/blog-land-backend-0.0.1-SNAPSHOT.jar app.jar
+
+# Expose port 8080
+EXPOSE 8080
 
 # Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
