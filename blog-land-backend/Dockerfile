@@ -1,21 +1,24 @@
-# Use Maven + OpenJDK for build
+# ===== Build Stage: Maven + OpenJDK =====
 FROM maven:3.9.2-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Copy source code
+# Copy pom.xml and source code
 COPY pom.xml .
 COPY src ./src
 
-# Build the jar (skip tests)
-RUN mvn clean package -DskipTests
+# Run tests first (will fail build if tests fail)
+RUN mvn clean verify
 
-# Use slim JDK for running
+# Package the application (skip tests since they already ran)
+RUN mvn package -DskipTests
+
+# ===== Runtime Stage: Slim JDK =====
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-# Copy jar from build stage
+# Copy the jar from build stage
 COPY --from=build /app/target/blog-land-backend-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
