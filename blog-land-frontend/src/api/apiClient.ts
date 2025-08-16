@@ -2,8 +2,9 @@
 import axios from 'axios';
 import { store } from '../store/store';
 
+// http://localhost:8080/api
 export const apiClient = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: 'https://blog-land.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
