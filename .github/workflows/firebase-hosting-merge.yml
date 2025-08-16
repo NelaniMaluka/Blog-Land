@@ -13,12 +13,12 @@ jobs:
         run: npm ci --legacy-peer-deps
         working-directory: ./blog-land-frontend
 
-      - name: Build frontend
-        run: npm run build
-        working-directory: ./blog-land-frontend
-
       - name: List routes folder
         run: ls -la src/routes
+        working-directory: ./blog-land-frontend
+
+      - name: Build frontend
+        run: npm run build
         working-directory: ./blog-land-frontend
 
       - name: Deploy to Firebase
