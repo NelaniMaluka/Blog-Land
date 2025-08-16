@@ -1,52 +1,37 @@
-import { useState, useEffect } from 'react';
 import { PostCard } from '../../cards/postCard';
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
 import styles from './PostLayout.module.css';
-import { Order, PostResponse, PaginatedPosts } from '../../../types/post/response';
-import { useGetCategoryPosts } from '../../../hooks/usePost';
+import { Order, PostResponse } from '../../../types/post/response';
+import { useGetCategories } from '../../../hooks/useCategory';
+import Pagination from '@mui/material/Pagination';
+import PaginationItem from '@mui/material/PaginationItem';
 
 interface PostsLayoutProps {
   title: string;
   showOrderButtons?: boolean;
-  defaultOrder?: Order;
-  categoryId?: number;
-  fetchFn?: (params?: { order?: Order; page?: number }) => {
-    data?: PaginatedPosts;
-    isLoading: boolean;
-    isError: boolean;
-  };
+  posts: PostResponse[];
+  isLoading: boolean;
+  isError: boolean;
+  page: number;
+  setPage: (page: number) => void;
+  totalPages: number;
+  order: Order;
+  setOrder: (order: Order) => void;
 }
 
 export const PostsLayout: React.FC<PostsLayoutProps> = ({
   title,
   showOrderButtons = true,
-  defaultOrder = Order.LATEST,
-  categoryId,
-  fetchFn,
+  posts,
+  isLoading,
+  isError,
+  page,
+  setPage,
+  totalPages,
+  order,
+  setOrder,
 }) => {
-  const [order, setOrder] = useState<Order>(defaultOrder);
-  const [page, setPage] = useState<number>(0);
-
-  // Reset page & order if category or default changes
-  useEffect(() => {
-    setOrder(defaultOrder);
-    setPage(0);
-  }, [categoryId, defaultOrder]);
-
-  const queryResult = categoryId
-    ? useGetCategoryPosts({ categoryId, page, size: 12, order })
-    : fetchFn
-    ? fetchFn({ order, page })
-    : {
-        data: { content: [], totalPages: 0, totalElements: 0, number: 0 },
-        isLoading: false,
-        isError: false,
-      };
-
-  const { data, isLoading, isError } = queryResult;
-
-  const posts: PostResponse[] = data?.content ?? [];
-  const totalPages: number = data?.totalPages ?? 0;
+  const { data: categoriesData } = useGetCategories();
 
   if (isError)
     return (
@@ -104,23 +89,24 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
 
         <LoadingScreen isLoading={isLoading}>
           <div className={styles.postsGrid}>
-            {posts.map((post: PostResponse) => (
-              <PostCard key={post.id} post={post} categoryName={post.categoryName} />
-            ))}
+            {posts.map((post) => {
+              const category = categoriesData?.find((c) => c.id === post.categoryId);
+              return <PostCard key={post.id} post={post} categoryName={category?.name} />;
+            })}
           </div>
 
-          {/* Pagination Controls */}
+          {/* MUI Pagination */}
           {totalPages > 1 && (
             <div className={styles.pagination}>
-              <button onClick={() => setPage((p) => p - 1)} disabled={page === 0}>
-                Prev
-              </button>
-              <span>
-                Page {page + 1} of {totalPages}
-              </span>
-              <button onClick={() => setPage((p) => p + 1)} disabled={page + 1 >= totalPages}>
-                Next
-              </button>
+              <Pagination
+                page={page + 1} // MUI is 1-based, your state is 0-based
+                count={totalPages}
+                onChange={(_, value) => {
+                  setPage(value - 1); // convert back to 0-based
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                renderItem={(item) => <PaginationItem {...item} />}
+              />
             </div>
           )}
         </LoadingScreen>

@@ -1,14 +1,28 @@
-import { useGetAllPost } from '../hooks/usePost';
+import { useState } from 'react';
 import { PostsLayout } from '../components/ui/postLayout/PostsLayout';
+import { useGetAllPost } from '../hooks/usePost';
 import { Order } from '../types/post/response';
 
 export const ViewAllPage = () => {
+  const [order, setOrder] = useState<Order>(Order.OLDEST);
+  const [page, setPage] = useState(0);
+
+  const { data, isLoading, isError } = useGetAllPost({ page, size: 12, order });
+  const posts = data?.content ?? [];
+  const totalPages = data?.totalPages ?? 0;
+
   return (
     <PostsLayout
       title="All Posts"
-      fetchFn={(params) =>
-        useGetAllPost({ page: 0, size: 12, order: params?.order ?? Order.OLDEST })
-      }
+      posts={posts}
+      isLoading={isLoading}
+      isError={isError}
+      page={page}
+      setPage={setPage}
+      totalPages={totalPages}
+      order={order}
+      setOrder={setOrder}
+      showOrderButtons={true}
     />
   );
 };

@@ -1,6 +1,5 @@
 import styles from './Navbar.module.css';
 
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
@@ -8,6 +7,7 @@ import AvatarMenu from './Avatar';
 import SearchBar from './searchbar/Searchbar';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
+import ViewListIcon from '@mui/icons-material/ViewList';
 import { ROUTES } from '../../constants/routes';
 
 interface NavbarProps {
@@ -30,9 +30,9 @@ function Navbar({ setOpen }: NavbarProps) {
             </div>
             <div className={styles.navbar_Links}>
               <span className={styles.navbar_Link_mobile}>
-                <a href="/dashboard/posts/add-post">
-                  <AddCircleOutlineIcon fontSize="small" />
-                  <span>Add Post</span>
+                <a href={ROUTES.VIEW_ALL}>
+                  <ViewListIcon fontSize="small" />
+                  <span>View All</span>
                 </a>
               </span>
               <span className={styles.navbar_Link_mobile}>

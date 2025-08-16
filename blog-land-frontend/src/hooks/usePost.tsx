@@ -17,8 +17,8 @@ import {
 import { useDebounce } from './useDebounce';
 import { Order } from '../types/post/response';
 import { useMutation } from '@tanstack/react-query';
-import { PostResponse } from '../types/post/response';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { PaginatedPosts } from '../types/post/response';
 
 export const useSearchPost = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -85,8 +85,8 @@ export const useGetCategoryPosts = (payload: {
   page: number;
   size: number;
   order: Order;
-}): UseQueryResult<PostResponse[], Error> => {
-  return useQuery<PostResponse[], Error>({
+}): UseQueryResult<PaginatedPosts, Error> => {
+  return useQuery<PaginatedPosts, Error>({
     queryKey: ['categoryPosts', payload.categoryId, payload.page, payload.size, payload.order],
     queryFn: () => fetchPostByCategory(payload),
   });

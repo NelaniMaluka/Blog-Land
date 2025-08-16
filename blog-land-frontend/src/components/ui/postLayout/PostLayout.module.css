@@ -2,11 +2,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
 }
 .holder {
   padding: 0 2rem;
   margin-top: 0.8rem;
+  margin-bottom: 4rem;
 }
 
 .buttonGroup button {
@@ -29,7 +29,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  margin: 2rem 0 4rem 0;
+  margin: 2rem 0 0.9rem 0;
 }
 
 .header {
@@ -100,6 +100,23 @@
   align-items: center;
   justify-content: center;
   font-size: 0.8rem;
+}
+
+.pagination {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination :global(.MuiPaginationItem-root) {
+  color: #5f5f5f;
+  font-weight: 500;
+  font-size: 0.8rem !important;
+}
+
+.pagination :global(.Mui-selected) {
+  background-color: #1976d2;
+  color: #1976d2;
 }
 
 @media (max-width: 1024px) {
