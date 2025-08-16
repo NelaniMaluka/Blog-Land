@@ -12,7 +12,7 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**")
+                registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173", "https://blog-land.web.app",
                                 "https://blog-land.firebaseapp.com")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
