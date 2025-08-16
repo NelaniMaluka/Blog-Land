@@ -14,6 +14,7 @@ const ScrollToTop = () => {
   }, [pathname]);
 
   return null;
+  //lol
 };
 
 function App() {
