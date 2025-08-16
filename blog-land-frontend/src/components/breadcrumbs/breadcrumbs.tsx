@@ -17,7 +17,7 @@ export const BasicBreadcrumbs: React.FC<PostsLayoutProps> = ({ title, link, page
         aria-label="breadcrumb"
         separator={
           <span
-            style={{ fontSize: '0.6rem', margin: '0 4px', lineHeight: 1, verticalAlign: 'middle' }}
+            style={{ fontSize: '0.6rem', margin: '0px', lineHeight: 1, verticalAlign: 'middle' }}
           >
             /
           </span>

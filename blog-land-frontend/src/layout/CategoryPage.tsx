@@ -12,16 +12,12 @@ export const CategoryPage = () => {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState<Order>(Order.LATEST);
 
-  if (!categories) return <div>Loading categories...</div>;
-
   const decodedSlug = decodeURIComponent(slug || '');
-  const category = categories.find((c) => c.name.toLowerCase() === decodedSlug.toLowerCase());
+  const category = categories?.find((c) => c.name.toLowerCase() === decodedSlug.toLowerCase());
 
-  if (!category) return <div>Category not found</div>;
-
-  // Call the hook directly with page & order
+  // Always call the hook, even if category is undefined
   const { data, isLoading, isError } = useGetCategoryPosts({
-    categoryId: category.id,
+    categoryId: category?.id || 0,
     page,
     size: 12,
     order,
@@ -32,7 +28,7 @@ export const CategoryPage = () => {
 
   return (
     <PostsLayout
-      title={category.name}
+      title={category?.name || 'Category'}
       posts={posts}
       isLoading={isLoading}
       isError={isError}
