@@ -1,14 +1,23 @@
-# Use official OpenJDK 17 image
-FROM openjdk:17-jdk-slim
+# Use Maven + OpenJDK for build
+FROM maven:3.9.2-eclipse-temurin-17 AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy the built jar
-COPY target/blog-land-backend-0.0.1-SNAPSHOT.jar app.jar
+# Copy source code
+COPY pom.xml .
+COPY src ./src
 
-# Expose port 8080
+# Build the jar (skip tests)
+RUN mvn clean package -DskipTests
+
+# Use slim JDK for running
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+
+# Copy jar from build stage
+COPY --from=build /app/target/blog-land-backend-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 8080
 
-# Run the application
 ENTRYPOINT ["java","-jar","/app/app.jar"]
