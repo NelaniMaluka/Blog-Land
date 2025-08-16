@@ -41,7 +41,12 @@ export const BasicBreadcrumbs: React.FC<PostsLayoutProps> = ({ title, link, page
           {title}
         </Link>
         <Typography
-          sx={{ color: 'text.primary', fontSize: '0.6rem', lineHeight: 1, verticalAlign: 'middle' }}
+          sx={{
+            color: 'text.primary',
+            fontSize: '0.58rem',
+            lineHeight: 1,
+            verticalAlign: 'middle',
+          }}
         >
           {page}
         </Typography>
