@@ -7,15 +7,18 @@
 
 .post img {
   width: 100%;
-  height: auto;
-  display: block;
   height: 260px;
+  object-fit: cover;
+  display: block;
   border-radius: 15px;
 }
 
 .category {
   font-size: 0.55rem;
   margin-right: 8px;
+}
+.category:hover {
+  color: rgba(0, 87, 201, 0.966);
 }
 
 .date {
@@ -79,6 +82,7 @@
 @media (width >= 1680px) {
   .post img {
     height: 340px;
+    object-fit: cover;
   }
 }
 
@@ -90,6 +94,7 @@
   .title {
     height: max-content;
     font-size: 0.75rem !important;
+    line-height: 0.9rem;
   }
 
   .post p {
@@ -99,5 +104,6 @@
 
   .post img {
     height: 200px;
+    object-fit: cover;
   }
 }

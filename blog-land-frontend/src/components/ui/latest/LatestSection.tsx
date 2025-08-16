@@ -23,7 +23,13 @@ export const LatestSection = () => {
     error: categoriesError,
   } = useGetCategories();
 
-  if (!recentData?.length) return null;
+  // Safe access
+  const recentPost = recentData?.content?.[0];
+  const category = recentPost
+    ? categoriesData?.find((c) => c.id === recentPost.categoryId)?.name || 'Unknown'
+    : undefined;
+
+  if (!recentPost) return null; // nothing to render yet
 
   return (
     <div className="container">
@@ -34,42 +40,37 @@ export const LatestSection = () => {
             <a href={ROUTES.VIEW_ALL}>View All</a>
           </div>
 
-          {recentData?.length > 0 && (
-            <>
-              {/* First post - big layout */}{' '}
-              <div className={styles.featuredPost}>
-                <img src={recentData[0].postImgUrl} alt="img" className={styles.featuredImg} />{' '}
-                <div className={styles.featuredContent}>
-                  {categoriesData && (
-                    <span className={styles.category}>
-                      {categoriesData.find((c) => c.id === recentData[0].categoryId)?.name}{' '}
-                    </span>
-                  )}
-                  <span className={styles.date}>{recentData[0].createdAt}</span>{' '}
-                  <p className={styles.title}>{recentData[0].title}</p>{' '}
-                  <p>{recentData[0].summary}</p>{' '}
-                  <div className={styles.subDetails}>
-                    <span>
-                      <VisibilityIcon fontSize="small" /> {formatViews(recentData[0].views)}{' '}
-                    </span>
-                    <span>
-                      <AccessTimeIcon fontSize="small" /> {recentData[0].readTime} min read{' '}
-                    </span>
-                  </div>
-                  <a href={ROUTES.POST(recentData[0].id)} className={styles.readMore}>
-                    Read more <ArrowForwardIcon className={styles.readMoreIcon} fontSize="small" />
-                  </a>
-                </div>
+          <div className={styles.featuredPost}>
+            <img src={recentPost.postImgUrl} alt="img" className={styles.featuredImg} />
+            <div className={styles.featuredContent}>
+              {category && (
+                <a href={`/category/${encodeURIComponent(category)}`} className={styles.category}>
+                  {category}
+                </a>
+              )}
+              <span className={styles.date}>{recentPost.createdAt}</span>
+              <p className={styles.title}>{recentPost.title}</p>
+              <p>{recentPost.summary}</p>
+              <div className={styles.subDetails}>
+                <span>
+                  <VisibilityIcon fontSize="small" /> {formatViews(recentPost.views)}
+                </span>
+                <span>
+                  <AccessTimeIcon fontSize="small" /> {recentPost.readTime} min read
+                </span>
               </div>
-              {/* Next 3 posts - grid layout */}
-              <div className={styles.gridPosts}>
-                {recentData.slice(1).map((post) => {
-                  const category = categoriesData?.find((c) => c.id === post.categoryId);
-                  return <PostCard key={post.id} post={post} categoryName={category?.name} />;
-                })}
-              </div>
-            </>
-          )}
+              <a href={ROUTES.POST(recentPost.id)} className={styles.readMore}>
+                Read more <ArrowForwardIcon className={styles.readMoreIcon} fontSize="small" />
+              </a>
+            </div>
+          </div>
+
+          <div className={styles.gridPosts}>
+            {recentData?.content.slice(1).map((post) => {
+              const postCategory = categoriesData?.find((c) => c.id === post.categoryId);
+              return <PostCard key={post.id} post={post} categoryName={postCategory?.name} />;
+            })}
+          </div>
         </div>
       </LoadingScreen>
     </div>

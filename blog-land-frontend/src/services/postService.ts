@@ -25,7 +25,7 @@ import { AddPostRequest, UpdatePostRequest } from '../types/post/request';
 import { addPostSchema, updatePostSchema } from '../schemas/postSchema';
 import { stripHtml, formatDate } from '../utils/formatUtils';
 import he from 'he';
-import { date } from 'zod';
+import { PaginatedPosts } from '../types/post/response';
 
 export const fetchSearchedPosts = async (keyword: string): Promise<PostResponse[]> => {
   try {
@@ -60,21 +60,24 @@ export const fetchAllPosts = async (payload: {
   page: number;
   size: number;
   order?: Order;
-}): Promise<PostResponse[]> => {
+}): Promise<PaginatedPosts> => {
   const validPayload = validateOrThrow(paginationSchemaWithOrder, payload);
 
   try {
     const response = await getAllPosts(validPayload);
-    const rawPosts = response?.data.content ?? [];
+    const data = response?.data;
 
-    return rawPosts.map((raw: PostResponse) => ({
-      ...raw,
-      title: he.decode(stripHtml(raw.title)),
-      summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
-      createdAt: formatDate(raw.createdAt),
-    }));
+    return {
+      ...data,
+      content: (data?.content ?? []).map((raw: PostResponse) => ({
+        ...raw,
+        title: he.decode(stripHtml(raw.title)),
+        summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
+        createdAt: formatDate(raw.createdAt),
+      })),
+    };
   } catch (error) {
-    throw new Error(getAxiosErrorMessage(error, 'Failed the get all posts'));
+    throw new Error(getAxiosErrorMessage(error, 'Failed to get all posts'));
   }
 };
 
@@ -104,19 +107,22 @@ export const fetchLatestPosts = async (payload: {
 export const fetchTrendingPosts = async (payload: {
   page: number;
   size: number;
-}): Promise<PostResponse[]> => {
+}): Promise<PaginatedPosts> => {
   const validPayload = validateOrThrow(paginationSchema, payload);
 
   try {
     const response = await getTrendingPosts(validPayload);
-    const rawPosts = response?.data.content ?? [];
+    const data = response?.data;
 
-    return rawPosts.map((raw: PostResponse) => ({
-      ...raw,
-      title: he.decode(stripHtml(raw.title)),
-      summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
-      createdAt: formatDate(raw.createdAt),
-    }));
+    return {
+      ...data,
+      content: (data?.content ?? []).map((raw: PostResponse) => ({
+        ...raw,
+        title: he.decode(stripHtml(raw.title)),
+        summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
+        createdAt: formatDate(raw.createdAt),
+      })),
+    };
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get trending posts'));
   }
@@ -127,19 +133,22 @@ export const fetchPostByCategory = async (payload: {
   page: number;
   size: number;
   order: Order;
-}): Promise<PostResponse[]> => {
+}): Promise<PaginatedPosts> => {
   const validPayload = validateOrThrow(paginationWithCategoryIdSchema, payload);
 
   try {
     const response = await getPostsByCategory(validPayload);
-    const rawPosts = response?.data.content ?? [];
+    const data = response?.data;
 
-    return rawPosts.map((raw: PostResponse) => ({
-      ...raw,
-      title: he.decode(stripHtml(raw.title)),
-      summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
-      createdAt: formatDate(raw.createdAt),
-    }));
+    return {
+      ...data,
+      content: (data?.content ?? []).map((raw: PostResponse) => ({
+        ...raw,
+        title: he.decode(stripHtml(raw.title)),
+        summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
+        createdAt: formatDate(raw.createdAt),
+      })),
+    };
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get category posts'));
   }

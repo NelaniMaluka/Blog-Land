@@ -9,6 +9,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
+import ReorderIcon from '@mui/icons-material/Reorder';
 
 import { useGetCategories } from '../../../hooks/useCategory';
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
@@ -42,27 +43,39 @@ export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNa
           />
           <ModalClose id="close-icon" sx={{ position: 'initial' }} />
         </Box>
-
         {/* Tablet/Mobile only nav links */}
         {isMobileOrTablet && (
-          <Box className={styles.navLinks}>
-            <Box
-              sx={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '0.7rem 0' }}
-            >
-              <a href={ROUTES.RANDOM_POSTS} className={styles.navLink}>
-                <ShuffleIcon fontSize="small" sx={{ fontSize: '0.9rem', marginRight: '5px' }} />
-                <Typography sx={{ fontSize: '0.9rem' }}>Random</Typography>
-              </a>
-              <a href={ROUTES.LATEST_POSTS} className={styles.navLink}>
-                <AccessTimeIcon fontSize="small" sx={{ fontSize: '0.9rem', marginRight: '5px' }} />
-                <Typography sx={{ fontSize: '0.9rem' }}>Latest</Typography>
-              </a>
-              <a href={ROUTES.TRENDING_POSTS} className={styles.navLink}>
-                <WhatshotIcon fontSize="small" sx={{ fontSize: '0.9rem', marginRight: '5px' }} />
-                <Typography sx={{ fontSize: '0.9rem' }}>Trending</Typography>
-              </a>
+          <>
+            <h2 className={styles.categoriesHeader}>Discover</h2>
+
+            <Box className={styles.navLinks}>
+              <Box
+                sx={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '0.7rem 0' }}
+              >
+                <a href={ROUTES.RANDOM_POSTS} className={styles.navLink}>
+                  <ShuffleIcon
+                    fontSize="small"
+                    sx={{ fontSize: '0.7rem', marginRight: '0.5rem' }}
+                  />
+                  <Typography sx={{ fontSize: '0.7rem' }}>Random</Typography>
+                </a>
+                <a href={ROUTES.LATEST_POSTS} className={styles.navLink}>
+                  <AccessTimeIcon
+                    fontSize="small"
+                    sx={{ fontSize: '0.7rem', marginRight: '0.5rem' }}
+                  />
+                  <Typography sx={{ fontSize: '0.7rem' }}>Latest</Typography>
+                </a>
+                <a href={ROUTES.TRENDING_POSTS} className={styles.navLink}>
+                  <WhatshotIcon
+                    fontSize="small"
+                    sx={{ fontSize: '0.7rem', marginRight: '0.5rem' }}
+                  />
+                  <Typography sx={{ fontSize: '0.7rem' }}>Trending</Typography>
+                </a>
+              </Box>
             </Box>
-          </Box>
+          </>
         )}
 
         {/* Categories header */}
@@ -81,7 +94,7 @@ export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNa
                   <ListItemButton key={key} className={styles.listItemButton}>
                     {/* Left side: icon + text */}
                     <Box className={styles.listItemLeft}>
-                      <CategoryIcon
+                      <ReorderIcon
                         fontSize="small"
                         className={colorClasses[index % colorClasses.length]}
                         sx={{ height: '0.8rem', minWidth: '1rem' }}

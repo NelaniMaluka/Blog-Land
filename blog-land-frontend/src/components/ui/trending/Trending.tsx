@@ -18,7 +18,7 @@ export const TrendingSection = () => {
     error: categoriesError,
   } = useGetCategories();
 
-  if (!trendingData?.length) return null;
+  if (!trendingData?.content?.length) return null;
 
   return (
     <LoadingScreen isLoading={trendingLoading || categoriesLoading}>
@@ -30,7 +30,7 @@ export const TrendingSection = () => {
           </div>
 
           <div className={styles.row2}>
-            {trendingData.map((post) => {
+            {trendingData.content.map((post) => {
               const category = categoriesData?.find((c) => c.id === post.categoryId);
               return <PostCard key={post.id} post={post} categoryName={category?.name} />;
             })}

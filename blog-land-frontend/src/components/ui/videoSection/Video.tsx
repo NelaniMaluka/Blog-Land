@@ -1,69 +1,97 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
+import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import styles from './Video.module.css';
-import { Video } from '../../../types/video/video';
+import { useGetYoutubeVideos } from '../../../hooks/useTechCrunch';
+import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
 
 export const VideoSection = () => {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const { data: videos = [], isLoading, isError } = useGetYoutubeVideos();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const videos: Video[] = [
-    {
-      videoId: '1',
-      title: 'Ponpon Chen｜The World News Polka (ABC-TV)',
-      url: 'videos/1.webm',
-      category: 'Other',
-    },
-    { videoId: '2', title: 'Markets Updates SABC News', url: 'videos/2.webm', category: 'Finance' },
-    {
-      videoId: '3',
-      title: 'Queen Elizabeth I Gun salute in honour of Britain',
-      url: 'videos/3.webm',
-      category: 'Politics',
-    },
-  ];
+  if (isError || videos.length <= 0) return <></>;
 
-  const handleClose = () => {
-    setActiveVideo(null);
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const scrollAmount = scrollRef.current.clientWidth;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
   };
 
   return (
-    <div className={styles.videoContainer}>
-      <div className="container">
-        <div className={styles.row1}>
-          <h2>Video Highlights</h2>
-        </div>
+    <LoadingScreen isLoading={isLoading}>
+      <div className={styles.videoContainer}>
+        <div className="container">
+          <div className={styles.row1}>
+            <h2>Top News Videos</h2>
 
-        <div className={styles.row2}>
-          {videos.map((video) => (
-            <div key={video.videoId} className={styles.video}>
-              <div className={styles.videoWrapper}>
-                <video className={styles.frame} src={video.url} preload="metadata" muted />
-                <div className={styles.overlay}>
-                  <button className={styles.playButton} onClick={() => setActiveVideo(video.url)}>
-                    ▶
-                  </button>
-                </div>
-              </div>
-              <span className={styles.category}>{video.category}</span>
-              <span className={styles.title}>{video.title}</span>
+            {/* Desktop-only arrows */}
+            <div className={styles.desktopArrows}>
+              <IconButton onClick={() => scroll('left')}>
+                <ChevronLeft />
+              </IconButton>
+              <IconButton onClick={() => scroll('right')}>
+                <ChevronRight />
+              </IconButton>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      <Dialog
-        open={Boolean(activeVideo)}
-        onClose={handleClose}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          style: { backgroundColor: 'transparent', boxShadow: 'none' },
-        }}
-      >
-        {activeVideo && (
-          <video src={activeVideo} controls autoPlay style={{ width: '100%', borderRadius: 16 }} />
-        )}
-      </Dialog>
-    </div>
+          <div className={styles.scrollWrapper}>
+            {/* Scrollable row */}
+            <div className={styles.row2} ref={scrollRef}>
+              {videos.slice(0, 10).map((video) => (
+                <div key={video.id.videoId} className={styles.video}>
+                  <div className={styles.videoWrapper}>
+                    <div
+                      className={styles.thumbnail}
+                      style={{
+                        backgroundImage: `url(https://img.youtube.com/vi/${video.id.videoId}/hqdefault.jpg)`,
+                      }}
+                    >
+                      <div
+                        className={styles.overlay}
+                        onClick={() => setActiveVideo(video.id.videoId)}
+                      >
+                        ▶
+                      </div>
+                    </div>
+                  </div>
+                  <span className={styles.category}>News</span>
+                  <span className={styles.title}>{video.snippet.title}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Popup dialog */}
+        <Dialog
+          open={Boolean(activeVideo)}
+          onClose={() => setActiveVideo(null)}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{
+            style: { backgroundColor: 'transparent', boxShadow: 'none' },
+          }}
+        >
+          {activeVideo && (
+            <iframe
+              width="100%"
+              height="500"
+              src={`https://www.youtube.com/embed/${activeVideo}?autoplay=1`}
+              frameBorder="0"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+              style={{ borderRadius: 16 }}
+            />
+          )}
+        </Dialog>
+      </div>
+    </LoadingScreen>
   );
 };

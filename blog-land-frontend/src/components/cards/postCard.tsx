@@ -15,7 +15,11 @@ export const PostCard: React.FC<PostCardProps> = ({ post, categoryName }) => {
   return (
     <div key={post.id} className={styles.post}>
       <img src={post.postImgUrl} alt="img" />
-      {categoryName && <span className={styles.category}>{categoryName}</span>}
+      {categoryName && (
+        <a href={`/category/${encodeURIComponent(categoryName)}`} className={styles.category}>
+          {categoryName}
+        </a>
+      )}
       <span className={styles.date}>{post.createdAt}</span>
       <p className={styles.title}>{post.title}</p>
       <p>{post.summary}</p>

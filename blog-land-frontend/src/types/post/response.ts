@@ -32,3 +32,10 @@ export interface PostWithCategoryResponse {
   categoryName: string;
   posts: PostResponse;
 }
+
+export interface PaginatedPosts {
+  content: PostResponse[];
+  totalPages: number;
+  totalElements: number;
+  number: number;
+}

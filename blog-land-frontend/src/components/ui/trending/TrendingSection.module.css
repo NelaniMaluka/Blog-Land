@@ -7,20 +7,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
+  padding: 1rem 0 0 0;
 }
 
 .row1 a {
   background-color: rgba(0, 74, 172, 0.829);
-  padding: 10px 20px;
-  font-size: 0.7rem;
+  padding: 8px 16px;
+  font-size: 0.6rem;
   color: white;
   border-radius: 10px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .row1 a:hover {
-  transform: scale(1.05);
   background-color: rgba(0, 87, 201, 0.966);
 }
 
@@ -39,6 +38,9 @@
 }
 
 @media (width <= 1024px) {
+  .trendingContainer {
+    padding: 1rem 0;
+  }
   .row2 {
     grid-template-columns: repeat(2, 1fr);
   }

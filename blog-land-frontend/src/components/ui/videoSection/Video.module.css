@@ -1,104 +1,146 @@
 .videoContainer {
-  padding: 1rem;
-  margin: auto;
+  padding: 1rem 0 1rem 0;
 }
-
 .row1 {
-  padding: 1.2rem 0;
-  text-align: center;
-}
-
-.row1 h2 {
-  font-weight: 600;
-  margin-bottom: 1rem;
+  padding: 1rem 0;
 }
 
 .row2 {
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+  overflow-x: auto;
+  gap: 16px;
+
+  /* hide scrollbar in most browsers */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
 }
 
-.row2 .video {
-  flex: 1 1 300px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
+.row2::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }
 
-.row2 .video:hover {
-  transform: scale(1.025);
-}
-
-.row2 .video .frame {
-  width: 100%;
-  height: 250px;
-  object-fit: cover;
-  border-radius: 16px;
-  margin-bottom: 0.5rem;
-}
-
-.row2 .video .category {
-  font-size: 0.6rem;
-  font-weight: 500;
-  min-height: 20px;
-  color: #646464;
-  display: block;
-}
-
-.row2 .video .title {
-  font-size: 0.75rem;
-  font-weight: 500;
-  min-height: 40px;
-  color: #4d4d4d;
-}
-
-.row2 .video .date {
-  font-size: 0.75rem;
-  color: #777;
+.video {
+  flex: 0 0 auto;
+  width: 40%;
 }
 
 .videoWrapper {
   position: relative;
 }
 
-.frame {
-  display: block;
+.thumbnail {
   width: 100%;
-  height: auto;
+  height: 305px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
 }
 
 .overlay {
   position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.4);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  border-radius: 16px;
-}
-
-.playButton {
-  font-size: 2.5rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
   color: white;
-  background: transparent;
-  border: none;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
   cursor: pointer;
-  pointer-events: auto;
 }
 
-.videoWrapper:hover .overlay {
-  opacity: 1;
+.category {
+  display: block;
+  font-size: 0.5rem;
+  color: #888;
+  margin-top: 8px;
 }
 
-/* Mobile adjustments */
-@media (width <= 600px) {
-  .row2 .video {
-    flex: 1 1 100%;
-    max-width: 100%;
-    margin-bottom: 0.9rem;
+.title {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 480;
+  margin-top: 8px;
+}
+
+.scrollWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.row2 {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.row2::-webkit-scrollbar {
+  display: none;
+}
+
+/* Arrows */
+.arrowLeft,
+.arrowRight {
+  position: absolute;
+  top: 40%;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.arrowLeft {
+  left: -12px;
+}
+.arrowRight {
+  right: -12px;
+}
+
+.row1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.desktopArrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Hide arrows on small screens */
+@media (max-width: 1024px) {
+  .video {
+    flex: 0 0 auto;
+    width: 60%;
   }
+}
+
+/* Hide arrows on small screens */
+@media (max-width: 768px) {
+  .desktopArrows {
+    display: none;
+  }
+
+  .video {
+    flex: 0 0 auto;
+    width: 80%;
+  }
+
+  .thumbnail {
+    height: 290px;
+  }
+}
+
+.scrollWrapper {
+  display: flex;
+  overflow-x: auto; /* allows swipe scroll */
+  gap: 16px;
+  scrollbar-width: none; /* hide scrollbar in Firefox */
+}
+
+.scrollWrapper::-webkit-scrollbar {
+  display: none; /* hide scrollbar in Chrome/Safari */
 }

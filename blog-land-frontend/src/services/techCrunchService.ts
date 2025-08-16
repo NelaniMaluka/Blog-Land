@@ -1,7 +1,9 @@
-import { getArticleApi } from '../api/techCrunchApi';
+import { getArticleApi, getYoutubeVideosApi } from '../api/techCrunchApi';
 import { Article } from '../types/techCrunch/response';
 import { getAxiosErrorMessage } from '../utils/errorUtils';
 import { stripHtml, formatDate } from '../utils/formatUtils';
+import { YoutubeVideo } from '../types/techCrunch/response';
+import { filterVideos } from '../utils/filterUtils';
 import he from 'he';
 
 export const fetchArticle = async (): Promise<Article[]> => {
@@ -19,5 +21,20 @@ export const fetchArticle = async (): Promise<Article[]> => {
     return articles;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get article details from techcrunch'));
+  }
+};
+
+export const fetchYoutubeVideos = async (): Promise<YoutubeVideo[]> => {
+  try {
+    const response = await getYoutubeVideosApi();
+    const data = await response.json();
+
+    // Use the filter util
+    const filteredVideos = filterVideos(data.items);
+
+    // Return top 10 videos
+    return filteredVideos.slice(0, 10);
+  } catch (error) {
+    throw new Error(getAxiosErrorMessage(error, 'Failed to get YouTube videos'));
   }
 };
