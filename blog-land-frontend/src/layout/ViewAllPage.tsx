@@ -23,6 +23,7 @@ export const ViewAllPage = () => {
       order={order}
       setOrder={setOrder}
       showOrderButtons={true}
+      totalElements={data?.totalElements || 0}
     />
   );
 };

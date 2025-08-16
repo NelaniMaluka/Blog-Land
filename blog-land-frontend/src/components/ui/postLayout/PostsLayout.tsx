@@ -5,6 +5,8 @@ import { Order, PostResponse } from '../../../types/post/response';
 import { useGetCategories } from '../../../hooks/useCategory';
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
+import BasicBreadcrumbs from '../../breadcrumbs/breadcrumbs';
+import { ROUTES } from '../../../constants/routes';
 
 interface PostsLayoutProps {
   title: string;
@@ -17,6 +19,7 @@ interface PostsLayoutProps {
   totalPages: number;
   order: Order;
   setOrder: (order: Order) => void;
+  totalElements: number;
 }
 
 export const PostsLayout: React.FC<PostsLayoutProps> = ({
@@ -30,6 +33,7 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
   totalPages,
   order,
   setOrder,
+  totalElements,
 }) => {
   const { data: categoriesData } = useGetCategories();
 
@@ -37,8 +41,9 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
     return (
       <div className="container">
         <div className={styles.holder}>
+          <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
           <div className={styles.header}>
-            <h2>{title}</h2>
+            <h3>posts: {totalElements}</h3>
           </div>
           <div className={styles.message}>Could not load data.</div>
         </div>
@@ -49,8 +54,9 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
     return (
       <div className="container">
         <div className={styles.holder}>
+          <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
           <div className={styles.header}>
-            <h2>{title}</h2>
+            <h3>posts: {totalElements}</h3>
           </div>
           <div className={styles.message}>No posts yet. Be the first!</div>
         </div>
@@ -60,8 +66,9 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
   return (
     <div className="container">
       <div className={styles.holder}>
+        <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
         <div className={styles.header}>
-          <h2>{title}</h2>
+          <h3>posts: {totalElements}</h3>
 
           {showOrderButtons && (
             <div className={styles.toggleGroup}>

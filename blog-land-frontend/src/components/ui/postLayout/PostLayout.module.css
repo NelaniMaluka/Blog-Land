@@ -38,6 +38,11 @@
   justify-content: space-between;
 }
 
+.header h3 {
+  color: #494949;
+  font-size: 0.85rem;
+}
+
 /* Container for the toggle */
 .toggleGroup {
   display: inline-flex;

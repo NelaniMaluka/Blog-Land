@@ -42,6 +42,7 @@ export const CategoryPage = () => {
       order={order}
       setOrder={setOrder}
       showOrderButtons={true}
+      totalElements={data?.totalElements || 0}
     />
   );
 };

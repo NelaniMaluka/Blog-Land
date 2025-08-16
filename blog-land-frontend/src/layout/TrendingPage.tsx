@@ -21,6 +21,7 @@ export const TrendingPage = () => {
       order={Order.LATEST}
       setOrder={() => {}}
       showOrderButtons={false}
+      totalElements={data?.totalElements || 0}
     />
   );
 };
