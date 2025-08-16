@@ -4,7 +4,7 @@ import { store } from '../store/store';
 
 // http://localhost:8080/api
 export const apiClient = axios.create({
-  baseURL: 'https://blog-land.onrender.com',
+  baseURL: 'https://blog-land.onrender.com/api/',
   headers: {
     'Content-Type': 'application/json',
   },
