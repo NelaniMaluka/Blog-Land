@@ -40,8 +40,8 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
   if (isError)
     return (
       <div className="container">
+        <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
         <div className={styles.holder}>
-          <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
           <div className={styles.header}>
             <h3>posts: {totalElements}</h3>
           </div>
@@ -53,8 +53,8 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
   if (!isLoading && posts.length === 0)
     return (
       <div className="container">
+        <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
         <div className={styles.holder}>
-          <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
           <div className={styles.header}>
             <h3>posts: {totalElements}</h3>
           </div>
@@ -65,8 +65,8 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
 
   return (
     <div className="container">
+      <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
       <div className={styles.holder}>
-        <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
         <div className={styles.header}>
           <h3>posts: {totalElements}</h3>
 

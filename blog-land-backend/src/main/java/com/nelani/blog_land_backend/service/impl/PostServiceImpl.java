@@ -122,17 +122,26 @@ public class PostServiceImpl implements PostService {
         ResponseEntity<TechCrunchPostDto[]> response = restTemplate.getForEntity(apiUrl, TechCrunchPostDto[].class);
         TechCrunchPostDto[] externalPosts = response.getBody();
 
-        // Generates a list of the latest blog posts
-        if (externalPosts == null)
+        if (externalPosts == null) {
             throw new AssertionError();
+        }
+
         return Arrays.stream(externalPosts).map(dto -> {
-            String author = dto.get_embedded().getAuthor()[0].getName();
+            // Author comes from embedded.author
+            String author = dto.getEmbedded().getAuthor()[0].getName();
+
             String title = dto.getTitle().getRendered();
             String content = dto.getContent().getRendered();
             String summary = dto.getExcerpt().getRendered();
             LocalDateTime createdAt = LocalDateTime.parse(dto.getDate());
 
-            // Builds response data
+            // Image comes from embedded.featuredmedia
+            String image = null;
+            if (dto.getEmbedded().getFeaturedmedia() != null
+                    && dto.getEmbedded().getFeaturedmedia().length > 0) {
+                image = dto.getEmbedded().getFeaturedmedia()[0].getSourceUrl();
+            }
+
             return PostResponse.builder()
                     .title(title)
                     .content(content)
@@ -141,9 +150,12 @@ public class PostServiceImpl implements PostService {
                     .source("TechCrunch")
                     .createdAt(createdAt)
                     .readTime(PostBuilder.calculateReadTime(content))
+                    .postImgUrl(image)
                     .build();
         }).toList();
+
     }
+
 
     @Override
     @Transactional
