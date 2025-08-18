@@ -41,17 +41,19 @@ export const LatestLayout = () => {
           >
             {(latestPosts ?? []).map((post, index) => {
               const heightVh = isMobile ? MOBILE_HEIGHT_VH : heights[index % heights.length];
-
+              console.log(post);
               return (
                 <div
                   key={post.id || index}
                   className={styles.item}
-                  style={{ '--item-height': `${heightVh}vh` } as React.CSSProperties} // use CSS variable
+                  style={{ '--item-height': `${heightVh}vh` } as React.CSSProperties}
                 >
-                  <img src={post.postImgUrl} alt={post.title} />
-                  <div className={styles.overlay}>
-                    <p>{he.decode(post.title)}</p>
-                  </div>
+                  <a href={ROUTES.LATEST_POST_Page(post.title)}>
+                    <img src={post.postImgUrl} alt={post.title} />
+                    <div className={styles.overlay}>
+                      <p>{he.decode(post.title)}</p>
+                    </div>
+                  </a>
                 </div>
               );
             })}

@@ -10,21 +10,21 @@ import { formatDate } from '../../../utils/formatUtils';
 import { ExperienceLabels } from '../../../types/user/response';
 
 import styles from './SinglePostLayout.module.css';
+import { PostResponse } from '../../../types/post/response';
 
 interface SinglePostLayoutProps {
-  id: number;
+  post?: PostResponse;
+  isLoading: boolean;
+  isError?: boolean;
 }
 
-export const SinglePostLayout = ({ id }: SinglePostLayoutProps) => {
-  const { data: post, isLoading, error } = useGetPost({ id });
+export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutProps) => {
   const { data: categoriesData } = useGetCategories();
 
   const category = categoriesData?.find((c) => c.id === post?.categoryId);
   const categoryName = category?.name;
 
-  console.log(post?.user);
-
-  if (error) return <div>Error loading post</div>;
+  if (isError) return <div>Error loading post</div>;
 
   return (
     <>
@@ -56,27 +56,29 @@ export const SinglePostLayout = ({ id }: SinglePostLayoutProps) => {
                 className={styles.content}
               />
             </div>
-            <div className={styles.column2}>
-              <p className={styles.name}>{post?.user?.firstname + ' ' + post?.user?.lastname}</p>
-              <p className={styles.title1}>{post?.user?.title && post?.user?.title}</p>
-              <p className={styles.experience}>
-                Experience:{' '}
-                {post?.user?.experience ? ExperienceLabels[post.user.experience] : 'N/A'}
-              </p>
+            {post?.user && (
+              <div className={styles.column2}>
+                <p className={styles.name}>{post?.user?.firstname + ' ' + post?.user?.lastname}</p>
+                <p className={styles.title1}>{post?.user?.title && post?.user?.title}</p>
+                <p className={styles.experience}>
+                  Experience:{' '}
+                  {post?.user?.experience ? ExperienceLabels[post.user.experience] : 'N/A'}
+                </p>
 
-              <p className={styles.location}>
-                {post?.user?.location && (
-                  <>
-                    <LocationOnIcon fontSize="small" className={styles.locationIcon} />
-                    {post?.user?.location}
-                  </>
-                )}
-              </p>
-              <p className={styles.summary}>{post?.user?.summary && post?.user?.summary}</p>
+                <p className={styles.location}>
+                  {post?.user?.location && (
+                    <>
+                      <LocationOnIcon fontSize="small" className={styles.locationIcon} />
+                      {post?.user?.location}
+                    </>
+                  )}
+                </p>
+                <p className={styles.summary}>{post?.user?.summary && post?.user?.summary}</p>
 
-              <p className={styles.joinAt}>joined on {formatDate(post?.user?.joinedAt)}</p>
-              <p>{}</p>
-            </div>
+                <p className={styles.joinAt}>joined on {formatDate(post?.user?.joinedAt)}</p>
+                <p>{}</p>
+              </div>
+            )}
           </div>
         </div>
       </LoadingScreen>

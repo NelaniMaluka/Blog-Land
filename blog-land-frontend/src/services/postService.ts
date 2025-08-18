@@ -104,7 +104,17 @@ export const fetchLatestPosts = async (payload: {
 
   try {
     const response = await getLatestPosts(validPayload);
-    return response?.data;
+    const data = response?.data ?? [];
+
+    return data.map(
+      (raw: any): PostResponse => ({
+        ...raw,
+
+        title: he.decode(stripHtml(raw.title)),
+        summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
+        createdAt: formatDate(raw.createdAt),
+      })
+    );
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get latest post'));
   }
