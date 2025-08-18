@@ -105,7 +105,7 @@ public class UserServiceImplTest {
                 user.setEmail("nelani@example.com");
                 user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
-                user.setExperience(ExperienceLevel.BEGINNER);
+                user.setExperience(ExperienceLevel.CASUAL_POSTER);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -140,7 +140,7 @@ public class UserServiceImplTest {
                 assertEquals("nelani@example.com", savedUser.getEmail());
                 assertEquals(Provider.LOCAL, savedUser.getProvider());
                 assertEquals("Johannesburg, South Africa", savedUser.getLocation());
-                assertEquals(ExperienceLevel.BEGINNER, savedUser.getExperience());
+                assertEquals(ExperienceLevel.CASUAL_POSTER, savedUser.getExperience());
                 assertEquals(socials, savedUser.getSocials());
         }
 
@@ -153,7 +153,7 @@ public class UserServiceImplTest {
                 user.setEmail("nelani@example.com");
                 user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
-                user.setExperience(ExperienceLevel.BEGINNER);
+                user.setExperience(ExperienceLevel.CASUAL_POSTER);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -178,7 +178,7 @@ public class UserServiceImplTest {
                 user.setEmail("nelani@example.com");
                 user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
-                user.setExperience(ExperienceLevel.BEGINNER);
+                user.setExperience(ExperienceLevel.CASUAL_POSTER);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -203,7 +203,7 @@ public class UserServiceImplTest {
                 user.setEmail("invalid-email");
                 user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
-                user.setExperience(ExperienceLevel.BEGINNER);
+                user.setExperience(ExperienceLevel.CASUAL_POSTER);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -229,7 +229,7 @@ public class UserServiceImplTest {
                 user.setEmail("nelani@example.com");
                 user.setProvider(Provider.GOOGLE);
                 user.setLocation("Johannesburg, South Africa");
-                user.setExperience(ExperienceLevel.BEGINNER);
+                user.setExperience(ExperienceLevel.CASUAL_POSTER);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -269,7 +269,7 @@ public class UserServiceImplTest {
                 user.setEmail("nelani@example.com");
                 user.setProvider(Provider.LOCAL);
                 user.setLocation("    ");
-                user.setExperience(ExperienceLevel.BEGINNER);
+                user.setExperience(ExperienceLevel.CASUAL_POSTER);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -302,7 +302,7 @@ public class UserServiceImplTest {
                 assertEquals("nelani@example.com", savedUser.getEmail());
                 assertEquals(Provider.LOCAL, savedUser.getProvider());
                 assertEquals("    ", savedUser.getLocation());
-                assertEquals(ExperienceLevel.BEGINNER, savedUser.getExperience());
+                assertEquals(ExperienceLevel.CASUAL_POSTER, savedUser.getExperience());
                 assertEquals(socials, savedUser.getSocials());
         }
 
@@ -359,7 +359,7 @@ public class UserServiceImplTest {
                 user.setEmail("nelani@example.com");
                 user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
-                user.setExperience(ExperienceLevel.ADVANCED);
+                user.setExperience(ExperienceLevel.CASUAL_POSTER);
                 user.setSocials(null);
 
                 User existingUser = new User();
@@ -388,7 +388,7 @@ public class UserServiceImplTest {
                 assertEquals("nelani@example.com", savedUser.getEmail());
                 assertEquals(Provider.LOCAL, savedUser.getProvider());
                 assertEquals("Johannesburg, South Africa", savedUser.getLocation());
-                assertEquals(ExperienceLevel.ADVANCED, savedUser.getExperience());
+                assertEquals(ExperienceLevel.CASUAL_POSTER, savedUser.getExperience());
                 assertNull(savedUser.getSocials());
         }
 
@@ -400,7 +400,7 @@ public class UserServiceImplTest {
                 user.setEmail("nelani@example.com");
                 user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
-                user.setExperience(ExperienceLevel.ADVANCED);
+                user.setExperience(ExperienceLevel.CASUAL_POSTER);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");

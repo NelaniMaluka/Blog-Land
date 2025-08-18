@@ -38,6 +38,7 @@ public class SecurityConfig {
                                                    UnifiedAuthenticationFilter unifiedAuthenticationFilter) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/oauth2/**", "/api/v1/auth/oauth2/callback", "/error",
                                 "/h2-console/**", "/api/contact-us/**", "/api/newsletter/**", "/api/category/**",
@@ -53,4 +54,5 @@ public class SecurityConfig {
                 .addFilterBefore(unifiedAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 }
