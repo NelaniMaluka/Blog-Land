@@ -126,22 +126,26 @@ public class UserServiceImplTest {
                                 List.of(new SimpleGrantedAuthority("ROLE_USER")));
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
-                // Act
-                userService.updateUserDetails(user);
+            // Assert
+            ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
-                // Assert
-                ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-                verify(userRepository, times(1)).save(userCaptor.capture());
-                verify(moderationValidator, times(1)).userModeration(user);
+            // Verify repository save
+            verify(userRepository, times(1)).save(userCaptor.capture());
+            User savedUser = userCaptor.getValue();
 
-                User savedUser = userCaptor.getValue();
-                assertEquals("Nelani", savedUser.getFirstname());
-                assertEquals("Maluka", savedUser.getLastname());
-                assertEquals("nelani@example.com", savedUser.getEmail());
-                assertEquals(Provider.LOCAL, savedUser.getProvider());
-                assertEquals("Johannesburg, South Africa", savedUser.getLocation());
-                assertEquals(ExperienceLevel.CASUAL_POSTER, savedUser.getExperience());
-                assertEquals(socials, savedUser.getSocials());
+            // Verify moderation
+            ArgumentCaptor<User> moderationCaptor = ArgumentCaptor.forClass(User.class);
+            verify(moderationValidator, times(1)).userModeration(moderationCaptor.capture());
+            User moderatedUser = moderationCaptor.getValue();
+
+            // Now assert the fields
+            assertEquals("Nelani", savedUser.getFirstname());
+            assertEquals("Maluka", savedUser.getLastname());
+            assertEquals("nelani@example.com", savedUser.getEmail());
+            assertEquals(Provider.LOCAL, savedUser.getProvider());
+            assertEquals("Johannesburg, South Africa", savedUser.getLocation());
+            assertEquals(ExperienceLevel.CASUAL_POSTER, savedUser.getExperience());
+            assertEquals(socials, savedUser.getSocials());
         }
 
         @Test
