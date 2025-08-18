@@ -10,11 +10,20 @@ export enum Provider {
 }
 
 export enum ExperienceLevel {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED',
-  EXPERT = 'EXPERT',
+  NEW_BLOGGER = 'NEW_BLOGGER',
+  CASUAL_POSTER = 'CASUAL_POSTER',
+  COMMUNITY_WRITER = 'COMMUNITY_WRITER',
+  FREQUENT_CONTRIBUTOR = 'FREQUENT_CONTRIBUTOR',
+  PRO_BLOGGER = 'EXPERT',
 }
+
+export const ExperienceLabels: Record<ExperienceLevel, string> = {
+  [ExperienceLevel.NEW_BLOGGER]: 'New Blogger',
+  [ExperienceLevel.CASUAL_POSTER]: 'Casual Poster',
+  [ExperienceLevel.COMMUNITY_WRITER]: 'Community Writer',
+  [ExperienceLevel.FREQUENT_CONTRIBUTOR]: 'Frequent Contributor',
+  [ExperienceLevel.PRO_BLOGGER]: 'Pro Blogger',
+};
 
 // ---------- Response Interfaces ----------
 
@@ -29,6 +38,9 @@ export interface UserResponse {
   firstname: string;
   lastname: string;
   provider: Provider;
+  title: string;
+  summary: string;
+  joinedAt: string;
   profileIconUrl?: string | null;
   location?: string | null;
   experience?: ExperienceLevel | null;

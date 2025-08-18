@@ -1,47 +1,47 @@
+.containerBox {
+  width: 100% !important;
+  min-height: 200vh !important;
+  padding: 1.5rem 0 3rem 0 !important;
+}
+
 .item {
-  position: relative;
-  overflow: hidden;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+  cursor: pointer !important;
+  height: var(--item-height, 40vh) !important; /* fallback 40vh */
 }
 
 .item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.3s ease;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  transition: transform 0.3s ease !important;
 }
 
 .item:hover img {
-  transform: scale(1.05);
+  transform: scale(1.05) !important;
 }
 
 .overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.9rem;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  color: #fff !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.9rem !important;
+  transform: translateY(100%) !important;
+  transition: transform 0.3s ease !important;
 }
 
 .overlay p {
-  font-size: 0.65rem;
+  font-size: 0.65rem !important;
 }
 
 .item:hover .overlay {
-  transform: translateY(0);
-}
-
-.item img {
-  width: 100%;
-  display: block;
-  object-fit: cover;
-  transition: transform 0.3s ease;
+  transform: translateY(0) !important;
 }

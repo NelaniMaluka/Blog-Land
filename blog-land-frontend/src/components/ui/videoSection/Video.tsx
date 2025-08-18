@@ -3,15 +3,27 @@ import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import styles from './Video.module.css';
-import { useGetYoutubeVideos } from '../../../hooks/useTechCrunch';
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
+
+interface LocalVideo {
+  id: string;
+  title: string;
+  src: string;
+}
+
+const localVideos: LocalVideo[] = [
+  { id: 'video1', title: 'Ponpon Chen｜The World News Polka (ABC-TV)', src: '/videos/1.webm' },
+  { id: 'video2', title: 'Markets Updates SABC News', src: '/videos/2.webm' },
+  {
+    id: 'video3',
+    title: 'Queen Elizabeth I Gun salute in honour of Britain',
+    src: '/videos/3.webm',
+  },
+];
 
 export const VideoSection = () => {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
-  const { data: videos = [], isLoading, isError } = useGetYoutubeVideos();
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  if (isError || videos.length <= 0) return <></>;
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -24,13 +36,12 @@ export const VideoSection = () => {
   };
 
   return (
-    <LoadingScreen isLoading={isLoading}>
+    <LoadingScreen isLoading={false}>
       <div className={styles.videoContainer}>
         <div className="container">
           <div className={styles.row1}>
             <h2>Top News Videos</h2>
 
-            {/* Desktop-only arrows */}
             <div className={styles.desktopArrows}>
               <IconButton onClick={() => scroll('left')}>
                 <ChevronLeft />
@@ -42,53 +53,36 @@ export const VideoSection = () => {
           </div>
 
           <div className={styles.scrollWrapper}>
-            {/* Scrollable row */}
             <div className={styles.row2} ref={scrollRef}>
-              {videos.slice(0, 10).map((video) => (
-                <div key={video.id.videoId} className={styles.video}>
+              {localVideos.map((video) => (
+                <div key={video.id} className={styles.video}>
                   <div className={styles.videoWrapper}>
-                    <div
-                      className={styles.thumbnail}
-                      style={{
-                        backgroundImage: `url(https://img.youtube.com/vi/${video.id.videoId}/hqdefault.jpg)`,
-                      }}
-                    >
-                      <div
-                        className={styles.overlay}
-                        onClick={() => setActiveVideo(video.id.videoId)}
-                      >
-                        ▶
-                      </div>
+                    <video className={styles.thumbnail} src={video.src} muted controls={false} />
+                    {/* Overlay Play Button */}
+                    <div className={styles.overlay} onClick={() => setActiveVideo(video.src)}>
+                      ▶
                     </div>
                   </div>
                   <span className={styles.category}>News</span>
-                  <span className={styles.title}>{video.snippet.title}</span>
+                  <span className={styles.title}>{video.title}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Popup dialog */}
         <Dialog
           open={Boolean(activeVideo)}
           onClose={() => setActiveVideo(null)}
           maxWidth="md"
           fullWidth
-          PaperProps={{
-            style: { backgroundColor: 'transparent', boxShadow: 'none' },
-          }}
+          PaperProps={{ style: { backgroundColor: 'transparent', boxShadow: 'none' } }}
         >
           {activeVideo && (
-            <iframe
-              width="100%"
-              height="500"
-              src={`https://www.youtube.com/embed/${activeVideo}?autoplay=1`}
-              frameBorder="0"
-              allow="autoplay; encrypted-media"
-              allowFullScreen
-              style={{ borderRadius: 16 }}
-            />
+            <video width="100%" height="500" controls autoPlay style={{ borderRadius: 16 }}>
+              <source src={activeVideo} type="video/webm" />
+              Your browser does not support the video tag.
+            </video>
           )}
         </Dialog>
       </div>

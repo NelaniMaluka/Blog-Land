@@ -5,6 +5,7 @@ import { TrendingPage } from '../layout/TrendingPage';
 import { ViewAllPage } from '../layout/ViewAllPage';
 import { CategoryPage } from '../layout/CategoryPage';
 import { LatestPage } from '../layout/LatestPage';
+import { PostPage } from '../layout/PostPage';
 
 const MainRoutes = () => (
   <>
@@ -13,6 +14,7 @@ const MainRoutes = () => (
     <Route path={ROUTES.VIEW_ALL} element={<ViewAllPage />} />
     <Route path={ROUTES.LATEST_POSTS} element={<LatestPage />} />
     <Route path="/category/:slug" element={<CategoryPage />} />
+    <Route path="/post/:slug" element={<PostPage />} />
   </>
 );
 

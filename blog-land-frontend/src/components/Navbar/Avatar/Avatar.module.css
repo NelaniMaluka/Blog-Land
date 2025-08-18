@@ -1,0 +1,20 @@
+.avatarButton {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.menuPaper {
+  margin-top: 8px !important;
+  min-width: 150px !important;
+}
+
+.menuItem {
+  display: flex !important;
+  align-items: center !important;
+  font-size: 0.6rem !important;
+  gap: 8px !important;
+}
+
+.menuIcon {
+  font-size: 0.8rem !important;
+}

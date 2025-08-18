@@ -15,6 +15,9 @@ public class UserBuilder {
         userResponse.setLocation(user.getLocation());
         userResponse.setExperience(user.getExperience());
         userResponse.setSocials(user.getSocials());
+        userResponse.setSummary(user.getSummary());
+        userResponse.setTitle(user.getTitle());
+        userResponse.setJoinedAt(user.getJoinedAt());
         return userResponse;
     }
 
@@ -26,6 +29,9 @@ public class UserBuilder {
         userResponse.setLocation(user.getLocation());
         userResponse.setExperience(user.getExperience());
         userResponse.setSocials(user.getSocials());
+        userResponse.setSummary(user.getSummary());
+        userResponse.setTitle(user.getTitle());
+        userResponse.setJoinedAt(user.getJoinedAt());
         return userResponse;
     }
 

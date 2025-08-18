@@ -7,9 +7,11 @@ export const getArticleApi = async () => {
 };
 
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
-const API_URL = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&order=date&q=news&type=video&key=${API_KEY}`;
 
-export const getYoutubeVideosApi = async () => {
+export const getYoutubeVideosApi = async (): Promise<Response> => {
+  const MAX_RESULTS = 50; // Fetch more to ensure enough long videos
+  const API_URL = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=UCOmcA3f_RrH6b9NmcNa4tdg&maxResults=${MAX_RESULTS}&type=video&videoDuration=any&order=date&key=${API_KEY}`;
+
   const response = await fetch(API_URL);
   return response;
 };

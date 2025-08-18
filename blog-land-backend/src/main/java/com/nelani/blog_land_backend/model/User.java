@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,12 @@ public class User {
 
     @Column(nullable = true)
     private String password;
+
+    @Column(nullable = true)
+    private String title;
+
+    @Column(nullable = true)
+    private String summary;
 
     @Email
     @Column(unique = true, nullable = false)
@@ -49,6 +56,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private ExperienceLevel experience;
+
+    @Builder.Default
+    private LocalDateTime joinedAt = LocalDateTime.now();
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

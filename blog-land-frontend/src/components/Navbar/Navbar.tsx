@@ -3,7 +3,7 @@ import styles from './Navbar.module.css';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
-import AvatarMenu from './Avatar';
+import AvatarMenu from './Avatar/Avatar';
 import SearchBar from './searchbar/Searchbar';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';

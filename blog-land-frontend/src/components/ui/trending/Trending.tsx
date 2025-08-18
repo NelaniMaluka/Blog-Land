@@ -6,17 +6,12 @@ import { PostCard } from '../../cards/postCard';
 import { ROUTES } from '../../../constants/routes';
 
 export const TrendingSection = () => {
-  const {
-    data: trendingData,
-    isLoading: trendingLoading,
-    error: trendingError,
-  } = useGetTrendingPosts({ page: 0, size: 6 });
+  const { data: trendingData, isLoading: trendingLoading } = useGetTrendingPosts({
+    page: 0,
+    size: 6,
+  });
 
-  const {
-    data: categoriesData,
-    isLoading: categoriesLoading,
-    error: categoriesError,
-  } = useGetCategories();
+  const { data: categoriesData, isLoading: categoriesLoading } = useGetCategories();
 
   if (!trendingData?.content?.length) return null;
 

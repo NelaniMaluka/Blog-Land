@@ -20,7 +20,7 @@
 
 .QandA {
   margin-bottom: 0.4rem;
-  box-shadow: none;
+  box-shadow: none !important;
 }
 
 .text {

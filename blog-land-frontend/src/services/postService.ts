@@ -45,12 +45,18 @@ export const fetchRandomPost = async (): Promise<PostResponse> => {
   }
 };
 
-export const fetchPost = async (id: number): Promise<PostResponse> => {
-  const validPayload = validateOrThrow(idSchema, id);
+export const fetchPost = async (payload: { id: number }): Promise<PostResponse> => {
+  const validPayload = validateOrThrow(idSchema, payload);
 
   try {
     const response = await getPost(validPayload.id);
-    return response?.data;
+    const data = response?.data;
+    return {
+      ...data,
+      title: he.decode(stripHtml(data.title)),
+      summary: data.summary ? he.decode(stripHtml(data.summary)) : null,
+      createdAt: formatDate(data.createdAt),
+    };
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get post'));
   }

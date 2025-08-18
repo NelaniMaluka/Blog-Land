@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class UserSeeder {
 
@@ -47,15 +48,44 @@ public class UserSeeder {
                 "Barcelona, Spain",
                 "Istanbul, Turkey");
         List<ExperienceLevel> experienceLevels = List.of(
-                ExperienceLevel.BEGINNER,
-                ExperienceLevel.INTERMEDIATE,
-                ExperienceLevel.ADVANCED,
-                ExperienceLevel.EXPERT);
+                ExperienceLevel.NEW_BLOGGER,
+                ExperienceLevel.CASUAL_POSTER,
+                ExperienceLevel.COMMUNITY_WRITER,
+                ExperienceLevel.FREQUENT_CONTRIBUTOR,
+                ExperienceLevel.PRO_BLOGGER);
+
+        List<String> summaries = List.of(
+                "Writes about coding, coffee, and late-night debugging sessions.",
+                "Sharing thoughts on tech, games, and random internet finds.",
+                "Exploring web development while documenting the journey.",
+                "Just a curious mind posting tutorials and opinions.",
+                "Into gadgets, apps, and digital minimalism.",
+                "Breaking down complex topics into simple blog posts.",
+                "Enjoys reviewing new tools and frameworks.",
+                "Documenting travel, tech, and personal projects.",
+                "Passionate about security, privacy, and open source.",
+                "Blogging for fun and learning along the way."
+        );
+
+        List<String> titles = List.of(
+                "Tech Enthusiast",
+                "Full-Stack Explorer",
+                "Gamer & Blogger",
+                "Student Developer",
+                "Creative Writer",
+                "Foodie Reviewer",
+                "Travel Storyteller",
+                "UI/UX Tinkerer",
+                "AI Curious",
+                "Cybersecurity Advocate"
+        );
 
         if (userRepository.count() > 0) {
             System.out.println("⚠️ Skipping seeding — users already exist.");
             return;
         }
+
+        Random random = new Random();
 
         for (int i = 0; i < 20; i++) {
             String firstname = firstNames.get(i);
@@ -63,6 +93,8 @@ public class UserSeeder {
             String email = firstname.toLowerCase() + "." + lastname.toLowerCase() + "@blogland.dev";
             String location = locations.get(i % locations.size());
             ExperienceLevel experience = experienceLevels.get(i % experienceLevels.size());
+            String summary = summaries.get(random.nextInt(summaries.size())); // Random summary
+            String title = titles.get(random.nextInt(titles.size()));         // Random title
 
             Map<String, String> socials = new HashMap<>();
             socials.put("twitter", "@" + firstname.toLowerCase() + "_blogger");
@@ -79,8 +111,10 @@ public class UserSeeder {
                         .provider(Provider.LOCAL)
                         .role(Role.USER)
                         .profileIconUrl(null)
-                        .experience(experience) // Enum injected here
+                        .experience(experience)
                         .socials(socials)
+                        .summary(summary)
+                        .title(title) // 👈 Added random title
                         .build();
 
                 userRepository.save(user);

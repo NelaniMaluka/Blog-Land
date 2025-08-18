@@ -37,85 +37,82 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
 }) => {
   const { data: categoriesData } = useGetCategories();
 
-  if (isError)
-    return (
-      <div className="container">
-        <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
-        <div className={styles.holder}>
-          <div className={styles.header}>
-            <h3>posts: {totalElements}</h3>
+  // ----- Render Helpers -----
+  const renderHeader = () => (
+    <div className={styles.header}>
+      <h3>posts: {totalElements}</h3>
+      {showOrderButtons && (
+        <div className={styles.toggleGroup}>
+          <div
+            className={`${styles.toggleOption} ${order === Order.LATEST ? styles.active : ''}`}
+            onClick={() => {
+              setOrder(Order.LATEST);
+              setPage(0);
+            }}
+          >
+            Latest
           </div>
-          <div className={styles.message}>Could not load data.</div>
+          <div
+            className={`${styles.toggleOption} ${order === Order.OLDEST ? styles.active : ''}`}
+            onClick={() => {
+              setOrder(Order.OLDEST);
+              setPage(0);
+            }}
+          >
+            Oldest
+          </div>
         </div>
+      )}
+    </div>
+  );
+
+  const renderPosts = () => (
+    <div className={styles.postsGrid}>
+      {posts.map((post) => {
+        const category = categoriesData?.find((c) => c.id === post.categoryId);
+        return <PostCard key={post.id} post={post} categoryName={category?.name} />;
+      })}
+    </div>
+  );
+
+  const renderPagination = () =>
+    totalPages > 1 && (
+      <div className={styles.pagination}>
+        <Pagination
+          page={page + 1}
+          count={totalPages}
+          onChange={(_, value) => {
+            setPage(value - 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          renderItem={(item) => <PaginationItem {...item} />}
+        />
       </div>
     );
 
-  if (!isLoading && posts.length === 0)
-    return (
-      <div className="container">
-        <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
-        <div className={styles.holder}>
-          <div className={styles.header}>
-            <h3>posts: {totalElements}</h3>
-          </div>
-          <div className={styles.message}>No posts yet. Be the first!</div>
-        </div>
+  const renderErrorOrEmpty = (message: string) => (
+    <div className="container">
+      <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
+      <div className={styles.holder}>
+        {renderHeader()}
+        <div className={styles.message}>{message}</div>
       </div>
-    );
+    </div>
+  );
 
+  // ----- Early returns -----
+  if (isError) return renderErrorOrEmpty('Could not load data.');
+  if (!isLoading && posts.length === 0) return renderErrorOrEmpty('No posts yet. Be the first!');
+
+  // ----- Main return -----
   return (
     <div className="container">
       <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
       <div className={styles.holder}>
-        <div className={styles.header}>
-          <h3>posts: {totalElements}</h3>
-
-          {showOrderButtons && (
-            <div className={styles.toggleGroup}>
-              <div
-                className={`${styles.toggleOption} ${order === Order.LATEST ? styles.active : ''}`}
-                onClick={() => {
-                  setOrder(Order.LATEST);
-                  setPage(0);
-                }}
-              >
-                Latest
-              </div>
-              <div
-                className={`${styles.toggleOption} ${order === Order.OLDEST ? styles.active : ''}`}
-                onClick={() => {
-                  setOrder(Order.OLDEST);
-                  setPage(0);
-                }}
-              >
-                Oldest
-              </div>
-            </div>
-          )}
-        </div>
-
+        {renderHeader()}
         <LoadingScreen isLoading={isLoading}>
-          <div className={styles.postsGrid}>
-            {posts.map((post) => {
-              const category = categoriesData?.find((c) => c.id === post.categoryId);
-              return <PostCard key={post.id} post={post} categoryName={category?.name} />;
-            })}
-          </div>
-
-          {/* MUI Pagination */}
-          {totalPages > 1 && (
-            <div className={styles.pagination}>
-              <Pagination
-                page={page + 1} // MUI is 1-based, your state is 0-based
-                count={totalPages}
-                onChange={(_, value) => {
-                  setPage(value - 1); // convert back to 0-based
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                renderItem={(item) => <PaginationItem {...item} />}
-              />
-            </div>
-          )}
+          {renderPosts()}
+          {renderPagination()}
         </LoadingScreen>
       </div>
     </div>

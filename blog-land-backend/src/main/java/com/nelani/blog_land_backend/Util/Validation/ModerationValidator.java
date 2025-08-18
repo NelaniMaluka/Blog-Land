@@ -37,6 +37,8 @@ public class ModerationValidator {
     public void userModeration(User user) {
         moderationClient.validateContent(user.getFirstname());
         moderationClient.validateContent(user.getLastname());
+        if (isValid(user.getSummary())) moderationClient.validateContent(user.getSummary());
+        if (isValid(user.getTitle())) moderationClient.validateContent(user.getTitle());
         if (isValid(user.getLocation())) moderationClient.validateContent(user.getLocation());
 
         if (user.getSocials() != null) {

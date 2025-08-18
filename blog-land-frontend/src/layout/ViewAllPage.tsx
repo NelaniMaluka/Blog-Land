@@ -4,7 +4,7 @@ import { useGetAllPost } from '../hooks/usePost';
 import { Order } from '../types/post/response';
 
 export const ViewAllPage = () => {
-  const [order, setOrder] = useState<Order>(Order.OLDEST);
+  const [order, setOrder] = useState<Order>(Order.LATEST);
   const [page, setPage] = useState(0);
 
   const { data, isLoading, isError } = useGetAllPost({ page, size: 12, order });

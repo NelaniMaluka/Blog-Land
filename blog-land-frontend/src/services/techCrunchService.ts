@@ -3,7 +3,6 @@ import { Article } from '../types/techCrunch/response';
 import { getAxiosErrorMessage } from '../utils/errorUtils';
 import { stripHtml, formatDate } from '../utils/formatUtils';
 import { YoutubeVideo } from '../types/techCrunch/response';
-import { filterVideos } from '../utils/filterUtils';
 import he from 'he';
 
 export const fetchArticle = async (): Promise<Article[]> => {
@@ -28,12 +27,8 @@ export const fetchYoutubeVideos = async (): Promise<YoutubeVideo[]> => {
   try {
     const response = await getYoutubeVideosApi();
     const data = await response.json();
-
-    // Use the filter util
-    const filteredVideos = filterVideos(data.items);
-
-    // Return top 10 videos
-    return filteredVideos.slice(0, 10);
+    console.log(data.items);
+    return data.items;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get YouTube videos'));
   }

@@ -1,0 +1,19 @@
+.seperator {
+  font-size: 0.6rem !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+}
+
+.crumb {
+  font-size: 0.6rem !important;
+  margin: 0 !important;
+  vertical-align: middle !important;
+}
+
+.primary {
+  color: #000000 !important;
+  font-size: 0.6rem !important;
+  margin: 0 !important;
+  vertical-align: middle !important;
+}

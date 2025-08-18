@@ -50,6 +50,8 @@ public class UserServiceImpl implements UserService {
         String location = updateUser.getLocation();
         ExperienceLevel experienceLevel = updateUser.getExperience();
         Map<String, String> socials = updateUser.getSocials();
+        String summary = updateUser.getSummary();
+        String title = updateUser.getTitle();
 
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
@@ -70,6 +72,8 @@ public class UserServiceImpl implements UserService {
         user.setLocation(location);
         user.setExperience(experienceLevel);
         user.setSocials(socials);
+        user.setSummary(summary);
+        user.setTitle(title);
 
         // Moderate content
         moderationValidator.userModeration(user);

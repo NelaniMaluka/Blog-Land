@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
@@ -23,6 +24,9 @@ public class UserResponse {
     private String profileIconUrl;
     private String location;
     private ExperienceLevel experience;
+    private String summary;
+    private String title;
+    private LocalDateTime joinedAt;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Map<String, String> socials;

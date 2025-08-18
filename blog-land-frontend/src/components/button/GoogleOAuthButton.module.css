@@ -1,0 +1,16 @@
+.button {
+  width: 90% !important;
+  margin: auto !important;
+  border-radius: 10px !important;
+  text-transform: none !important;
+  font-size: 0.45rem !important;
+  font-weight: 500 !important;
+  color: white !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3) !important;
+  background-color: #313131ff !important;
+}
+
+.button:hover {
+  background-color: #202020ff !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) !important;
+}

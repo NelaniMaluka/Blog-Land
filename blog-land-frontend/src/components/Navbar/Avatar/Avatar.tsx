@@ -9,10 +9,11 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArticleIcon from '@mui/icons-material/Article';
 import CommentIcon from '@mui/icons-material/Comment';
 
-import RegisterDialog from '../forms/Register';
-import LoginDialog from '../forms/Login';
-import { useLogoutUser } from '../../hooks/useUser';
-import { store } from '../../store/store';
+import RegisterDialog from '../../forms/Register';
+import LoginDialog from '../../forms/Login';
+import { useLogoutUser } from '../../../hooks/useUser';
+import { store } from '../../../store/store';
+import styles from './Avatar.module.css';
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -22,19 +23,13 @@ export default function AvatarMenu() {
 
   const open = Boolean(anchorEl);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+  const handleCloseMenu = () => setAnchorEl(null);
   const handleLogout = () => {
     logout.mutate();
+    handleCloseMenu();
   };
 
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
-  // Handlers to switch dialogs:
   const switchToRegister = () => {
     setOpenLogin(false);
     setOpenRegister(true);
@@ -45,6 +40,8 @@ export default function AvatarMenu() {
     setOpenLogin(true);
   };
 
+  const auth = store.getState().auth.isAuthenticated;
+
   return (
     <>
       <IconButton
@@ -54,21 +51,19 @@ export default function AvatarMenu() {
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
       >
-        <Avatar src="/broken-image.jpg" sx={{ width: 40, height: 40 }} />
+        <Avatar src="/broken-image.jpg" className={styles.avatarButton} />
       </IconButton>
+
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
         open={open}
         onClose={handleCloseMenu}
-        PaperProps={{
-          elevation: 4,
-          sx: { mt: 1, minWidth: 150 },
-        }}
+        PaperProps={{ elevation: 4, className: styles.menuPaper }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        {store.getState().auth.isAuthenticated
+        {auth
           ? [
               <MenuItem
                 key="profile"
@@ -76,46 +71,32 @@ export default function AvatarMenu() {
                   setOpenRegister(true);
                   handleCloseMenu();
                 }}
-                sx={{ display: 'flex', alignItems: 'center', fontSize: '0.6rem', gap: 1 }}
+                className={styles.menuItem}
               >
-                <AccountCircleIcon sx={{ fontSize: '0.8rem' }} />
-                Profile
+                <AccountCircleIcon className={styles.menuIcon} /> Profile
               </MenuItem>,
-
               <MenuItem
                 key="myposts"
                 onClick={() => {
                   setOpenLogin(true);
                   handleCloseMenu();
                 }}
-                sx={{ display: 'flex', alignItems: 'center', fontSize: '0.6rem', gap: 1 }}
+                className={styles.menuItem}
               >
-                <ArticleIcon sx={{ fontSize: '0.8rem' }} />
-                My Posts
+                <ArticleIcon className={styles.menuIcon} /> My Posts
               </MenuItem>,
-
               <MenuItem
                 key="mycomments"
                 onClick={() => {
                   setOpenLogin(true);
                   handleCloseMenu();
                 }}
-                sx={{ display: 'flex', alignItems: 'center', fontSize: '0.6rem', gap: 1 }}
+                className={styles.menuItem}
               >
-                <CommentIcon sx={{ fontSize: '0.8rem' }} />
-                My Comments
+                <CommentIcon className={styles.menuIcon} /> My Comments
               </MenuItem>,
-
-              <MenuItem
-                key="logout"
-                onClick={() => {
-                  handleLogout();
-                  handleCloseMenu();
-                }}
-                sx={{ display: 'flex', alignItems: 'center', fontSize: '0.6rem', gap: 1 }}
-              >
-                <CommentIcon sx={{ fontSize: '0.8rem' }} />
-                Logout
+              <MenuItem key="logout" onClick={handleLogout} className={styles.menuItem}>
+                <CommentIcon className={styles.menuIcon} /> Logout
               </MenuItem>,
             ]
           : [
@@ -125,36 +106,32 @@ export default function AvatarMenu() {
                   setOpenRegister(true);
                   handleCloseMenu();
                 }}
-                sx={{ display: 'flex', alignItems: 'center', fontSize: '0.6rem', gap: 1 }}
+                className={styles.menuItem}
               >
-                <PersonAddIcon sx={{ fontSize: '0.8rem' }} />
-                Register
+                <PersonAddIcon className={styles.menuIcon} /> Register
               </MenuItem>,
-
               <MenuItem
                 key="login"
                 onClick={() => {
                   setOpenLogin(true);
                   handleCloseMenu();
                 }}
-                sx={{ display: 'flex', alignItems: 'center', fontSize: '0.6rem', gap: 1 }}
+                className={styles.menuItem}
               >
-                <LoginIcon sx={{ fontSize: '0.8rem' }} />
-                Login
+                <LoginIcon className={styles.menuIcon} /> Login
               </MenuItem>,
             ]}
       </Menu>
 
-      {/* Popups */}
       <RegisterDialog
         open={openRegister}
         onClose={() => setOpenRegister(false)}
-        onSwitchToLogin={switchToLogin} // pass switch handler here
+        onSwitchToLogin={switchToLogin}
       />
       <LoginDialog
         open={openLogin}
         onClose={() => setOpenLogin(false)}
-        onSwitchToRegister={switchToRegister} // pass switch handler here
+        onSwitchToRegister={switchToRegister}
       />
     </>
   );

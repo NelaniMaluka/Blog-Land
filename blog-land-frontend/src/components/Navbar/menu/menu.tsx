@@ -30,57 +30,41 @@ export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNa
   const isMobileOrTablet = useMediaQuery(theme.breakpoints.down('md'));
   const colorClasses = [styles.categoryIconBlue, styles.categoryIconRed, styles.categoryIconGreen];
 
-  const { data, isLoading, error } = useGetCategories();
+  const { data, isLoading } = useGetCategories();
 
   return (
     <LoadingScreen isLoading={isLoading}>
       <Drawer open={open} onClose={() => setOpen(false)}>
         {/* Close button */}
         <Box className={styles.closeButtonContainer}>
-          <Typography
-            component="label"
-            htmlFor="close-icon"
-            sx={{ fontSize: 'sm', fontWeight: 'lg', cursor: 'pointer' }}
-          />
-          <ModalClose id="close-icon" sx={{ position: 'initial' }} />
+          <Typography component="label" htmlFor="close-icon" className={styles.closeButtonLabel} />
+          <ModalClose id="close-icon" className={styles.closeButtonLabel} />
         </Box>
-        {/* Tablet/Mobile only nav links */}
+
+        {/* Mobile nav links */}
         {isMobileOrTablet && (
           <>
             <h2 className={styles.categoriesHeader}>Discover</h2>
-
             <Box className={styles.navLinks}>
-              <Box
-                sx={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '0.7rem 0' }}
-              >
+              <Box className={styles.navLinksColumn}>
                 <a href={ROUTES.VIEW_ALL} className={styles.navLink}>
-                  <ViewListIcon
-                    fontSize="small"
-                    sx={{ fontSize: '0.7rem', marginRight: '0.5rem' }}
-                  />
-                  <Typography sx={{ fontSize: '0.7rem' }}>View All</Typography>
+                  <ViewListIcon className={styles.navLinkIcon} />
+                  <Typography className={styles.navLinkText}>View All</Typography>
                 </a>
 
                 <a href={ROUTES.RANDOM_POSTS} className={styles.navLink}>
-                  <ShuffleIcon
-                    fontSize="small"
-                    sx={{ fontSize: '0.7rem', marginRight: '0.5rem' }}
-                  />
-                  <Typography sx={{ fontSize: '0.7rem' }}>Random</Typography>
+                  <ShuffleIcon className={styles.navLinkIcon} />
+                  <Typography className={styles.navLinkText}>Random</Typography>
                 </a>
+
                 <a href={ROUTES.LATEST_POSTS} className={styles.navLink}>
-                  <AccessTimeIcon
-                    fontSize="small"
-                    sx={{ fontSize: '0.7rem', marginRight: '0.5rem' }}
-                  />
-                  <Typography sx={{ fontSize: '0.7rem' }}>Latest</Typography>
+                  <AccessTimeIcon className={styles.navLinkIcon} />
+                  <Typography className={styles.navLinkText}>Latest</Typography>
                 </a>
+
                 <a href={ROUTES.TRENDING_POSTS} className={styles.navLink}>
-                  <WhatshotIcon
-                    fontSize="small"
-                    sx={{ fontSize: '0.7rem', marginRight: '0.5rem' }}
-                  />
-                  <Typography sx={{ fontSize: '0.7rem' }}>Trending</Typography>
+                  <WhatshotIcon className={styles.navLinkIcon} />
+                  <Typography className={styles.navLinkText}>Trending</Typography>
                 </a>
               </Box>
             </Box>
@@ -91,38 +75,25 @@ export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNa
         <h2 className={styles.categoriesHeader}>Categories</h2>
 
         {/* Categories list */}
-        <List size="lg" component="nav" sx={{ flex: 'none', fontSize: 'xl' }}>
+        <List size="lg" component="nav" className={styles.listRoot}>
           {data?.length ? (
-            data.map((category, index) => {
-              const key =
-                typeof category === 'string'
-                  ? `string-${index}-${category}`
-                  : category.id ?? `category-${index}`;
-              return (
-                <Link key={category.id} to={`/category/${encodeURIComponent(category.name)}`}>
-                  <ListItemButton key={key} className={styles.listItemButton}>
-                    {/* Left side: icon + text */}
-                    <Box className={styles.listItemLeft}>
-                      <ReorderIcon
-                        fontSize="small"
-                        className={colorClasses[index % colorClasses.length]}
-                        sx={{ height: '0.8rem', minWidth: '1rem' }}
-                      />
-                      <Typography component="span" className={styles.categoryName}>
-                        <span>{typeof category === 'string' ? category : category.name}</span>
-                      </Typography>
-                    </Box>
-
-                    {/* Right side: post count */}
-                    <Typography component="span" className={styles.postCount}>
-                      <span>{category.postCount}</span>
+            data.map((category, index) => (
+              <Link key={category.id} to={ROUTES.CATEGORY_POSTS(category.name)}>
+                <ListItemButton className={styles.listItemButton}>
+                  <Box className={styles.listItemLeft}>
+                    <ReorderIcon className={colorClasses[index % colorClasses.length]} />
+                    <Typography component="span" className={styles.categoryName}>
+                      <span>{category.name}</span>
                     </Typography>
-                  </ListItemButton>
-                </Link>
-              );
-            })
+                  </Box>
+                  <Typography component="span" className={styles.postCount}>
+                    <span>{category.postCount}</span>
+                  </Typography>
+                </ListItemButton>
+              </Link>
+            ))
           ) : (
-            <ListItemButton key="no-data" disabled>
+            <ListItemButton disabled className={styles.listItemButton}>
               <Typography level="body-sm" className={styles.noCategories}>
                 No categories available
               </Typography>

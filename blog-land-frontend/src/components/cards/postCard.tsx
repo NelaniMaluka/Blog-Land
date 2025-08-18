@@ -16,7 +16,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, categoryName }) => {
     <div key={post.id} className={styles.post}>
       <img src={post.postImgUrl} alt="img" />
       {categoryName && (
-        <a href={`/category/${encodeURIComponent(categoryName)}`} className={styles.category}>
+        <a href={ROUTES.CATEGORY_POSTS(categoryName)} className={styles.category}>
           {categoryName}
         </a>
       )}

@@ -29,7 +29,7 @@ export const LatestLayout = () => {
     <LoadingScreen isLoading={isLoading}>
       <div className="container">
         <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={'Latest'} />
-        <Box sx={{ width: '100%', minHeight: '200vh', padding: '1.5rem 0 3rem 0' }}>
+        <Box className={styles.containerBox}>
           <Masonry
             spacing={2}
             columns={{
@@ -41,11 +41,12 @@ export const LatestLayout = () => {
           >
             {(latestPosts ?? []).map((post, index) => {
               const heightVh = isMobile ? MOBILE_HEIGHT_VH : heights[index % heights.length];
+
               return (
                 <div
                   key={post.id || index}
                   className={styles.item}
-                  style={{ height: `${heightVh}vh` }}
+                  style={{ '--item-height': `${heightVh}vh` } as React.CSSProperties} // use CSS variable
                 >
                   <img src={post.postImgUrl} alt={post.title} />
                   <div className={styles.overlay}>

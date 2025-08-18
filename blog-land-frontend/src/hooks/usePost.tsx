@@ -44,11 +44,11 @@ export const useGetRandomPost = () => {
   return useQuery({ queryKey: ['randomPost'], queryFn: () => fetchRandomPost() });
 };
 
-export const useGetPost = (id: number) => {
+export const useGetPost = (payload: { id: number }) => {
   return useQuery({
-    queryKey: ['singlePost', id],
-    queryFn: () => fetchPost(id),
-    enabled: !!id,
+    queryKey: ['singlePost', payload],
+    queryFn: () => fetchPost(payload),
+    enabled: !!payload,
   });
 };
 
