@@ -293,7 +293,7 @@ public class UserServiceImplTest {
 
                 ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
                 verify(userRepository, times(1)).save(userCaptor.capture());
-                verify(moderationValidator, times(1)).userModeration(user);
+                verify(moderationValidator, times(1)).userModeration(any(User.class));
 
                 User savedUser = userCaptor.getValue();
                 assertEquals("Nelani", savedUser.getFirstname());
@@ -338,7 +338,7 @@ public class UserServiceImplTest {
 
                 ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
                 verify(userRepository, times(1)).save(userCaptor.capture());
-                verify(moderationValidator, times(1)).userModeration(user);
+                verify(moderationValidator, times(1)).userModeration(any(User.class));
 
                 User savedUser = userCaptor.getValue();
                 assertEquals("Nelani", savedUser.getFirstname());
@@ -379,7 +379,7 @@ public class UserServiceImplTest {
 
                 ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
                 verify(userRepository, times(1)).save(userCaptor.capture());
-                verify(moderationValidator, times(1)).userModeration(user);
+                verify(moderationValidator, times(1)).userModeration(any(User.class));
 
                 User savedUser = userCaptor.getValue();
                 assertEquals("Nelani", savedUser.getFirstname());
