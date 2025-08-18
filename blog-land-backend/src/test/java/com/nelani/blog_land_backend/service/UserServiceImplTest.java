@@ -116,36 +116,31 @@ public class UserServiceImplTest {
                 existingUser.setEmail("nelani@example.com");
                 existingUser.setProvider(Provider.LOCAL);
 
-                when(userRepository.findByEmail("nelani@example.com"))
-                                .thenReturn(Optional.of(existingUser));
+                when(userRepository.findByEmail("nelani@example.com")).thenReturn(Optional.of(existingUser));
                 when(jwtUtils.generateJwtToken(any(User.class))).thenReturn("fake-jwt-token");
                 doNothing().when(moderationValidator).userModeration(any(User.class));
 
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                                existingUser, null,
-                                List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                                existingUser, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
-            // Assert
-            ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+                // Act
+                userService.updateUserDetails(user);
 
-            // Verify repository save
-            verify(userRepository, times(1)).save(userCaptor.capture());
-            User savedUser = userCaptor.getValue();
+                // Assert
+                ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+                verify(userRepository, times(1)).save(userCaptor.capture());
+                User savedUser = userCaptor.getValue();
 
-            // Verify moderation
-            ArgumentCaptor<User> moderationCaptor = ArgumentCaptor.forClass(User.class);
-            verify(moderationValidator, times(1)).userModeration(moderationCaptor.capture());
-            User moderatedUser = moderationCaptor.getValue();
+                verify(moderationValidator, times(1)).userModeration(any(User.class));
 
-            // Now assert the fields
-            assertEquals("Nelani", savedUser.getFirstname());
-            assertEquals("Maluka", savedUser.getLastname());
-            assertEquals("nelani@example.com", savedUser.getEmail());
-            assertEquals(Provider.LOCAL, savedUser.getProvider());
-            assertEquals("Johannesburg, South Africa", savedUser.getLocation());
-            assertEquals(ExperienceLevel.CASUAL_POSTER, savedUser.getExperience());
-            assertEquals(socials, savedUser.getSocials());
+                assertEquals("Nelani", savedUser.getFirstname());
+                assertEquals("Maluka", savedUser.getLastname());
+                assertEquals("nelani@example.com", savedUser.getEmail());
+                assertEquals(Provider.LOCAL, savedUser.getProvider());
+                assertEquals("Johannesburg, South Africa", savedUser.getLocation());
+                assertEquals(ExperienceLevel.CASUAL_POSTER, savedUser.getExperience());
+                assertEquals(socials, savedUser.getSocials());
         }
 
         @Test
