@@ -4,7 +4,7 @@ import { useGetCategories } from '../../../../hooks/useCategory';
 import { Order } from '../../../../types/post/response';
 import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
 import { ROUTES } from '../../../../constants/routes';
-import { PostCard } from '../../../cards_temp/PostCard';
+import { PostCard } from '../../../cards/PostCard';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';

@@ -2,7 +2,7 @@ import styles from './TrendingSection.module.css';
 import { useGetTrendingPosts } from '../../../../hooks/usePost';
 import { useGetCategories } from '../../../../hooks/useCategory';
 import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
-import { PostCard } from '../../../cards_temp/PostCard';
+import { PostCard } from '../../../cards/PostCard';
 import { ROUTES } from '../../../../constants/routes';
 
 export const TrendingSection = () => {
