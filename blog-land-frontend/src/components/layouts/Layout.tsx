@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import { useState } from 'react';
 import DrawerMobileNavigation from '../Navbar/menu/menu';
 import { GlobalPreloadQueries } from '../../features/GlobalPreloadQueries';
-import Footer from '../footer/Footer';
+import Footer from '../Footer/Footer';
 
 interface LayoutProps {
   noLayout?: boolean;
