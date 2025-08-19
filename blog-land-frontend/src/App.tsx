@@ -29,7 +29,7 @@ function App() {
         </Route>
 
         {/* Dashboard with no Navbar/Footer */}
-        <Route path={ROUTES.DASHBOARD} element={<Layout noLayout />}>
+        <Route path={ROUTES.DASHBOARD_PROFILE} element={<Layout noLayout />}>
           {DashboardRoutes()}
         </Route>
       </Routes>
