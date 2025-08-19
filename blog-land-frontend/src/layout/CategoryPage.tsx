@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGetCategories } from '../hooks/useCategory';
 import { useGetCategoryPosts } from '../hooks/usePost';
-import { PostsLayout } from '../components/layouts/postLayout/PostsLayout';
+import { PostsLayout } from '../components/layouts/postLayout_temp/PostsLayout';
 import { Order } from '../types/post/response';
 import { PostResponse } from '../types/post/response';
 
