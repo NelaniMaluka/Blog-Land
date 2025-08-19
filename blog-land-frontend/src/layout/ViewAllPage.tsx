@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PostsLayout } from '../components/ui/postLayout/PostsLayout';
+import { PostsLayout } from '../components/layouts/postLayout/PostsLayout';
 import { useGetAllPost } from '../hooks/usePost';
 import { Order } from '../types/post/response';
 

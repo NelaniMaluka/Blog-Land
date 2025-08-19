@@ -5,11 +5,9 @@ import { useDispatch } from 'react-redux';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { UserResponse } from '../types/user/response';
 import { useEffect } from 'react';
-import { store } from '../store/store';
 
 export function useGetUser(options?: { enabled?: boolean }) {
   const dispatch = useDispatch();
-  //console.log(store.getState().auth.jwtToken + 'token');
 
   const query = useQuery<UserResponse, Error>({
     queryKey: ['user'],

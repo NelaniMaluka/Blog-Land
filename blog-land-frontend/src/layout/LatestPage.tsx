@@ -1,4 +1,4 @@
-import { LatestLayout } from '../components/ui/latestLayout/LatestLayout';
+import { LatestLayout } from '../components/layouts/latestLayout/LatestLayout';
 
 export const LatestPage = () => {
   return (

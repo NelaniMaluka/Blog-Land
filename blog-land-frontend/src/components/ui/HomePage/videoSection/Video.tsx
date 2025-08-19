@@ -3,7 +3,7 @@ import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import styles from './Video.module.css';
-import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
+import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
 
 interface LocalVideo {
   id: string;

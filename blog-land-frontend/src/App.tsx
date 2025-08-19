@@ -1,8 +1,9 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
-import MainRoutes from './Routes/MainRoutes';
+import MainRoutes from './routes/MainRoutes';
+import DashboardRoutes from './routes/DasboardRoutes';
 import { useEffect } from 'react';
-import Layout from './components/Layout';
+import Layout from './components/layouts/Layout';
 import { ROUTES } from './constants/routes';
 
 // ScrollToTop Component
@@ -20,9 +21,16 @@ function App() {
   return (
     <>
       <ScrollToTop />
+
       <Routes>
+        {/* All pages that should use Navbar + Footer */}
         <Route path={ROUTES.HOME} element={<Layout noLayout={false} />}>
           {MainRoutes()}
+        </Route>
+
+        {/* Dashboard with no Navbar/Footer */}
+        <Route path={ROUTES.DASHBOARD} element={<Layout noLayout />}>
+          {DashboardRoutes()}
         </Route>
       </Routes>
     </>

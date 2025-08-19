@@ -1,5 +1,5 @@
 import { useGetRandomPost } from '../hooks/usePost';
-import { SinglePostLayout } from '../components/ui/singlePostLayout/SinglePostLayout';
+import { SinglePostLayout } from '../components/layouts/singlePostLayout/SinglePostLayout';
 
 export const RandomPostPage = () => {
   const { data, isLoading, isError } = useGetRandomPost();

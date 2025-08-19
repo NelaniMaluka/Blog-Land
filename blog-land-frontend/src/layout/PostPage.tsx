@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { SinglePostLayout } from '../components/ui/singlePostLayout/SinglePostLayout';
+import { SinglePostLayout } from '../components/layouts/singlePostLayout/SinglePostLayout';
 import { useGetPost } from '../hooks/usePost';
 
 export const PostPage = () => {

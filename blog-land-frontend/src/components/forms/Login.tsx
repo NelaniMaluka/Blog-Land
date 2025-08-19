@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import classNames from 'classnames';
 import styles from './Form.module.css';
-import GoogleOAuthButton from '../button/GoogleOAuthButton';
+import GoogleOAuthButton from '../buttons/GoogleButtons/GoogleOAuthButton';
 import LoadingScreen from '../../features/LoadingScreen/LoadingScreen';
 import { useLogin } from '../../hooks/useAuth';
 import { validateEmail, validatePassword } from '../../utils/validationUtils';

@@ -1,5 +1,5 @@
-import { useGetArticles } from '../../../hooks/useTechCrunch';
-import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
+import { useGetArticles } from '../../../../hooks/useTechCrunch';
+import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
 import styles from './Article.module.css';
 
 export const Article = () => {

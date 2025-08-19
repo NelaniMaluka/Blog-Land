@@ -1,6 +1,6 @@
 import { useGetLatestPosts } from '../hooks/usePost';
 import { useParams } from 'react-router-dom';
-import { SinglePostLayout } from '../components/ui/singlePostLayout/SinglePostLayout';
+import { SinglePostLayout } from '../components/layouts/singlePostLayout/SinglePostLayout';
 
 export const LatestPostPage = () => {
   const { slug } = useParams<{ slug?: string }>();

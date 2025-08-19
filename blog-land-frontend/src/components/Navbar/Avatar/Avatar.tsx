@@ -8,12 +8,14 @@ import LoginIcon from '@mui/icons-material/Login';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArticleIcon from '@mui/icons-material/Article';
 import CommentIcon from '@mui/icons-material/Comment';
+import { ROUTES } from '../../../constants/routes';
 
 import RegisterDialog from '../../forms/Register';
 import LoginDialog from '../../forms/Login';
 import { useLogoutUser } from '../../../hooks/useUser';
 import { store } from '../../../store/store';
 import styles from './Avatar.module.css';
+import { Routes } from 'react-router-dom';
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -65,39 +67,26 @@ export default function AvatarMenu() {
       >
         {auth
           ? [
-              <MenuItem
-                key="profile"
-                onClick={() => {
-                  setOpenRegister(true);
-                  handleCloseMenu();
-                }}
-                className={styles.menuItem}
-              >
-                <AccountCircleIcon className={styles.menuIcon} /> Profile
-              </MenuItem>,
-              <MenuItem
-                key="myposts"
-                onClick={() => {
-                  setOpenLogin(true);
-                  handleCloseMenu();
-                }}
-                className={styles.menuItem}
-              >
-                <ArticleIcon className={styles.menuIcon} /> My Posts
-              </MenuItem>,
-              <MenuItem
-                key="mycomments"
-                onClick={() => {
-                  setOpenLogin(true);
-                  handleCloseMenu();
-                }}
-                className={styles.menuItem}
-              >
-                <CommentIcon className={styles.menuIcon} /> My Comments
-              </MenuItem>,
-              <MenuItem key="logout" onClick={handleLogout} className={styles.menuItem}>
-                <CommentIcon className={styles.menuIcon} /> Logout
-              </MenuItem>,
+              <a href={ROUTES.DASHBOARD}>
+                <MenuItem key="profile" className={styles.menuItem}>
+                  <AccountCircleIcon className={styles.menuIcon} /> Profile
+                </MenuItem>
+              </a>,
+              <a href={ROUTES.DASHBOARD}>
+                <MenuItem key="myposts" className={styles.menuItem}>
+                  <ArticleIcon className={styles.menuIcon} /> My Posts
+                </MenuItem>
+              </a>,
+              <a href={ROUTES.DASHBOARD}>
+                <MenuItem key="mycomments" className={styles.menuItem}>
+                  <CommentIcon className={styles.menuIcon} /> My Comments
+                </MenuItem>
+              </a>,
+              <a href={ROUTES.DASHBOARD}>
+                <MenuItem key="logout" onClick={handleLogout} className={styles.menuItem}>
+                  <CommentIcon className={styles.menuIcon} /> Logout
+                </MenuItem>
+              </a>,
             ]
           : [
               <MenuItem
