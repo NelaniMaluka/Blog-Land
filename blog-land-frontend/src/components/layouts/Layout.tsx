@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router-dom';
-import Navbar from '../Navbar/Navbar';
+import Navbar from '../navbar/Navbar';
 import { ReactNode } from 'react';
 import { useState } from 'react';
-import DrawerMobileNavigation from '../Navbar/menu/menu';
+import DrawerMobileNavigation from '../navbar/menu/menu';
 import { GlobalPreloadQueries } from '../../features/GlobalPreloadQueries';
 import Footer from '../footer/Footer';
 

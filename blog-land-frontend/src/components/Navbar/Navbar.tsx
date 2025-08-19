@@ -1,7 +1,7 @@
 import styles from './Navbar.module.css';
 
 import AvatarMenu from './Avatar/Avatar';
-import NavbarBottom from './NavbarBottom/navbarBottom';
+import NavbarBottom from './NavbarBottom/NavbarBottom';
 import { ROUTES } from '../../constants/routes';
 
 interface NavbarProps {
