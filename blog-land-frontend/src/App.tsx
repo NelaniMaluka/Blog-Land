@@ -1,6 +1,6 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
-import MainRoutes from './routes/MainRoutes';
+import MainRoutes from './Routes/MainRoutes';
 import DashboardRoutes from './Routes/DashboardRoutes';
 import { useEffect } from 'react';
 import Layout from './components/layouts/Layout';
