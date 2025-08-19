@@ -1,13 +1,7 @@
 import styles from './Navbar.module.css';
 
-import ShuffleIcon from '@mui/icons-material/Shuffle';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import WhatshotIcon from '@mui/icons-material/Whatshot';
 import AvatarMenu from './Avatar/Avatar';
-import SearchBar from './searchbar/Searchbar';
-import MenuIcon from '@mui/icons-material/Menu';
-import IconButton from '@mui/material/IconButton';
-import ViewListIcon from '@mui/icons-material/ViewList';
+import NavbarBottom from './NavbarBottom/navbarBottom';
 import { ROUTES } from '../../constants/routes';
 
 interface NavbarProps {
@@ -21,35 +15,38 @@ function Navbar({ setOpen }: NavbarProps) {
         <div className="container">
           <div className={`${styles.navbar_row} ${styles['navbar_row--top']}`}>
             <div className={styles.navbar_Logo}>
-              <IconButton onClick={() => setOpen(true)} edge="start" sx={{ color: 'inherit' }}>
-                <MenuIcon />
-              </IconButton>
+              <img
+                src="/icons/menu.png"
+                alt="menu icon"
+                onClick={() => setOpen(true)}
+                className={styles.menu}
+              />
               <a href={ROUTES.HOME}>
-                <h1>Blog-Land</h1>
+                <h2>Blog-Land</h2>
               </a>
             </div>
             <div className={styles.navbar_Links}>
               <span className={styles.navbar_Link_mobile}>
                 <a href={ROUTES.VIEW_ALL}>
-                  <ViewListIcon fontSize="small" />
+                  <img className={styles.list} src="/icons/list.png" alt="View-All icon" />
                   <span>View All</span>
                 </a>
               </span>
               <span className={styles.navbar_Link_mobile}>
                 <a href={ROUTES.RANDOM_POSTS}>
-                  <ShuffleIcon fontSize="small" />
+                  <img src="/icons/random.png" alt="Random icon" />
                   <span>Random</span>
                 </a>
               </span>
               <span className={styles.navbar_Link_mobile}>
                 <a href={ROUTES.LATEST_POSTS}>
-                  <AccessTimeIcon fontSize="small" />
+                  <img className={styles.clock} src="/icons/clock.png" alt="Latest icon" />
                   <span>Latest</span>
                 </a>
               </span>
               <span className={styles.navbar_Link_mobile}>
                 <a href={ROUTES.TRENDING_POSTS}>
-                  <WhatshotIcon fontSize="small" />
+                  <img className={styles.trending} src="/icons/trending.png" alt="trending icon" />
                   <span>Trending</span>
                 </a>
               </span>
@@ -59,7 +56,7 @@ function Navbar({ setOpen }: NavbarProps) {
             </div>
           </div>
           <div className={`${styles.navbar_row} ${styles['navbar_row--bottom']}`}>
-            <SearchBar />
+            <NavbarBottom />
           </div>
         </div>
       </nav>

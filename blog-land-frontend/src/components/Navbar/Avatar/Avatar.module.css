@@ -1,6 +1,6 @@
 .avatarButton {
-  width: 40px !important;
-  height: 40px !important;
+  width: 36px !important;
+  height: 36px !important;
 }
 
 .menuPaper {
@@ -16,5 +16,14 @@
 }
 
 .menuIcon {
-  font-size: 0.8rem !important;
+  height: 0.7rem !important;
+}
+
+@media (width <= 900px) {
+  .menuItem {
+    font-size: 0.75rem !important;
+  }
+  .menuIcon {
+    height: 0.8rem !important;
+  }
 }

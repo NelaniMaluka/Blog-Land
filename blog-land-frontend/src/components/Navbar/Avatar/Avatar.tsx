@@ -3,24 +3,15 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import LoginIcon from '@mui/icons-material/Login';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import ArticleIcon from '@mui/icons-material/Article';
-import CommentIcon from '@mui/icons-material/Comment';
+import { useEffect } from 'react';
 import { ROUTES } from '../../../constants/routes';
 
-import RegisterDialog from '../../forms/Register';
-import LoginDialog from '../../forms/Login';
 import { useLogoutUser } from '../../../hooks/useUser';
 import { store } from '../../../store/store';
 import styles from './Avatar.module.css';
-import { Routes } from 'react-router-dom';
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [openRegister, setOpenRegister] = React.useState(false);
-  const [openLogin, setOpenLogin] = React.useState(false);
   const logout = useLogoutUser();
 
   const open = Boolean(anchorEl);
@@ -32,15 +23,26 @@ export default function AvatarMenu() {
     handleCloseMenu();
   };
 
-  const switchToRegister = () => {
-    setOpenLogin(false);
-    setOpenRegister(true);
-  };
+  useEffect(() => {
+    if (!anchorEl) return;
 
-  const switchToLogin = () => {
-    setOpenRegister(false);
-    setOpenLogin(true);
-  };
+    const handleScrollOrClick = (event: Event) => {
+      // If click is inside the menu or avatar, do nothing
+      const target = event.target as HTMLElement;
+      if (anchorEl.contains(target) || document.getElementById('account-menu')?.contains(target)) {
+        return;
+      }
+      setAnchorEl(null);
+    };
+
+    window.addEventListener('scroll', handleScrollOrClick, true);
+    window.addEventListener('click', handleScrollOrClick);
+
+    return () => {
+      window.removeEventListener('scroll', handleScrollOrClick, true);
+      window.removeEventListener('click', handleScrollOrClick);
+    };
+  }, [anchorEl]);
 
   const auth = store.getState().auth.isAuthenticated;
 
@@ -64,64 +66,39 @@ export default function AvatarMenu() {
         PaperProps={{ elevation: 4, className: styles.menuPaper }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        disableScrollLock={true}
       >
         {auth
           ? [
-              <a href={ROUTES.DASHBOARD}>
-                <MenuItem key="profile" className={styles.menuItem}>
-                  <AccountCircleIcon className={styles.menuIcon} /> Profile
+              <a key="profile" href={ROUTES.DASHBOARD_PROFILE}>
+                <MenuItem className={styles.menuItem}>
+                  <img className={styles.menuIcon} src="/icons/profile.png" alt="profile icon" />
+                  Profile
                 </MenuItem>
               </a>,
-              <a href={ROUTES.DASHBOARD}>
-                <MenuItem key="myposts" className={styles.menuItem}>
-                  <ArticleIcon className={styles.menuIcon} /> My Posts
+              <a key="myposts" href={ROUTES.DASHBOARD_POSTS}>
+                <MenuItem className={styles.menuItem}>
+                  <img className={styles.menuIcon} src="/icons/blog.png" alt="blog icon" /> My Posts
                 </MenuItem>
               </a>,
-              <a href={ROUTES.DASHBOARD}>
-                <MenuItem key="mycomments" className={styles.menuItem}>
-                  <CommentIcon className={styles.menuIcon} /> My Comments
-                </MenuItem>
-              </a>,
-              <a href={ROUTES.DASHBOARD}>
-                <MenuItem key="logout" onClick={handleLogout} className={styles.menuItem}>
-                  <CommentIcon className={styles.menuIcon} /> Logout
-                </MenuItem>
-              </a>,
+              <MenuItem key="logout" onClick={handleLogout} className={styles.menuItem}>
+                <img className={styles.menuIcon} src="/icons/logout.png" alt="logout icon" /> Logout
+              </MenuItem>,
             ]
           : [
-              <MenuItem
-                key="register"
-                onClick={() => {
-                  setOpenRegister(true);
-                  handleCloseMenu();
-                }}
-                className={styles.menuItem}
-              >
-                <PersonAddIcon className={styles.menuIcon} /> Register
-              </MenuItem>,
-              <MenuItem
-                key="login"
-                onClick={() => {
-                  setOpenLogin(true);
-                  handleCloseMenu();
-                }}
-                className={styles.menuItem}
-              >
-                <LoginIcon className={styles.menuIcon} /> Login
-              </MenuItem>,
+              <a key="register" href={ROUTES.REGISTER}>
+                <MenuItem className={styles.menuItem}>
+                  <img className={styles.menuIcon} src="/icons/register.png" alt="register icon" />
+                  Register
+                </MenuItem>
+              </a>,
+              <a key="login" href={ROUTES.LOGIN}>
+                <MenuItem className={styles.menuItem}>
+                  <img className={styles.menuIcon} src="/icons/login.png" alt="login icon" /> Login
+                </MenuItem>
+              </a>,
             ]}
       </Menu>
-
-      <RegisterDialog
-        open={openRegister}
-        onClose={() => setOpenRegister(false)}
-        onSwitchToLogin={switchToLogin}
-      />
-      <LoginDialog
-        open={openLogin}
-        onClose={() => setOpenLogin(false)}
-        onSwitchToRegister={switchToRegister}
-      />
     </>
   );
 }

@@ -33,7 +33,7 @@ export const AppBarDashboard: React.FC<AppBarDashboardProps> = ({ onMenuClick })
           </IconButton>
         )}
         <Typography variant="h6" fontWeight={700} noWrap>
-          <a href={ROUTES.DASHBOARD}>
+          <a href={ROUTES.DASHBOARD_PROFILE}>
             <h3>Blog-Land</h3>
           </a>
         </Typography>

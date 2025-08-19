@@ -16,7 +16,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Solway', serif;
+  font-family: 'Courier Prime', monospace;
 }
 
 h2 {
@@ -32,12 +32,8 @@ h2 {
 @media (max-width: 600px) {
   html {
     font-size: 23px;
-    font-family: 'Roboto', sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
   }
-
   h2 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
 }

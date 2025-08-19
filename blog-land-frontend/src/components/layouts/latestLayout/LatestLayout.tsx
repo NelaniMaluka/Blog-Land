@@ -48,7 +48,7 @@ export const LatestLayout = () => {
                   className={styles.item}
                   style={{ '--item-height': `${heightVh}vh` } as React.CSSProperties}
                 >
-                  <a href={ROUTES.LATEST_POST_Page(post.title)}>
+                  <a href={ROUTES.LATEST_POST_PAGE(post.title)}>
                     <img src={post.postImgUrl} alt={post.title} />
                     <div className={styles.overlay}>
                       <p>{he.decode(post.title)}</p>

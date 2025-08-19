@@ -9,8 +9,9 @@
   justify-content: space-between;
 }
 .navbar_row--bottom {
-  justify-content: center;
   align-items: center;
+  display: flex;
+  justify-content: space-between;
 }
 
 .navbar_Logo {
@@ -20,7 +21,6 @@
 }
 
 .navbar_Logo a {
-  margin-left: 0.5rem;
   font-size: 0.9rem;
   transition: transform 0.3s ease;
 }
@@ -49,6 +49,26 @@ a {
   height: 0.8rem;
 }
 
+.navbar_Links a img {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.navbar_Links .list {
+  width: 1.1rem;
+  height: 0.8rem;
+}
+
+.navbar_Links .clock {
+  width: 0.65rem;
+  height: 0.65rem;
+}
+
+.navbar_Links .trending {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
 .navbar_Link_mobile {
   display: block;
   transition: transform 0.3s ease;
@@ -58,11 +78,21 @@ a {
   transform: scale(1.05);
 }
 
+.menu {
+  display: none !important;
+  height: 1.1rem;
+  width: 1.1rem;
+}
+
 @media (width <= 900px) {
   .navbar_Link_mobile {
     display: none;
   }
   .navbar_Logo a {
     margin-left: 0rem;
+  }
+  .menu {
+    display: block !important;
+    margin-right: 0.4rem;
   }
 }
