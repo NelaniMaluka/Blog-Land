@@ -7,7 +7,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import Tooltip from '@mui/material/Tooltip';
 import { useSearchPost } from '../../../hooks/usePost';
 import ErrorMessage from '../../../features/Snackbars/Snackbar';
-import styles from './SearchBar.module.css';
+import styles from './Searchbar.module.css';
 
 export default function SearchBar() {
   const { searchTerm, setSearchTerm, results, isLoading, isError, error } = useSearchPost();
