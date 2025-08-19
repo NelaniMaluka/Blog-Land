@@ -4,7 +4,7 @@ import { ROUTES } from '../constants/routes';
 
 const DashboardRoutes = () => (
   <>
-    <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+    <Route path={ROUTES.DASHBOARD_PROFILE} element={<DashboardPage />} />
   </>
 );
 
