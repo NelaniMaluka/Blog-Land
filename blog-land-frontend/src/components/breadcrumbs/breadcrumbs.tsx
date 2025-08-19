@@ -20,7 +20,7 @@ export const BasicBreadcrumbs: React.FC<PostsLayoutProps> = ({ title, link, page
         sx={{ alignItems: 'center' }}
       >
         <Link underline="hover" color="inherit" href={ROUTES.HOME} className={styles.crumb}>
-          Blog-Land
+          Blog-Lands
         </Link>
         <Link underline="hover" color="inherit" href={link || '/'} className={styles.crumb}>
           {title}
