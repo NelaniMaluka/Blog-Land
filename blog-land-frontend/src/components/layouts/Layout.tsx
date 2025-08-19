@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import { useState } from 'react';
 import DrawerMobileNavigation from '../Navbar/menu/menu';
 import { GlobalPreloadQueries } from '../../features/GlobalPreloadQueries';
-import Footer from '../Footer/Footer';
+import Footer from '../footer/Footer';
 
 interface LayoutProps {
   noLayout?: boolean;
@@ -24,8 +24,7 @@ export default function Layout({ noLayout, children }: LayoutProps) {
         </>
       )}
       <main>{children ?? <Outlet />}</main>
-      {!noLayout && <footer></footer>}
-      <Footer />
+      {!noLayout && <Footer />}
     </div>
   );
 }
