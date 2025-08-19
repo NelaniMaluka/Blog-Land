@@ -8,9 +8,12 @@ import Tooltip from '@mui/material/Tooltip';
 import { useSearchPost } from '../../../hooks/usePost';
 import ErrorMessage from '../../../features/Snackbars/Snackbar';
 import styles from './Searchbar.module.css';
+import { ROUTES } from '../../../constants/routes';
+import { useNavigate } from 'react-router-dom';
 
 export default function SearchBar() {
   const { searchTerm, setSearchTerm, results, isLoading, isError, error } = useSearchPost();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -21,20 +24,23 @@ export default function SearchBar() {
         getOptionLabel={(option) => (typeof option === 'string' ? option : option.title)}
         inputValue={searchTerm}
         onInputChange={(event, newValue) => setSearchTerm(newValue)}
+        onChange={(event, selectedOption) => {
+          if (selectedOption && typeof selectedOption !== 'string') {
+            navigate(ROUTES.POST(selectedOption.id));
+          }
+        }}
         loading={isLoading}
         className={styles.autocomplete}
         renderOption={(props, option) => (
           <li {...props} key={option.id} className={styles.option}>
             <Tooltip
-              title={`${option.title} — ${option.author}`}
+              title={`${option.title}`}
               arrow
               placement="right"
               enterDelay={300}
               leaveDelay={100}
             >
-              <div className={styles.optionText}>
-                {option.title} — {option.author}
-              </div>
+              <div className={styles.optionText}>{option.title}</div>
             </Tooltip>
           </li>
         )}
