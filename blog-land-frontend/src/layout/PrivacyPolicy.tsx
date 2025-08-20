@@ -1,8 +1,56 @@
 import styles from '../components/common/LegalPages.module.css';
+import { Helmet } from 'react-helmet-async';
 
 export const PrivacyPolicy = () => {
+  const canonicalUrl = window.location.href;
+
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Privacy Policy – Blog Land',
+    description:
+      "Read Blog Land's Privacy Policy to understand how we collect, use, and protect your personal information while using our blogging platform.",
+    url: canonicalUrl,
+  };
+
   return (
     <div className="container">
+      <Helmet>
+        <title>Privacy Policy – Blog Land</title>
+        <meta
+          name="description"
+          content="Read Blog Land's Privacy Policy to understand how we collect, use, and protect your personal information while using our blogging platform."
+        />
+        <meta
+          name="keywords"
+          content="Blog Land, Privacy Policy, data protection, personal information, user privacy, GDPR"
+        />
+        <meta name="author" content="Nelani Maluka" />
+        <link rel="canonical" href={canonicalUrl} />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Privacy Policy – Blog Land" />
+        <meta
+          property="og:description"
+          content="Learn how Blog Land collects, uses, and safeguards your personal information while you enjoy our platform."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={`${window.location.origin}/og-image-default.jpg`} />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Privacy Policy – Blog Land" />
+        <meta
+          name="twitter:description"
+          content="Understand Blog Land's Privacy Policy and how we protect your personal information."
+        />
+        <meta name="twitter:image" content={`${window.location.origin}/og-image-default.jpg`} />
+
+        {/* Structured Data */}
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
+      </Helmet>
+
       <div className={styles.LegalPages}>
         <h1 className={styles.title}>Privacy Policy</h1>
         <p className={styles.text}>
