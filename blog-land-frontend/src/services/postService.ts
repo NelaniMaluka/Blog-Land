@@ -39,7 +39,14 @@ export const fetchSearchedPosts = async (keyword: string): Promise<PostResponse[
 export const fetchRandomPost = async (): Promise<PostResponse> => {
   try {
     const response = await getRandomPost();
-    return response?.data;
+    const data = response?.data;
+
+    return {
+      ...data,
+      title: he.decode(stripHtml(data.title)),
+      summary: data.summary ? he.decode(stripHtml(data.summary)) : null,
+      createdAt: formatDate(data.createdAt),
+    };
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get random post'));
   }
@@ -109,7 +116,6 @@ export const fetchLatestPosts = async (payload: {
     return data.map(
       (raw: any): PostResponse => ({
         ...raw,
-
         title: he.decode(stripHtml(raw.title)),
         summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
         createdAt: formatDate(raw.createdAt),
@@ -178,7 +184,17 @@ export const fetchAllUserPosts = async (payload: {
 
   try {
     const response = await getAllUserPosts(validPayload);
-    return response?.data;
+    const data = response?.data;
+
+    return {
+      ...data,
+      content: (data?.content ?? []).map((raw: PostResponse) => ({
+        ...raw,
+        title: he.decode(stripHtml(raw.title)),
+        summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
+        createdAt: formatDate(raw.createdAt),
+      })),
+    };
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get user posts'));
   }
