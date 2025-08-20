@@ -19,18 +19,22 @@
 }
 
 .QandA {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.2rem;
   box-shadow: none !important;
 }
 
 .text {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: rgb(85, 85, 85);
+}
+
+.question {
+  font-size: 0.75rem !important;
 }
 
 @media (width <= 1023px) {
   .QandAContainer {
-    padding: 2rem 0;
+    padding: 3rem 0;
   }
 
   .row1 {
@@ -48,12 +52,5 @@
   .QandA {
     box-shadow: none;
     margin-bottom: 0.6rem;
-  }
-  .question {
-    font-size: 0.7rem;
-  }
-
-  .text {
-    font-size: 0.6rem;
   }
 }

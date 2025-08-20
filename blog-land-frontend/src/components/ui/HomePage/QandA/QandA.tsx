@@ -25,7 +25,6 @@ export default function QandASection() {
             </p>
           </div>
         </div>
-
         <Accordion className={styles.QandA}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -66,13 +65,44 @@ export default function QandASection() {
             id="panel3-header"
           >
             <Typography component="span" className={styles.question}>
-              How do I customize the look of my blog?
+              How do I edit or delete a post?
             </Typography>
           </AccordionSummary>
           <AccordionDetails className={styles.text}>
-            You can customize your blog’s appearance by visiting the “Themes” section in your
-            dashboard. Choose from various themes and adjust colors, fonts, and layouts to match
-            your style.
+            You can edit or delete any of your posts by going to your dashboard, selecting the post,
+            and choosing either “Edit” to make changes or “Delete” to remove it permanently.
+          </AccordionDetails>
+        </Accordion>
+
+        <Accordion className={styles.QandA}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel4-content"
+            id="panel4-header"
+          >
+            <Typography component="span" className={styles.question}>
+              Can I interact with other bloggers?
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails className={styles.text}>
+            Yes! You can comment on other posts, follow bloggers you like, and participate in
+            discussions to connect with the community.
+          </AccordionDetails>
+        </Accordion>
+
+        <Accordion className={styles.QandA}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel5-content"
+            id="panel5-header"
+          >
+            <Typography component="span" className={styles.question}>
+              How do I manage my account settings?
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails className={styles.text}>
+            You can update your account information, change your password, and manage notification
+            preferences by visiting the “Settings” section in your dashboard.
           </AccordionDetails>
         </Accordion>
       </div>
