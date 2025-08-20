@@ -8,10 +8,16 @@ import { LatestPage } from '../layout/LatestPage';
 import { PostPage } from '../layout/PostPage';
 import { RandomPostPage } from '../layout/RandomPostPage';
 import { LatestPostPage } from '../layout/LatestPostPage';
+import { AboutPage } from '../layout/AboutPage';
+import { TermsAndServices } from '../layout/TermsAndServicesPage';
+import { PrivacyPolicy } from '../layout/PrivacyPolicy';
 
 const MainRoutes = () => (
   <>
     <Route path={ROUTES.HOME} element={<HomePage />} />
+    <Route path={ROUTES.ABOUT} element={<AboutPage />} />
+    <Route path={ROUTES.TERMS_AND_CONDITIONS} element={<TermsAndServices />} />
+    <Route path={ROUTES.PRIVACY_POLICY} element={<PrivacyPolicy />} />
     <Route path={ROUTES.TRENDING_POSTS} element={<TrendingPage />} />
     <Route path={ROUTES.VIEW_ALL} element={<ViewAllPage />} />
     <Route path={ROUTES.LATEST_POSTS} element={<LatestPage />} />
