@@ -44,11 +44,6 @@ a {
   flex-direction: column;
 }
 
-.navbar_Links a svg {
-  width: 0.8rem;
-  height: 0.8rem;
-}
-
 .navbar_Links a img {
   width: 0.8rem;
   height: 0.8rem;
