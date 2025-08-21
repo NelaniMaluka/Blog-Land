@@ -24,9 +24,7 @@ const Footer: React.FC = () => {
     try {
       await newsletter.mutateAsync(email);
       setEmail('');
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   };
 
   return (
@@ -65,7 +63,7 @@ const Footer: React.FC = () => {
             </div>
 
             <div className={styles.footerCol}>
-              <h5>Useful Links</h5>
+              <h5>Navigate</h5>
               <a href={ROUTES.ABOUT}>About</a>
               <a href={ROUTES.LATEST_POSTS}>Latest</a>
               <a href={ROUTES.TRENDING_POSTS}>Trending</a>
@@ -74,9 +72,12 @@ const Footer: React.FC = () => {
 
             <div className={styles.footerCol}>
               <h5>Contact</h5>
-              <p>
-                <FaHome className={styles.icon} /> Johannesburg, South Africa
-              </p>
+              <a
+                href="https://www.google.com/search?gs_ssp=eJzj4tDP1TdIN7IwMWD04snKz0jMy0stTiotSgcAU2cHoA&q=johannesburg&oq=joha&gs_lcrp=EgZjaHJvbWUqCggBEC4YsQMYgAQyBggAEEUYOTIKCAEQLhixAxiABDIKCAIQABixAxiABDIKCAMQABixAxiABDIQCAQQLhivARjHARixAxiABDIQCAUQLhiDARixAxiABBiKBTIQCAYQLhivARjHARixAxiABDINCAcQLhiDARixAxiABDIKCAgQLhixAxiABDIHCAkQABiPAtIBCDI5MzlqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8"
+                target="_blank"
+              >
+                <FaHome className={styles.icon1} /> Johannesburg, South Africa
+              </a>
               <a href="mailto:info@blog-land.com">
                 <FaEnvelope className={styles.icon} /> info@blog-land.com
               </a>
@@ -85,22 +86,21 @@ const Footer: React.FC = () => {
                 <FaPhone className={styles.icon} /> 012 345 6788
               </a>
             </div>
-          </div>
-
-          {/* Newsletter Section */}
-          <div className={styles.footerCol1}>
-            <h5>Subscribe to our Newsletter</h5>
-            <form onSubmit={handleSubscribe} className={styles.newsletterForm}>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <button type="submit">Subscribe</button>
-            </form>
-            <p>Get the latest posts delivered straight to your inbox.</p>
+            {/* Newsletter Section */}
+            <div className={styles.footerCol}>
+              <h5>Subscribe to Newsletter</h5>
+              <form onSubmit={handleSubscribe} className={styles.newsletterForm}>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <button type="submit">Subscribe</button>
+              </form>
+              <p>Get the latest posts delivered straight to your inbox.</p>
+            </div>
           </div>
 
           {/* Copyright */}

@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import ShuffleHero from '../components/ui/HomePage/hero/LatestCta';
+import { Hero } from '../components/ui/HomePage/home/Home';
 import { Article } from '../components/ui/HomePage/article/Article';
 import { LatestSection } from '../components/ui/HomePage/latest/LatestSection';
 import { TrendingSection } from '../components/ui/HomePage/trending/Trending';
@@ -91,9 +91,9 @@ function HomePage() {
         {/* Structured Data */}
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
-
+      <Hero />
       <LatestSection />
-      <ShuffleHero />
+
       <TrendingSection />
       <Article />
       <QandASection />

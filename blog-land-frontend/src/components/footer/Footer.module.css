@@ -14,7 +14,7 @@
 
 .socialText {
   font-weight: 500;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
 }
 
 .socialIcons {
@@ -25,17 +25,16 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  padding: 1.5rem 1rem 0 1rem;
 }
 
 .footerCol {
-  flex: 1 1 200px;
-  margin: 1rem;
+  flex: 1 1 280px;
+  margin: 1rem 0.5rem;
 }
 
 .footerCol h5 {
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
   color: #fff;
 }
 
@@ -44,7 +43,7 @@
   color: #fff;
   text-decoration: none;
   margin-bottom: 0.5rem;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   width: max-content;
   display: flex;
   align-items: center;
@@ -58,7 +57,7 @@
   margin: 0.3rem 0;
   display: flex;
   align-items: center;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: #fff;
 }
 
@@ -69,6 +68,11 @@
 
 .footerCol .icon {
   margin-right: 0.5rem !important;
+  font-size: 0.5rem !important;
+}
+
+.footerCol .icon1 {
+  margin-right: 0.4rem !important;
   font-size: 0.6rem !important;
 }
 
@@ -109,48 +113,38 @@
 }
 
 .newsletterForm {
-  display: flex;
-  gap: 0.5rem;
   margin-top: 0.5rem;
-  height: 1.1rem;
-  max-width: 500px;
   margin-bottom: 0.5rem;
 }
 
 .newsletterForm input {
-  padding: 0 0.4rem;
-  font-size: 0.55rem;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   flex: 1;
+  width: 80%;
+  display: block;
   outline: none;
   transition: border-color 0.3s ease;
+  max-width: 300px;
 }
 
 .newsletterForm button {
   padding: 0rem 1rem;
-  background-color: rgba(0, 74, 172, 0.829);
+  background-color: rgba(0, 87, 201, 0.966);
   color: white;
   font-size: 0.55rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  height: 1.1rem;
+  height: 1rem;
+  margin-top: 0.5rem;
 }
 
 .newsletterForm button:hover {
-  background-color: rgba(0, 87, 201, 0.966);
-}
-
-.footerCol1 {
-  display: block;
-  font-size: 0.6rem;
-  padding: 0 2rem 1rem 2rem;
-}
-
-.footerCol1 h5 {
-  font-size: 0.9rem;
+  background-color: rgba(0, 110, 255, 0.966);
 }
 
 .socialSection a {
@@ -210,6 +204,11 @@
 
   .copyRight {
     padding: 0.9rem 0;
+  }
+
+  .footerCol {
+    flex: 1 1;
+    margin: 1rem 0.5rem;
   }
 }
 
