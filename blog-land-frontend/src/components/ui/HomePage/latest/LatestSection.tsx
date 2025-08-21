@@ -43,21 +43,17 @@ export const LatestSection = () => {
           <div className={styles.featuredPost}>
             <img src={recentPost.postImgUrl} alt="img" className={styles.featuredImg} />
             <div className={styles.featuredContent}>
-              {category && (
-                <a href={`/category/${encodeURIComponent(category)}`} className={styles.category}>
-                  {category}
-                </a>
-              )}
               <span className={styles.date}>{recentPost.createdAt}</span>
               <p className={styles.title}>{recentPost.title}</p>
               <p>{recentPost.summary}</p>
               <div className={styles.subDetails}>
-                <span>
-                  <VisibilityIcon fontSize="small" /> {formatViews(recentPost.views)}
-                </span>
-                <span>
-                  <AccessTimeIcon fontSize="small" /> {recentPost.readTime} min read
-                </span>
+                {category && (
+                  <a href={`/category/${encodeURIComponent(category)}`} className={styles.category}>
+                    {category}
+                  </a>
+                )}
+                <span>{formatViews(recentPost.views)} views</span>
+                <span>{recentPost.readTime} min read</span>
               </div>
               <a href={ROUTES.POST(recentPost.id)} className={styles.readMore}>
                 Read more <ArrowForwardIcon className={styles.readMoreIcon} fontSize="small" />

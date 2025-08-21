@@ -48,12 +48,6 @@
   gap: 0.5rem;
 }
 
-.featuredContent .category {
-  font-size: 0.65rem;
-  margin-bottom: 0rem;
-  color: #555;
-}
-
 .featuredContent .category:hover {
   color: rgba(0, 87, 201, 0.966);
 }
@@ -75,15 +69,16 @@
   height: 70px;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 .featuredContent .subDetails {
   display: flex;
   justify-content: flex-start;
   gap: 1rem;
-  font-size: 0.5rem;
+  font-size: 0.55rem;
   color: rgb(75, 75, 75);
   display: flex;
   justify-content: space-between;

@@ -35,16 +35,36 @@ const Footer: React.FC = () => {
           <div className={styles.socialSection}>
             <span className={styles.socialText}>Get connected with us on social networks:</span>
             <div className={styles.socialIcons}>
-              <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://www.linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+              >
                 <FaLinkedin className={styles.icon} />
               </a>
-              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://www.facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+              >
                 <FaFacebookF className={styles.icon} />
               </a>
-              <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://www.instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+              >
                 <FaInstagram className={styles.icon} />
               </a>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+              >
                 <FaGithub className={styles.icon} />
               </a>
             </div>
@@ -75,6 +95,7 @@ const Footer: React.FC = () => {
               <a
                 href="https://www.google.com/search?gs_ssp=eJzj4tDP1TdIN7IwMWD04snKz0jMy0stTiotSgcAU2cHoA&q=johannesburg&oq=joha&gs_lcrp=EgZjaHJvbWUqCggBEC4YsQMYgAQyBggAEEUYOTIKCAEQLhixAxiABDIKCAIQABixAxiABDIKCAMQABixAxiABDIQCAQQLhivARjHARixAxiABDIQCAUQLhiDARixAxiABBiKBTIQCAYQLhivARjHARixAxiABDINCAcQLhiDARixAxiABDIKCAgQLhixAxiABDIHCAkQABiPAtIBCDI5MzlqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 <FaHome className={styles.icon1} /> Johannesburg, South Africa
               </a>
