@@ -1,6 +1,6 @@
 import { PostCard } from '../../cards/PostCard';
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
-import styles from './PostLayout.module.css';
+import styles from './PostsLayout.module.css';
 import { Order, PostResponse } from '../../../types/post/response';
 import { useGetCategories } from '../../../hooks/useCategory';
 import Pagination from '@mui/material/Pagination';
