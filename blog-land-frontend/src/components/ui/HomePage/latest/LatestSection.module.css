@@ -61,11 +61,12 @@
   font-size: 1rem;
   line-height: 1.2rem;
   font-weight: 500;
+  height: 2.42rem;
 }
 
 .featuredContent p {
   font-size: 0.6rem;
-  height: 1.81rem;
+  height: 2.15rem;
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
