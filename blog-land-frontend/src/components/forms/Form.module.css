@@ -116,6 +116,10 @@ input:-webkit-autofill:active {
 }
 
 @media (width <= 600px) {
+  .header {
+    display: block;
+    margin-bottom: 0.9rem !important;
+  }
   .dialogPaper {
     width: 100%;
     max-width: 100%;
