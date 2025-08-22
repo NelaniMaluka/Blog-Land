@@ -38,13 +38,12 @@ export default function ErrorMessage({ message }: ErrorMessageProps) {
       sx={{ display: 'flex', alignItems: 'center' }}
     >
       <Alert
-        onClose={() => setOpen(false)}
         severity="error"
         icon={false}
         sx={{
           backgroundColor: '#d32f2f',
           color: '#fff',
-          fontSize: '0.6rem',
+          fontSize: '0.5rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'flex-start',
@@ -60,14 +59,6 @@ export default function ErrorMessage({ message }: ErrorMessageProps) {
             display: 'flex',
             alignItems: 'center',
             padding: 0,
-          },
-          '& .MuiAlert-action .MuiIconButton-root': {
-            padding: '2px',
-            fontSize: '1rem',
-            color: '#fff',
-          },
-          '& .MuiAlert-action .MuiSvgIcon-root': {
-            fontSize: '1rem',
           },
         }}
       >

@@ -1,18 +1,20 @@
 import { useMutation } from '@tanstack/react-query';
 import { fetchUser, updateUser, deleteUser, submitLogoutUser } from '../services/userService';
 import { setUser, logout } from '../store/authSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { UserResponse } from '../types/user/response';
 import { useEffect } from 'react';
+import { RootState } from '../store/store';
 
 export function useGetUser(options?: { enabled?: boolean }) {
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const query = useQuery<UserResponse, Error>({
     queryKey: ['user'],
     queryFn: fetchUser,
-    enabled: options?.enabled ?? true,
+    enabled: isAuthenticated,
   });
 
   // Use effect to dispatch when data changes

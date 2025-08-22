@@ -36,6 +36,9 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
       } catch (error) {
         console.error(error);
       }
+    } else {
+      setEmailTouched(true);
+      setPasswordTouched(true);
     }
   };
 
@@ -53,10 +56,24 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
           transitionDuration={1200}
         >
           <form onSubmit={handleSubmit} className={styles.form}>
-            <h2 className={styles.title}>Log-In</h2>
+            <div className={styles.header}>
+              <h5 className={styles.title}>Login</h5>
+              <p>
+                Haven't Joined Yet?{' '}
+                <span
+                  onClick={() => {
+                    onClose();
+                    onSwitchToRegister();
+                  }}
+                >
+                  Sign-Up
+                </span>
+              </p>
+            </div>
 
+            {/* Email */}
             <div className={styles.inputGroup}>
-              <label htmlFor="email" className={classNames(styles.label, {})}>
+              <label htmlFor="email" className={styles.label}>
                 Email
               </label>
               <TextField
@@ -68,27 +85,28 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
                 }}
                 fullWidth
                 variant="outlined"
+                size="small"
                 InputLabelProps={{ shrink: false }}
-                FormHelperTextProps={{
-                  style: { marginTop: '0px', lineHeight: '0.35rem' },
-                }}
-                helperText={
-                  emailTouched &&
-                  !validateEmail(email) && (
-                    <span className={styles.errorText}>
-                      Please enter a valid email address (e.g. name@example.com).
-                    </span>
-                  )
-                }
+                inputProps={{ autoComplete: 'email', style: { color: 'black' } }}
                 className={classNames(styles.textField, {
-                  [styles.validField]: emailTouched && emailValid,
-                  [styles.invalidField]: emailTouched && !emailValid,
+                  [styles.validField]: emailTouched && validateEmail(email),
+                  [styles.invalidField]: emailTouched && !validateEmail(email),
                 })}
               />
+              <p
+                className={
+                  emailTouched && !validateEmail(email) ? styles.errorText : styles.errorPlaceholder
+                }
+              >
+                {emailTouched && !validateEmail(email)
+                  ? 'Please enter a valid email address (e.g. name@example.com).'
+                  : 'placeholder'}
+              </p>
             </div>
 
+            {/* Password */}
             <div className={styles.inputGroup}>
-              <label htmlFor="password" className={classNames(styles.label, {})}>
+              <label htmlFor="password" className={styles.label}>
                 Password
               </label>
               <TextField
@@ -101,25 +119,27 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
                 }}
                 fullWidth
                 variant="outlined"
+                size="small"
                 InputLabelProps={{ shrink: false }}
-                FormHelperTextProps={{
-                  style: { marginTop: '0px', lineHeight: '0.35rem' },
-                }}
-                helperText={
-                  passwordTouched &&
-                  !validatePassword(password) && (
-                    <span className={styles.errorText}>
-                      Password must be at least 6 characters, include uppercase, lowercase, a
-                      number, and a special character, with no spaces.
-                    </span>
-                  )
-                }
+                inputProps={{ autoComplete: 'current-password', style: { color: 'black' } }}
                 className={classNames(styles.textField, {
-                  [styles.validField]: passwordTouched && passwordValid,
-                  [styles.invalidField]: passwordTouched && !passwordValid,
+                  [styles.validField]: passwordTouched && validatePassword(password),
+                  [styles.invalidField]: passwordTouched && !validatePassword(password),
                 })}
               />
+              <p
+                className={
+                  passwordTouched && !validatePassword(password)
+                    ? styles.errorText
+                    : styles.errorPlaceholder
+                }
+              >
+                {passwordTouched && !validatePassword(password)
+                  ? 'Password must be at least 6 characters, include uppercase, lowercase, a number, and a special character, with no spaces.'
+                  : 'placeholder'}
+              </p>
             </div>
+
             <Button
               type="submit"
               variant="contained"
@@ -129,7 +149,7 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
                 borderRadius: '10px',
                 fontSize: '0.45rem',
                 height: '33px',
-                width: '90%',
+                width: '100%',
                 margin: '20px auto 0',
                 display: 'block',
               }}
@@ -147,25 +167,6 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
               redirectUrl="http://localhost:8080/oauth2/authorization/google"
               onClick={() => console.log('Google button clicked')}
             />
-            <Button
-              onClick={() => {
-                onClose();
-                onSwitchToRegister();
-              }}
-              variant="contained"
-              fullWidth
-              sx={{
-                mt: 4,
-                borderRadius: '10px',
-                fontSize: '0.45rem',
-                height: '33px',
-                width: '90%',
-                margin: '20px auto 0',
-                display: 'block',
-              }}
-            >
-              Register
-            </Button>
           </form>
         </Dialog>
       </LoadingScreen>

@@ -1,7 +1,7 @@
 .form {
   align-items: center;
   text-align: center;
-  padding: 1rem 0.4rem;
+  padding: 1rem 1rem;
   width: 400px;
   height: max-content;
   padding-bottom: 1.6rem;
@@ -13,13 +13,36 @@
   font-weight: 500;
 }
 
+.errorPlaceholder {
+  visibility: hidden;
+  font-size: 0.4rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header p {
+  font-size: 0.5rem;
+}
+
+.header p span {
+  font-weight: 600;
+}
+
+.header p span:hover {
+  text-decoration: underline;
+}
+
 .title {
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   margin-bottom: 10px;
 }
 
 .inputGroup {
-  width: 90%;
+  width: 100%;
   margin: 0 auto;
   margin-top: 10px;
   text-align: left;
@@ -42,11 +65,10 @@
 
 .textField :global(.MuiOutlinedInput-root) {
   border-radius: 10px;
-  height: 34px;
 }
 
 .textField :global(.MuiOutlinedInput-root input) {
-  padding: 16.5px 14px;
+  padding: 0.25rem 0.3rem;
   font-size: 0.5rem;
   color: black;
 }
@@ -95,19 +117,16 @@ input:-webkit-autofill:active {
 
 @media (width <= 600px) {
   .dialogPaper {
-    width: 90vh;
-    max-width: 500px;
-    margin: 0 auto;
-    border-radius: 10px;
-    padding: 10px 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
   }
 
   .form {
-    padding: 5px 0;
-    align-items: center;
-    text-align: center;
     width: 100%;
-    height: max-content;
+    padding: 1rem;
+    box-sizing: border-box;
   }
 
   .label {

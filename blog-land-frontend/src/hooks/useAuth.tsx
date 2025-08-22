@@ -13,6 +13,9 @@ export function useRegister() {
     mutationFn: async (payload: RegisterRequest) => {
       const token = await createUser(payload);
       dispatch(setToken(token));
+      return token;
+    },
+    onSuccess: async () => {
       await refetchUser();
     },
   });
@@ -26,6 +29,9 @@ export function useLogin() {
     mutationFn: async (payload: LoginRequest) => {
       const token = await authenticateUser(payload);
       dispatch(setToken(token));
+      return token;
+    },
+    onSuccess: async () => {
       await refetchUser();
     },
   });

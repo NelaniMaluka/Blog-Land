@@ -8,6 +8,11 @@ export const createUser = async (payload: RegisterRequest): Promise<string> => {
 
   try {
     const response = await registerUser(validPayload);
+
+    if (!response?.data) {
+      throw new Error('Login failed: no token received');
+    }
+
     return response?.data;
   } catch (error) {
     throw new Error(
@@ -21,6 +26,11 @@ export const authenticateUser = async (payload: LoginRequest): Promise<string> =
 
   try {
     const response = await loginUser(validPayload);
+
+    if (!response?.data) {
+      throw new Error('Login failed: no token received');
+    }
+
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Login failed. Please check your credentials.'));
