@@ -37,3 +37,35 @@ h2 {
     font-size: 1.1rem;
   }
 }
+
+.swal-popup-small {
+  max-width: 450px;
+  width: 100%;
+  padding: 1rem;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+  color: #333;
+}
+
+.swal-title-small {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.swal-popup-small .swal2-html-container {
+  font-size: 0.85rem;
+}
+
+.swal-popup-small .swal2-icon.swal2-success {
+  transform: scale(0.4);
+  margin: 0 auto;
+  margin-bottom: -0.5rem;
+}
+
+.swal-popup-small .swal2-icon.swal2-success .swal2-success-ring {
+  border-width: 0.15rem;
+}
+
+.swal-popup-small .swal2-icon {
+  margin-top: 0rem;
+}

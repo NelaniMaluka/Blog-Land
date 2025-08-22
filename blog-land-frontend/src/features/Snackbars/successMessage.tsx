@@ -3,7 +3,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Slide from '@mui/material/Slide';
 import { SlideProps } from '@mui/material/Slide';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 function SlideTransition(props: SlideProps) {
   return <Slide {...props} direction="up" />;
@@ -13,17 +13,17 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-interface ErrorMessageProps {
+interface SuccessMessageProps {
   message: string;
 }
 
-export default function ErrorMessage({ message }: ErrorMessageProps) {
+export default function SuccessMessage({ message }: SuccessMessageProps) {
   const [open, setOpen] = React.useState(true);
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setOpen(false);
-    }, 2500); // close after 2.5 seconds
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -38,10 +38,10 @@ export default function ErrorMessage({ message }: ErrorMessageProps) {
       sx={{ display: 'flex', alignItems: 'center' }}
     >
       <Alert
-        severity="error"
+        severity="success"
         icon={false}
         sx={{
-          backgroundColor: '#d32f2f',
+          backgroundColor: '#2e7d32',
           color: '#fff',
           fontSize: '0.5rem',
           display: 'flex',
@@ -62,7 +62,7 @@ export default function ErrorMessage({ message }: ErrorMessageProps) {
           },
         }}
       >
-        <ErrorOutlineIcon sx={{ fontSize: '1rem', color: '#fff', paddingRight: '0.4rem' }} />
+        <CheckCircleOutlineIcon sx={{ fontSize: '1rem', color: '#fff', paddingRight: '0.4rem' }} />
         {message}
       </Alert>
     </Snackbar>

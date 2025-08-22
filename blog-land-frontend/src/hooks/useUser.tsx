@@ -1,32 +1,48 @@
-import { useMutation } from '@tanstack/react-query';
+// src/hooks/useUser.tsx
+import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { fetchUser, updateUser, deleteUser, submitLogoutUser } from '../services/userService';
 import { setUser, logout } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { UserResponse } from '../types/user/response';
-import { useEffect } from 'react';
 import { RootState } from '../store/store';
+import Swal from 'sweetalert2';
 
 export function useGetUser(options?: { enabled?: boolean }) {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const query = useQuery<UserResponse, Error>({
-    queryKey: ['user'],
+    queryKey: ['user'], // just a string array, no need for as const
     queryFn: fetchUser,
     enabled: isAuthenticated,
-  });
+    onSuccess: (data: UserResponse) => {
+      dispatch(setUser(data));
 
-  // Use effect to dispatch when data changes
-  useEffect(() => {
-    if (query.data) {
-      dispatch(setUser(query.data));
-    }
-  }, [query.data, dispatch]);
+      Swal.fire({
+        icon: 'success',
+        title: 'User Loaded',
+        text: `Welcome, ${data.firstname} ${data.lastname || ''}!`,
+        timer: 2500,
+        showConfirmButton: false,
+        position: 'top-end',
+        width: '250px', // smaller width
+        padding: '1rem', // less padding
+        background: '#fff',
+        color: '#333',
+        iconColor: '#4caf50',
+        customClass: {
+          popup: 'swal-popup-small',
+          title: 'swal-title-small',
+        },
+      });
+    },
+    ...options,
+  } as UseQueryOptions<UserResponse, Error, UserResponse, readonly unknown[]>);
 
   return query;
 }
 
+// Mutation hooks for user management
 export const useUpdateUser = () => {
   return useMutation({
     mutationFn: updateUser,
@@ -45,7 +61,7 @@ export const useLogoutUser = () => {
   return useMutation({
     mutationFn: async () => {
       dispatch(logout());
-      const result = await submitLogoutUser();
+      await submitLogoutUser();
     },
   });
 };

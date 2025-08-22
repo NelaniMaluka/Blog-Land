@@ -8,7 +8,7 @@ import GoogleOAuthButton from '../buttons/GoogleButtons/GoogleOAuthButton';
 import LoadingScreen from '../../features/LoadingScreen/LoadingScreen';
 import { useLogin } from '../../hooks/useAuth';
 import { validateEmail, validatePassword } from '../../utils/validationUtils';
-import ErrorMessage from '../../features/Snackbars/Snackbar';
+import ErrorMessage from '../../features/Snackbars/errorMessage';
 import Fade from '@mui/material/Fade';
 import { useEffect } from 'react';
 

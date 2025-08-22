@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import Tooltip from '@mui/material/Tooltip';
 import { useSearchPost } from '../../../hooks/usePost';
-import ErrorMessage from '../../../features/Snackbars/Snackbar';
+import ErrorMessage from '../../../features/Snackbars/errorMessage';
 import styles from './Searchbar.module.css';
 import { ROUTES } from '../../../constants/routes';
 import { useNavigate } from 'react-router-dom';

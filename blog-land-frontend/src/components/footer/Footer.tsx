@@ -12,7 +12,8 @@ import {
 import { ROUTES } from '../../constants/routes';
 import LoadingScreen from '../../features/LoadingScreen/LoadingScreen';
 import { useNewsletterSubscription } from '../../hooks/useNewsletter';
-import ErrorMessage from '../../features/Snackbars/Snackbar';
+import ErrorMessage from '../../features/Snackbars/errorMessage';
+import SuccessMessage from '../../features/Snackbars/successMessage';
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -26,6 +27,9 @@ const Footer: React.FC = () => {
       setEmail('');
     } catch (error) {}
   };
+  if (newsletter.isSuccess) {
+    console.log(newsletter.data);
+  }
 
   return (
     <footer className={styles.footer}>
@@ -134,6 +138,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </LoadingScreen>
+      {newsletter.isSuccess && <SuccessMessage message={newsletter.data} />}
       {newsletter.isError && (
         <ErrorMessage message={newsletter?.error?.message || 'Something went wrong'} />
       )}

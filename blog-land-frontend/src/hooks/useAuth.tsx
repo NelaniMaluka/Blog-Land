@@ -1,9 +1,28 @@
+// src/hooks/useAuth.tsx
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { setToken } from '../store/authSlice';
 import { createUser, authenticateUser } from '../services/authService';
 import { RegisterRequest, LoginRequest } from '../types/auth/requests';
 import { useGetUser } from './useUser';
+import Swal from 'sweetalert2';
+
+const showSuccessSwal = (title: string, message: string) => {
+  Swal.fire({
+    icon: 'success',
+    title,
+    text: message,
+    timer: 2500,
+    showConfirmButton: false,
+    position: 'top-end',
+    background: '#fff',
+    iconColor: '#4caf50',
+    customClass: {
+      popup: 'swal-popup-small',
+      title: 'swal-title-small',
+    },
+  });
+};
 
 export function useRegister() {
   const dispatch = useDispatch();
@@ -16,7 +35,10 @@ export function useRegister() {
       return token;
     },
     onSuccess: async () => {
-      await refetchUser();
+      const { data } = await refetchUser();
+      if (data) {
+        showSuccessSwal('Sign-up Successful', `Welcome, ${data.firstname} ${data.lastname || ''}!`);
+      }
     },
   });
 }
@@ -32,7 +54,13 @@ export function useLogin() {
       return token;
     },
     onSuccess: async () => {
-      await refetchUser();
+      const { data } = await refetchUser();
+      if (data) {
+        showSuccessSwal(
+          'Login Successful',
+          `Welcome back, ${data.firstname} ${data.lastname || ''}!`
+        );
+      }
     },
   });
 }
