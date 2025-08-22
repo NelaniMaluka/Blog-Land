@@ -10,6 +10,7 @@ import { useRegister } from '../../hooks/useAuth';
 import ErrorMessage from '../../features/Snackbars/Snackbar';
 import { validateRequired, validateEmail, validatePassword } from '../../utils/validationUtils';
 import Fade from '@mui/material/Fade';
+import { useEffect } from 'react';
 
 interface RegisterDialogProps {
   open: boolean;
@@ -57,6 +58,20 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
     }
   };
 
+  useEffect(() => {
+    if (!open) return;
+
+    const handleScroll = () => {
+      onClose();
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+    };
+  }, [open, onClose]);
+
   return (
     <>
       <LoadingScreen isLoading={register.isPending}>
@@ -65,7 +80,7 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
           onClose={onClose}
           classes={{ paper: styles.dialogPaper }}
           TransitionComponent={Fade}
-          transitionDuration={1200}
+          transitionDuration={600}
           disableScrollLock={true}
         >
           <form onSubmit={handleSubmit} className={styles.form}>

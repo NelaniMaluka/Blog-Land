@@ -10,6 +10,7 @@ import { useLogin } from '../../hooks/useAuth';
 import { validateEmail, validatePassword } from '../../utils/validationUtils';
 import ErrorMessage from '../../features/Snackbars/Snackbar';
 import Fade from '@mui/material/Fade';
+import { useEffect } from 'react';
 
 interface LoginDialogProps {
   open: boolean;
@@ -45,6 +46,20 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
   const emailValid = validateEmail(email);
   const passwordValid = validatePassword(password);
 
+  useEffect(() => {
+    if (!open) return; // Only attach listener when dialog is open
+
+    const handleScroll = () => {
+      onClose();
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+    };
+  }, [open, onClose]);
+
   return (
     <>
       <LoadingScreen isLoading={login.isPending}>
@@ -53,7 +68,7 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
           onClose={onClose}
           classes={{ paper: styles.dialogPaper }}
           TransitionComponent={Fade}
-          transitionDuration={1200}
+          transitionDuration={600}
           disableScrollLock={true}
         >
           <form onSubmit={handleSubmit} className={styles.form}>
