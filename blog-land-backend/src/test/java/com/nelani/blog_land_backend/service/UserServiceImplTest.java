@@ -2,7 +2,6 @@ package com.nelani.blog_land_backend.service;
 
 import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
-import com.nelani.blog_land_backend.controller.UserController;
 import com.nelani.blog_land_backend.model.ExperienceLevel;
 import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.User;
@@ -11,8 +10,6 @@ import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.service.impl.UserServiceImpl;
 
 import jakarta.validation.ValidationException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,9 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -42,8 +35,6 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceImplTest {
-
-        private UserController userController;
 
         @Mock
         private UserRepository userRepository;
@@ -54,29 +45,14 @@ public class UserServiceImplTest {
         @Mock
         private JwtUtil jwtUtils;
 
-        @Mock
-        private RedisTemplate<String, String> redisTemplate;
-
-
-        @Mock
-        private ValueOperations<String, String> valueOperations;
-
         @InjectMocks
         private UserServiceImpl userService;
 
         @BeforeEach
         void setUp() {
-                MockitoAnnotations.openMocks(this); // initialize @Mock and @InjectMocks
-
-                // Mock Redis value operations
-                when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-
-                // Now create controller with real UserServiceImpl injected with mocks
-                userController = new UserController(userService, redisTemplate);
-
-                SecurityContextHolder.clearContext();
+                MockitoAnnotations.openMocks(this);
+                SecurityContextHolder.clearContext(); // Clear context before each test
         }
-
 
         @Test
         void getUserDetails_ShouldReturnAuthenticatedUser() {
@@ -508,20 +484,4 @@ public class UserServiceImplTest {
                 assertEquals("No authenticated user found.", exception.getMessage());
                 verify(userRepository, never()).delete(any());
         }
-
-        @Test
-        void logOut_ShouldBlacklistToken_WhenValidToken() {
-                HttpServletRequest request = mock(HttpServletRequest.class);
-                HttpServletResponse response = mock(HttpServletResponse.class);
-
-                // Simulate Authorization header
-                when(request.getHeader("Authorization")).thenReturn("Bearer testToken");
-
-                // Call logout
-                userController.logOut(request, response);
-
-                // Verify that the token was blacklisted in Redis
-                verify(redisTemplate.opsForValue()).set("testToken", "blacklisted", 24 * 60 * 60, java.util.concurrent.TimeUnit.SECONDS);
-        }
-
 }

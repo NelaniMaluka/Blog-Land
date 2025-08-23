@@ -28,9 +28,8 @@ public class SecurityConfig {
 
     @Bean
     public UnifiedAuthenticationFilter unifiedAuthenticationFilter(JwtUtil jwtUtil,
-                                                                   UserRepository userRepository,
-                                                                   RedisTemplate<String, String> redisTemplate) {
-        return new UnifiedAuthenticationFilter(jwtUtil, userRepository, redisTemplate);
+                                                                   UserRepository userRepository) {
+        return new UnifiedAuthenticationFilter(jwtUtil, userRepository);
     }
 
     @Bean
@@ -40,9 +39,19 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/oauth2/**", "/api/v1/auth/oauth2/callback", "/error",
-                                "/h2-console/**", "/api/contact-us/**", "/api/newsletter/**", "/api/category/**",
-                                "/api/post/get/**", "/api/comments/get/**", "/api/post/api/search/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/oauth2/**",
+                                "/api/v1/auth/oauth2/callback",
+                                "/error",
+                                "/h2-console/**",
+                                "/api/contact-us/**",
+                                "/api/newsletter/**",
+                                "/api/category/**",
+                                "/api/post/get/**",
+                                "/api/comments/get/**",
+                                "/api/post/api/search/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2.successHandler(customSuccessHandler))
@@ -54,5 +63,4 @@ public class SecurityConfig {
                 .addFilterBefore(unifiedAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
 }

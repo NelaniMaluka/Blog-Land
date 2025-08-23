@@ -53,14 +53,18 @@ public class UserController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
 
+
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwtToken = authHeader.substring(7);
-            redisTemplate.opsForValue()
-                    .set(jwtToken, "blacklisted", tokenExpirySeconds, TimeUnit.SECONDS);
+
+            // Skip Redis for now
+//            redisTemplate.opsForValue()
+//                    .set(jwtToken, "blacklisted", tokenExpirySeconds, TimeUnit.SECONDS);
+
         } else {
             throw new RuntimeException("No Authorization header provided or token is missing.");
-        } 
+        }
 
         return ResponseEntity.ok("Logged out successfully");
     }

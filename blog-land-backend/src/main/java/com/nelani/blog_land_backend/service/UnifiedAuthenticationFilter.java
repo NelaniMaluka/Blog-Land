@@ -23,14 +23,11 @@ public class UnifiedAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
-    private final RedisTemplate<String, String> redisTemplate; // Add Redis
 
     public UnifiedAuthenticationFilter(JwtUtil jwtUtil,
-                                       UserRepository userRepository,
-                                       RedisTemplate<String, String> redisTemplate) {
+                                       UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
-        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -42,19 +39,13 @@ public class UnifiedAuthenticationFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
 
-            // 1. Check if token is blacklisted in Redis
-            if (Boolean.TRUE.equals(redisTemplate.hasKey(token))) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token has been logged out.");
-                return;
-            }
-
-            // 2. Validate JWT
+            // 1. Validate JWT
             if (!jwtUtil.validateJwtToken(token)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token.");
                 return;
             }
 
-            // 3. Get user from token
+            // 2. Get user from token
             String email = jwtUtil.getEmailFromJwtToken(token);
             Optional<User> userOpt = userRepository.findByEmail(email);
 
@@ -65,7 +56,7 @@ public class UnifiedAuthenticationFilter extends OncePerRequestFilter {
 
             User user = userOpt.get();
 
-            // 4. Inject authentication into context if not already present
+            // 3. Inject authentication into context if not already present
             Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
             boolean shouldInject = (existingAuth == null)
                     || !(existingAuth instanceof UsernamePasswordAuthenticationToken);
