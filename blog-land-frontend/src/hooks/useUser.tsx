@@ -25,10 +25,7 @@ export function useGetUser(options?: { enabled?: boolean }) {
         timer: 2500,
         showConfirmButton: false,
         position: 'top-end',
-        width: '250px', // smaller width
-        padding: '1rem', // less padding
         background: '#fff',
-        color: '#333',
         iconColor: '#4caf50',
         customClass: {
           popup: 'swal-popup-small',
