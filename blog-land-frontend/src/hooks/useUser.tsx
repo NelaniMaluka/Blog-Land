@@ -17,7 +17,7 @@ export function useGetUser(options?: { enabled?: boolean }) {
     enabled: isAuthenticated,
     onSuccess: (data: UserResponse) => {
       dispatch(setUser(data));
-
+      console.log(data);
       Swal.fire({
         icon: 'success',
         title: 'User Loaded',
