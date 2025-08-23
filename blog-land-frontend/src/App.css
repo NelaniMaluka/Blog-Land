@@ -38,10 +38,6 @@ h2 {
   }
 }
 
-.swal2-container {
-  z-index: 99999 !important;
-}
-
 body.swal2-shown {
   overflow: auto !important;
   padding-right: 0 !important;
