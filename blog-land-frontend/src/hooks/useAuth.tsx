@@ -51,6 +51,7 @@ export function useLogin() {
     mutationFn: async (payload: LoginRequest) => {
       const token = await authenticateUser(payload);
       dispatch(setToken(token));
+      console.log(token);
       return token;
     },
     onSuccess: async () => {
