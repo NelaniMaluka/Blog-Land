@@ -55,6 +55,8 @@ export function useLogin() {
     },
     onSuccess: async () => {
       const { data } = await refetchUser();
+      console.log('Swal trigger data:', data);
+
       if (data) {
         showSuccessSwal(
           'Login Successful',
