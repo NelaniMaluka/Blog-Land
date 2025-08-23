@@ -7,8 +7,6 @@ import Layout from './components/layouts/Layout';
 import { ROUTES } from './constants/routes';
 import Swal from 'sweetalert2';
 
-Swal.fire('Hello from production!');
-
 // ScrollToTop Component
 const ScrollToTop = () => {
   const { pathname } = useLocation();

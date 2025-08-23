@@ -51,12 +51,10 @@ export function useLogin() {
     mutationFn: async (payload: LoginRequest) => {
       const token = await authenticateUser(payload);
       dispatch(setToken(token));
-      console.log(token);
       return token;
     },
     onSuccess: async () => {
       const { data } = await refetchUser();
-      console.log('Swal trigger data:', data);
 
       if (data) {
         showSuccessSwal(

@@ -17,7 +17,7 @@ export function useGetUser(options?: { enabled?: boolean }) {
     enabled: isAuthenticated,
     onSuccess: (data: UserResponse) => {
       dispatch(setUser(data));
-      console.log(data);
+
       Swal.fire({
         icon: 'success',
         title: 'User Loaded',
@@ -57,8 +57,11 @@ export const useLogoutUser = () => {
 
   return useMutation({
     mutationFn: async () => {
+      const response = await submitLogoutUser();
+      return response;
+    },
+    onSuccess: () => {
       dispatch(logout());
-      await submitLogoutUser();
     },
   });
 };
