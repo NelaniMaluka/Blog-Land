@@ -82,7 +82,7 @@ export default function AvatarMenu() {
               <a key="posts" href={ROUTES.DASHBOARD_POSTS}>
                 <MenuItem className={styles.menuItem}>
                   <img className={styles.menuIcon} src="/icons/blog.png" alt="blog icon" />
-                  My Posts
+                  My Blogs
                 </MenuItem>
               </a>,
               <MenuItem key="logout" onClick={handleLogout} className={styles.menuItem}>
