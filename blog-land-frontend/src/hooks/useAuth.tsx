@@ -5,24 +5,8 @@ import { setToken } from '../store/authSlice';
 import { createUser, authenticateUser } from '../services/authService';
 import { RegisterRequest, LoginRequest } from '../types/auth/requests';
 import { useGetUser } from './useUser';
-import Swal from 'sweetalert2';
-
-const showSuccessSwal = (title: string, message: string) => {
-  Swal.fire({
-    icon: 'success',
-    title,
-    text: message,
-    timer: 2500,
-    showConfirmButton: false,
-    position: 'top-end',
-    background: '#fff',
-    iconColor: '#4caf50',
-    customClass: {
-      popup: 'swal-popup-small',
-      title: 'swal-title-small',
-    },
-  });
-};
+import { ShowSuccessSwal } from '../features/Alerts/SuccessMessage';
+import { scheduleLogout } from '../constants/ScheduleLogout';
 
 export function useRegister() {
   const dispatch = useDispatch();
@@ -32,12 +16,13 @@ export function useRegister() {
     mutationFn: async (payload: RegisterRequest) => {
       const token = await createUser(payload);
       dispatch(setToken(token));
+      scheduleLogout(token, dispatch);
       return token;
     },
     onSuccess: async () => {
       const { data } = await refetchUser();
       if (data) {
-        showSuccessSwal('Sign-up Successful', `Welcome, ${data.firstname} ${data.lastname || ''}!`);
+        ShowSuccessSwal('Sign-up Successful', `Welcome, ${data.firstname} ${data.lastname || ''}!`);
       }
     },
   });
@@ -51,13 +36,36 @@ export function useLogin() {
     mutationFn: async (payload: LoginRequest) => {
       const token = await authenticateUser(payload);
       dispatch(setToken(token));
+      scheduleLogout(token, dispatch);
       return token;
     },
     onSuccess: async () => {
       const { data } = await refetchUser();
 
       if (data) {
-        showSuccessSwal(
+        ShowSuccessSwal(
+          'Login Successful',
+          `Welcome back, ${data.firstname} ${data.lastname || ''}!`
+        );
+      }
+    },
+  });
+}
+
+export function useSetOAuthToken() {
+  const dispatch = useDispatch();
+  const { refetch: refetchUser } = useGetUser();
+
+  return useMutation({
+    mutationFn: async (token: string) => {
+      dispatch(setToken(token));
+      scheduleLogout(token, dispatch);
+      return token;
+    },
+    onSuccess: async () => {
+      const { data } = await refetchUser();
+      if (data) {
+        ShowSuccessSwal(
           'Login Successful',
           `Welcome back, ${data.firstname} ${data.lastname || ''}!`
         );

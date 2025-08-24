@@ -10,7 +10,10 @@ import { useLogin } from '../../hooks/useAuth';
 import { validateEmail, validatePassword } from '../../utils/validationUtils';
 import ErrorMessage from '../../features/Snackbars/errorMessage';
 import Fade from '@mui/material/Fade';
-import { useEffect } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
+import { oauth } from '../../services/authService';
+import { useSetOAuthToken } from '../../hooks/useAuth';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface LoginDialogProps {
   open: boolean;
@@ -19,14 +22,24 @@ interface LoginDialogProps {
 }
 
 export default function LoginDialog({ open, onClose, onSwitchToRegister }: LoginDialogProps) {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [emailTouched, setEmailTouched] = React.useState(false);
-  const [passwordTouched, setPasswordTouched] = React.useState(false);
-  const [openRegister, setOpenRegister] = React.useState(false);
-  const login = useLogin();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSubmitted, setIsSubmited] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const login = useLogin();
+  const setOAuthToken = useSetOAuthToken();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    if (token) {
+      setOAuthToken.mutate(token, { onSuccess: () => navigate('/') });
+    }
+  }, [location.search, navigate, setOAuthToken]);
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (validateEmail(email) && validatePassword(password)) {
       try {
@@ -34,20 +47,14 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
         setEmail('');
         setPassword('');
         onClose();
-      } catch (error) {
-        console.error(error);
-      }
+      } catch (error) {}
     } else {
-      setEmailTouched(true);
-      setPasswordTouched(true);
+      setIsSubmited(true);
     }
   };
 
-  const emailValid = validateEmail(email);
-  const passwordValid = validatePassword(password);
-
   useEffect(() => {
-    if (!open) return; // Only attach listener when dialog is open
+    if (!open) return;
 
     const handleScroll = () => {
       onClose();
@@ -94,10 +101,10 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
               </label>
               <TextField
                 id="email"
+                type="email"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setEmailTouched(true);
                 }}
                 fullWidth
                 variant="outlined"
@@ -105,16 +112,16 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
                 InputLabelProps={{ shrink: false }}
                 inputProps={{ autoComplete: 'email', style: { color: 'black' } }}
                 className={classNames(styles.textField, {
-                  [styles.validField]: emailTouched && validateEmail(email),
-                  [styles.invalidField]: emailTouched && !validateEmail(email),
+                  [styles.validField]: isSubmitted && validateEmail(email),
+                  [styles.invalidField]: isSubmitted && !validateEmail(email),
                 })}
               />
               <p
                 className={
-                  emailTouched && !validateEmail(email) ? styles.errorText : styles.errorPlaceholder
+                  isSubmitted && !validateEmail(email) ? styles.errorText : styles.errorPlaceholder
                 }
               >
-                {emailTouched && !validateEmail(email)
+                {isSubmitted && !validateEmail(email)
                   ? 'Please enter a valid email address (e.g. name@example.com).'
                   : 'placeholder'}
               </p>
@@ -131,7 +138,6 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  setPasswordTouched(true);
                 }}
                 fullWidth
                 variant="outlined"
@@ -139,18 +145,18 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
                 InputLabelProps={{ shrink: false }}
                 inputProps={{ autoComplete: 'current-password', style: { color: 'black' } }}
                 className={classNames(styles.textField, {
-                  [styles.validField]: passwordTouched && validatePassword(password),
-                  [styles.invalidField]: passwordTouched && !validatePassword(password),
+                  [styles.validField]: isSubmitted && validatePassword(password),
+                  [styles.invalidField]: isSubmitted && !validatePassword(password),
                 })}
               />
               <p
                 className={
-                  passwordTouched && !validatePassword(password)
+                  isSubmitted && !validatePassword(password)
                     ? styles.errorText
                     : styles.errorPlaceholder
                 }
               >
-                {passwordTouched && !validatePassword(password)
+                {isSubmitted && !validatePassword(password)
                   ? 'Password must be at least 6 characters, include uppercase, lowercase, a number, and a special character, with no spaces.'
                   : 'placeholder'}
               </p>
@@ -179,10 +185,7 @@ export default function LoginDialog({ open, onClose, onSwitchToRegister }: Login
               <hr className={styles.divider} />
             </div>
 
-            <GoogleOAuthButton
-              redirectUrl="http://localhost:8080/oauth2/authorization/google"
-              onClick={() => console.log('Google button clicked')}
-            />
+            <GoogleOAuthButton onClick={() => oauth()} />
           </form>
         </Dialog>
       </LoadingScreen>

@@ -10,7 +10,10 @@ import { useRegister } from '../../hooks/useAuth';
 import ErrorMessage from '../../features/Snackbars/errorMessage';
 import { validateRequired, validateEmail, validatePassword } from '../../utils/validationUtils';
 import Fade from '@mui/material/Fade';
-import { useEffect } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
+import { oauth } from '../../services/authService';
+import { useSetOAuthToken } from '../../hooks/useAuth';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface RegisterDialogProps {
   open: boolean;
@@ -19,19 +22,26 @@ interface RegisterDialogProps {
 }
 
 export default function RegisterDialog({ open, onClose, onSwitchToLogin }: RegisterDialogProps) {
-  const [firstname, setFirstname] = React.useState('');
-  const [lastname, setLastname] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-
-  const [firstNameTouched, setFirstNameTouched] = React.useState(false);
-  const [lastNameTouched, setLastNameTouched] = React.useState(false);
-  const [emailTouched, setEmailTouched] = React.useState(false);
-  const [passwordTouched, setPasswordTouched] = React.useState(false);
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const register = useRegister();
+  const setOAuthToken = useSetOAuthToken();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    if (token) {
+      setOAuthToken.mutate(token, { onSuccess: () => navigate('/') });
+    }
+  }, [location.search, navigate, setOAuthToken]);
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const firstNameValid = validateRequired(firstname);
@@ -47,14 +57,9 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
         setEmail('');
         setPassword('');
         onClose();
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     } else {
-      setFirstNameTouched(true);
-      setLastNameTouched(true);
-      setEmailTouched(true);
-      setPasswordTouched(true);
+      setIsSubmitted(true);
     }
   };
 
@@ -109,7 +114,6 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                 value={firstname}
                 onChange={(e) => {
                   setFirstname(e.target.value);
-                  setFirstNameTouched(true);
                 }}
                 fullWidth
                 variant="outlined"
@@ -117,18 +121,18 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                 InputLabelProps={{ shrink: false }}
                 inputProps={{ autoComplete: 'given-name' }}
                 className={classNames(styles.textField, {
-                  [styles.validField]: firstNameTouched && validateRequired(firstname),
-                  [styles.invalidField]: firstNameTouched && !validateRequired(firstname),
+                  [styles.validField]: isSubmitted && validateRequired(firstname),
+                  [styles.invalidField]: isSubmitted && !validateRequired(firstname),
                 })}
               />
               <p
                 className={
-                  firstNameTouched && !validateRequired(firstname)
+                  isSubmitted && !validateRequired(firstname)
                     ? styles.errorText
                     : styles.errorPlaceholder
                 }
               >
-                {firstNameTouched && !validateRequired(firstname)
+                {isSubmitted && !validateRequired(firstname)
                   ? 'First name is required'
                   : 'placeholder'}
               </p>
@@ -144,7 +148,6 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                 value={lastname}
                 onChange={(e) => {
                   setLastname(e.target.value);
-                  setLastNameTouched(true);
                 }}
                 fullWidth
                 variant="outlined"
@@ -152,18 +155,18 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                 InputLabelProps={{ shrink: false }}
                 inputProps={{ autoComplete: 'family-name' }}
                 className={classNames(styles.textField, {
-                  [styles.validField]: lastNameTouched && validateRequired(lastname),
-                  [styles.invalidField]: lastNameTouched && !validateRequired(lastname),
+                  [styles.validField]: isSubmitted && validateRequired(lastname),
+                  [styles.invalidField]: isSubmitted && !validateRequired(lastname),
                 })}
               />
               <p
                 className={
-                  lastNameTouched && !validateRequired(lastname)
+                  isSubmitted && !validateRequired(lastname)
                     ? styles.errorText
                     : styles.errorPlaceholder
                 }
               >
-                {lastNameTouched && !validateRequired(lastname)
+                {isSubmitted && !validateRequired(lastname)
                   ? 'Last name is required'
                   : 'placeholder'}
               </p>
@@ -180,7 +183,6 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setEmailTouched(true);
                 }}
                 fullWidth
                 variant="outlined"
@@ -188,16 +190,16 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                 InputLabelProps={{ shrink: false }}
                 inputProps={{ autoComplete: 'email', style: { color: 'black' } }}
                 className={classNames(styles.textField, {
-                  [styles.validField]: emailTouched && validateEmail(email),
-                  [styles.invalidField]: emailTouched && !validateEmail(email),
+                  [styles.validField]: isSubmitted && validateEmail(email),
+                  [styles.invalidField]: isSubmitted && !validateEmail(email),
                 })}
               />
               <p
                 className={
-                  emailTouched && !validateEmail(email) ? styles.errorText : styles.errorPlaceholder
+                  isSubmitted && !validateEmail(email) ? styles.errorText : styles.errorPlaceholder
                 }
               >
-                {emailTouched && !validateEmail(email)
+                {isSubmitted && !validateEmail(email)
                   ? 'Please enter a valid email address (e.g. name@example.com).'
                   : 'placeholder'}
               </p>
@@ -214,7 +216,6 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  setPasswordTouched(true);
                 }}
                 fullWidth
                 variant="outlined"
@@ -222,18 +223,18 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                 InputLabelProps={{ shrink: false }}
                 inputProps={{ autoComplete: 'current-password', style: { color: 'black' } }}
                 className={classNames(styles.textField, {
-                  [styles.validField]: passwordTouched && validatePassword(password),
-                  [styles.invalidField]: passwordTouched && !validatePassword(password),
+                  [styles.validField]: isSubmitted && validatePassword(password),
+                  [styles.invalidField]: isSubmitted && !validatePassword(password),
                 })}
               />
               <p
                 className={
-                  passwordTouched && !validatePassword(password)
+                  isSubmitted && !validatePassword(password)
                     ? styles.errorText
                     : styles.errorPlaceholder
                 }
               >
-                {passwordTouched && !validatePassword(password)
+                {isSubmitted && !validatePassword(password)
                   ? 'Password must be at least 6 characters, include uppercase, lowercase, a number, and a special character, with no spaces.'
                   : 'placeholder'}
               </p>
@@ -262,10 +263,7 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
               <hr className={styles.divider} />
             </div>
 
-            <GoogleOAuthButton
-              redirectUrl="http://localhost:8080/oauth2/authorization/google"
-              onClick={() => console.log('Google button clicked')}
-            />
+            <GoogleOAuthButton onClick={() => oauth()} />
           </form>
         </Dialog>
       </LoadingScreen>

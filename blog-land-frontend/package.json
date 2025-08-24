@@ -23,6 +23,7 @@
     "clsx": "^2.1.1",
     "hamlet": "^0.3.3",
     "he": "^1.2.0",
+    "jwt-decode": "^4.0.0",
     "lottie-react": "^2.4.1",
     "mdb-react-ui-kit": "^9.0.0",
     "react": "^19.1.0",

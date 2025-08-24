@@ -29,7 +29,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws IOException {
+                                        Authentication authentication) throws IOException {
 
         DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
         String email = oauthUser.getAttribute("email");
@@ -47,14 +47,9 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
         String token = jwtUtil.generateJwtToken(user);
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        // Use Jackson ObjectMapper or similar to serialize userResponse to Json
-        String json = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(token);
-
-        response.getWriter().write(json);
-        response.getWriter().flush();
-        response.getWriter().close();
+        // 👇 redirect to frontend with token in URL
+        String redirectUrl = "http://localhost:5173?token=" + token;
+        response.sendRedirect(redirectUrl);
     }
+
 }

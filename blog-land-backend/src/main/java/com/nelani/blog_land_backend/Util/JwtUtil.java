@@ -42,9 +42,10 @@ public class JwtUtil {
                     .build()
                     .parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            throw new RuntimeException("JWT token has expired", e);
         } catch (JwtException | IllegalArgumentException e) {
-            // Logging can be added here if needed
-            return false;
+            throw new RuntimeException("Invalid JWT token", e);
         }
     }
 }
