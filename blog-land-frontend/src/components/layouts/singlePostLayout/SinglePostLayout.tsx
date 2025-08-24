@@ -24,7 +24,12 @@ export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutP
   const category = categoriesData?.find((c) => c.id === post?.categoryId);
   const categoryName = category?.name;
 
-  if (isError) return <div>Error loading post</div>;
+  if (isError)
+    return (
+      <div className="container">
+        <div className={styles.message}>Could not load data.</div>
+      </div>
+    );
 
   return (
     <>

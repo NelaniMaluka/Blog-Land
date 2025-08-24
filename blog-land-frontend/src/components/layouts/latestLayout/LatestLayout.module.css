@@ -45,3 +45,11 @@
 .item:hover .overlay {
   transform: translateY(0) !important;
 }
+
+.message {
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}

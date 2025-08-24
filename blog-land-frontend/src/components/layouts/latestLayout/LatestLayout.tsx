@@ -6,6 +6,7 @@ import Masonry from '@mui/lab/Masonry';
 import he from 'he';
 import BasicBreadcrumbs from '../../breadcrumbs/breadcrumbs';
 import { ROUTES } from '../../../constants/routes';
+import { useEffect } from 'react';
 
 import styles from './LatestLayout.module.css';
 
@@ -14,16 +15,24 @@ const MOBILE_BREAKPOINT = 600;
 const MOBILE_HEIGHT_VH = 30;
 
 export const LatestLayout = () => {
-  const { data: latestPosts, isLoading } = useGetLatestPosts({ page: 1, size: 20 });
+  const { data: latestPosts, isLoading, isError } = useGetLatestPosts({ page: 1, size: 20 });
   const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const isMobile = windowWidth < MOBILE_BREAKPOINT;
+
+  if (isError)
+    return (
+      <div className="container">
+        <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={'Latest'} />
+        <div className={styles.message}>Could not load data.</div>
+      </div>
+    );
 
   return (
     <LoadingScreen isLoading={isLoading}>
@@ -41,7 +50,6 @@ export const LatestLayout = () => {
           >
             {(latestPosts ?? []).map((post, index) => {
               const heightVh = isMobile ? MOBILE_HEIGHT_VH : heights[index % heights.length];
-              console.log(post);
               return (
                 <div
                   key={post.id || index}
