@@ -67,6 +67,7 @@ export default function LoginDialog({
         TransitionComponent={Fade}
         transitionDuration={600}
         disableScrollLock={true}
+        disableEnforceFocus
       >
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.header}>
@@ -76,7 +77,9 @@ export default function LoginDialog({
               <span
                 onClick={() => {
                   onClose();
-                  onSwitchToRegister();
+                  setTimeout(() => {
+                    onSwitchToRegister();
+                  }, 100);
                 }}
               >
                 Sign-Up
@@ -95,6 +98,7 @@ export default function LoginDialog({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               fullWidth
+              autoFocus
               size="small"
               inputProps={{ autoComplete: 'email', style: { color: 'black' } }}
               className={classNames(styles.textField, {
@@ -112,7 +116,9 @@ export default function LoginDialog({
                 <span
                   onClick={() => {
                     onClose();
-                    onSwitchToForgot(); // 👈 trigger forgot password
+                    setTimeout(() => {
+                      onSwitchToForgot();
+                    }, 100);
                   }}
                 >
                   Forgot password?
@@ -125,6 +131,7 @@ export default function LoginDialog({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               fullWidth
+              autoFocus={false}
               size="small"
               inputProps={{ autoComplete: 'current-password', style: { color: 'black' } }}
               className={classNames(styles.textField, {

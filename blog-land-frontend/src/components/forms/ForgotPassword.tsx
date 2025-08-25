@@ -40,7 +40,12 @@ export default function ForgotPasswordDialog({
 
   return (
     <LoadingScreen isLoading={forgotPassword.isPending}>
-      <Dialog open={open} onClose={onClose} classes={{ paper: styles.dialogPaper }}>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        classes={{ paper: styles.dialogPaper }}
+        disableEnforceFocus
+      >
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.header}>
             <h5 className={styles.title}>Forgot Password</h5>
@@ -50,7 +55,9 @@ export default function ForgotPasswordDialog({
             <span
               onClick={() => {
                 onClose();
-                onSwitchToLogin();
+                setTimeout(() => {
+                  onSwitchToLogin();
+                }, 100);
               }}
             >
               Back to Login
@@ -62,11 +69,12 @@ export default function ForgotPasswordDialog({
               Email
             </label>
             <TextField
-              id="email"
+              id="email1"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               fullWidth
+              autoFocus
               variant="outlined"
               size="small"
               inputProps={{ autoComplete: 'email', style: { color: 'black' } }}

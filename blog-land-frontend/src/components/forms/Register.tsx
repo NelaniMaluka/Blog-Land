@@ -87,6 +87,7 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
           TransitionComponent={Fade}
           transitionDuration={600}
           disableScrollLock={true}
+          disableEnforceFocus
         >
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.header}>
@@ -116,6 +117,7 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                   setFirstname(e.target.value);
                 }}
                 fullWidth
+                autoFocus
                 variant="outlined"
                 size="small"
                 InputLabelProps={{ shrink: false }}
@@ -150,6 +152,7 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                   setLastname(e.target.value);
                 }}
                 fullWidth
+                autoFocus={false}
                 variant="outlined"
                 size="small"
                 InputLabelProps={{ shrink: false }}
@@ -185,6 +188,7 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                   setEmail(e.target.value);
                 }}
                 fullWidth
+                autoFocus={false}
                 variant="outlined"
                 size="small"
                 InputLabelProps={{ shrink: false }}
@@ -218,6 +222,7 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
                   setPassword(e.target.value);
                 }}
                 fullWidth
+                autoFocus={false}
                 variant="outlined"
                 size="small"
                 InputLabelProps={{ shrink: false }}

@@ -45,49 +45,55 @@ export default function AvatarMenu() {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         disableScrollLock
       >
-        {auth ? (
-          <>
-            <a href={ROUTES.DASHBOARD_PROFILE}>
-              <MenuItem className={styles.menuItem}>
+        {auth
+          ? [
+              <MenuItem
+                key="profile"
+                component="a"
+                href={ROUTES.DASHBOARD_PROFILE}
+                className={styles.menuItem}
+              >
                 <img className={styles.menuIcon} src="/icons/profile.png" alt="profile icon" />
                 Profile
-              </MenuItem>
-            </a>
-            <a href={ROUTES.DASHBOARD_POSTS}>
-              <MenuItem className={styles.menuItem}>
+              </MenuItem>,
+              <MenuItem
+                key="blogs"
+                component="a"
+                href={ROUTES.DASHBOARD_POSTS}
+                className={styles.menuItem}
+              >
                 <img className={styles.menuIcon} src="/icons/blog.png" alt="blog icon" />
                 My Blogs
-              </MenuItem>
-            </a>
-            <MenuItem onClick={handleLogout} className={styles.menuItem}>
-              <img className={styles.menuIcon} src="/icons/logout.png" alt="logout icon" />
-              Logout
-            </MenuItem>
-          </>
-        ) : (
-          <>
-            <MenuItem
-              onClick={() => {
-                setOpenRegisterDialog(true);
-                handleCloseMenu();
-              }}
-              className={styles.menuItem}
-            >
-              <img className={styles.menuIcon} src="/icons/register.png" alt="register icon" />
-              Register
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                setOpenLoginDialog(true);
-                handleCloseMenu();
-              }}
-              className={styles.menuItem}
-            >
-              <img className={styles.menuIcon} src="/icons/login.png" alt="login icon" />
-              Login
-            </MenuItem>
-          </>
-        )}
+              </MenuItem>,
+              <MenuItem key="logout" onClick={handleLogout} className={styles.menuItem}>
+                <img className={styles.menuIcon} src="/icons/logout.png" alt="logout icon" />
+                Logout
+              </MenuItem>,
+            ]
+          : [
+              <MenuItem
+                key="register"
+                onClick={() => {
+                  setOpenRegisterDialog(true);
+                  handleCloseMenu();
+                }}
+                className={styles.menuItem}
+              >
+                <img className={styles.menuIcon} src="/icons/register.png" alt="register icon" />
+                Register
+              </MenuItem>,
+              <MenuItem
+                key="login"
+                onClick={() => {
+                  setOpenLoginDialog(true);
+                  handleCloseMenu();
+                }}
+                className={styles.menuItem}
+              >
+                <img className={styles.menuIcon} src="/icons/login.png" alt="login icon" />
+                Login
+              </MenuItem>,
+            ]}
       </Menu>
 
       {/* Login */}
