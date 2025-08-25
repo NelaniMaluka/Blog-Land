@@ -28,16 +28,19 @@ export default function ForgotPasswordDialog({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (validateEmail(email)) {
-      forgotPassword.mutateAsync(email);
-      onClose();
+      try {
+        await forgotPassword.mutateAsync(email);
+        setEmail('');
+        onClose();
+      } catch (error) {}
     } else {
       setIsSubmitted(true);
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} classes={{ paper: styles.dialogPaper }}>
-      <LoadingScreen isLoading={forgotPassword.isPending}>
+    <LoadingScreen isLoading={forgotPassword.isPending}>
+      <Dialog open={open} onClose={onClose} classes={{ paper: styles.dialogPaper }}>
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.header}>
             <h5 className={styles.title}>Forgot Password</h5>
@@ -101,11 +104,11 @@ export default function ForgotPasswordDialog({
             Send Reset Link
           </Button>
         </form>
-      </LoadingScreen>
 
-      {forgotPassword.isError && (
-        <ErrorMessage message={forgotPassword?.error?.message || 'Something went wrong'} />
-      )}
-    </Dialog>
+        {forgotPassword.isError && (
+          <ErrorMessage message={forgotPassword?.error?.message || 'Something went wrong'} />
+        )}
+      </Dialog>
+    </LoadingScreen>
   );
 }

@@ -4,6 +4,7 @@ import {
   submitForgotPassword,
   submitChangeWithTokenPassword,
 } from '../services/changePasswordService';
+import { ShowSuccessSwal } from '../features/Alerts/SuccessMessage';
 
 export const useChangePassword = () => {
   return useMutation({
@@ -13,7 +14,16 @@ export const useChangePassword = () => {
 
 export const useForgotPassword = () => {
   return useMutation({
-    mutationFn: submitForgotPassword,
+    mutationFn: async (email: string) => {
+      const response = await submitForgotPassword(email);
+      return response;
+    },
+    onSuccess: () => {
+      ShowSuccessSwal(
+        'Reset Email Sent',
+        'A password reset email has been sent to your inbox. Please check your email to proceed.'
+      );
+    },
   });
 };
 

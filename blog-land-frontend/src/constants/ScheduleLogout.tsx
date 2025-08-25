@@ -1,6 +1,6 @@
-import * as jwtDecode from 'jwt-decode';
 import { AppDispatch } from '../store/store';
 import { logout } from '../store/authSlice';
+import { jwtDecode } from 'jwt-decode';
 
 interface JwtPayload {
   exp: number;

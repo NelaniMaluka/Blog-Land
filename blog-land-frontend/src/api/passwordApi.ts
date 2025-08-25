@@ -9,9 +9,7 @@ export const changePassword = async (payload: changePasswordRequest) => {
 };
 
 export const forgotPassword = async (payload: { email: string }) => {
-  const response = await apiClient.post('/auth/request-password-reset', {
-    payload,
-  });
+  const response = await apiClient.post('/auth/request-password-reset', payload);
   return response;
 };
 

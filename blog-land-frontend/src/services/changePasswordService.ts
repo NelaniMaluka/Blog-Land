@@ -8,19 +8,20 @@ export const submitChangePassword = async (payload: changePasswordRequest): Prom
   const validPayload = validateOrThrow(changePasswordSchema, payload);
 
   try {
-    const categories = await changePassword(validPayload);
-    return categories.data;
+    const response = await changePassword(validPayload);
+    return response.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to submit request'));
   }
 };
 
 export const submitForgotPassword = async (email: string): Promise<string> => {
-  const validPayload = validateOrThrow(emailSchema, email);
+  const validPayload = validateOrThrow(emailSchema, { email });
 
   try {
-    const categories = await forgotPassword(validPayload);
-    return categories.data;
+    const response = await forgotPassword(validPayload);
+    console.log(response);
+    return response.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to submit request'));
   }
@@ -32,8 +33,8 @@ export const submitChangeWithTokenPassword = async (
   const validPayload = validateOrThrow(changePasswordWithTokenSchema, payload);
 
   try {
-    const categories = await changePasswordWithToken(validPayload);
-    return categories.data;
+    const response = await changePasswordWithToken(validPayload);
+    return response.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to submit request'));
   }

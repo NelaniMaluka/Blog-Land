@@ -16,11 +16,12 @@ export function useRegister() {
     mutationFn: async (payload: RegisterRequest) => {
       const token = await createUser(payload);
       dispatch(setToken(token));
-      scheduleLogout(token, dispatch);
+
       return token;
     },
-    onSuccess: async () => {
+    onSuccess: async (token) => {
       const { data } = await refetchUser();
+      scheduleLogout(token, dispatch);
       if (data) {
         ShowSuccessSwal('Sign-up Successful', `Welcome, ${data.firstname} ${data.lastname || ''}!`);
       }
@@ -39,9 +40,9 @@ export function useLogin() {
       scheduleLogout(token, dispatch);
       return token;
     },
-    onSuccess: async () => {
+    onSuccess: async (token) => {
       const { data } = await refetchUser();
-
+      scheduleLogout(token, dispatch);
       if (data) {
         ShowSuccessSwal(
           'Login Successful',
