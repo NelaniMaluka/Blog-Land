@@ -48,7 +48,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
         String token = jwtUtil.generateJwtToken(user);
 
         // 👇 redirect to frontend with token in URL
-        String redirectUrl = "http://localhost:5173?token=" + token;
+        String redirectUrl = "https://blog-land.web.app?token=" + token;
         response.sendRedirect(redirectUrl);
     }
 

@@ -40,7 +40,7 @@ export const authenticateUser = async (payload: LoginRequest): Promise<string> =
 // Google OAuth login
 export const oauth = async (): Promise<void> => {
   try {
-    window.location.href = 'https://blog-land-backend.onrender.com/oauth2/authorization/google';
+    window.location.href = 'https://blog-land.onrender.com/oauth2/authorization/google';
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'OAuth login failed.'));
   }
