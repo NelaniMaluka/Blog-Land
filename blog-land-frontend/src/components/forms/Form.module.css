@@ -55,6 +55,21 @@
   display: block;
 }
 
+.label2 {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.45rem;
+  font-weight: 500;
+  margin: 10px 0 0 0;
+}
+
+.forgotPassword {
+  font-weight: 400;
+}
+.forgotPassword:hover {
+  font-weight: 500;
+}
+
 .valid {
   color: green;
 }

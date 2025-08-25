@@ -96,20 +96,10 @@ const Footer: React.FC = () => {
 
             <div className={styles.footerCol}>
               <h5>Contact</h5>
-              <a
-                href="https://www.google.com/search?gs_ssp=eJzj4tDP1TdIN7IwMWD04snKz0jMy0stTiotSgcAU2cHoA&q=johannesburg&oq=joha&gs_lcrp=EgZjaHJvbWUqCggBEC4YsQMYgAQyBggAEEUYOTIKCAEQLhixAxiABDIKCAIQABixAxiABDIKCAMQABixAxiABDIQCAQQLhivARjHARixAxiABDIQCAUQLhiDARixAxiABBiKBTIQCAYQLhivARjHARixAxiABDINCAcQLhiDARixAxiABDIKCAgQLhixAxiABDIHCAkQABiPAtIBCDI5MzlqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaHome className={styles.icon1} /> Johannesburg, South Africa
-              </a>
-              <a href="mailto:info@blog-land.com">
-                <FaEnvelope className={styles.icon} /> info@blog-land.com
-              </a>
 
-              <a href="tel:012345678">
-                <FaPhone className={styles.icon} /> 012 345 6788
-              </a>
+              <a href="mailto:info@blog-land.com">info@blog-land.com</a>
+
+              <a href="tel:012345678">012 345 6788</a>
             </div>
             {/* Newsletter Section */}
             <div className={styles.footerCol}>
@@ -132,8 +122,8 @@ const Footer: React.FC = () => {
           <div className={styles.copyRight}>
             <div>© 2025 Copyright Blog-Land</div>
             <div>
-              <a href={ROUTES.PRIVACY_POLICY}>Privacy policy</a>
-              <a href={ROUTES.TERMS_AND_CONDITIONS}>Terms and Conditions</a>
+              <a href={ROUTES.PRIVACY_POLICY}>Privacy</a>
+              <a href={ROUTES.TERMS_AND_CONDITIONS}>Terms</a>
             </div>
           </div>
         </div>

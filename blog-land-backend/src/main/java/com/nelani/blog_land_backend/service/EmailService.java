@@ -17,13 +17,13 @@ public class EmailService {
 
     public void sendPasswordResetEmail(String toEmail, String token) {
         String subject = "🔐 Blog Land – Reset Your Password";
-        String resetUrl = "https://blogland.com/reset-password?token=" + token;
+        String resetUrl = "https://blog-land.web.app/reset-password?token=" + token;
 
         String htmlContent =
                 "<div style='font-family:Arial,sans-serif;color:#333;background:#f9f9f9;max-width:500px;width:100%;margin:auto;'>"
                         + "<div style='padding:1px 20px 0 20px'><h2 style='margin:20px 0'>Blog-Land</h2></div>"
                         + "<div style='text-align:center;'>"
-                        + "<img src='https://blogland.com/assets/logo-heade-2.png' alt='Blog Land Logo' style='width:100%;height:auto;display:block;margin-bottom:20px;'/>"
+                        + "<img src='https://blog-land.web.app/assets/logo-header.png' alt='Blog Land Logo' style='width:100%;height:auto;display:block;margin-bottom:20px;'/>"
                         + "</div>"
                         + "<div style='padding:0 20px 40px'>"
                         + "<h2 style='color:#2e86c1;margin:40px 0 20px 0'>Hi there,</h2>"

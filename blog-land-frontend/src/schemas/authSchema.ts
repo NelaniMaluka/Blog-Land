@@ -30,7 +30,7 @@ export const changePasswordSchema = z.object({
 });
 
 export const changePasswordWithTokenSchema = z.object({
-  token: z.string().min(1, { message: 'First name cannot be empty' }),
+  token: z.string().min(1, { message: 'Token cannot be empty' }),
   newPassword: passwordSchema,
   repeatPassword: passwordSchema,
 });

@@ -49,5 +49,8 @@ export const useLogoutUser = () => {
 
       ShowSuccessSwal('Logout Successful', `We hope to see you again soon!`);
     },
+    onError: () => {
+      dispatch(logout());
+    },
   });
 };
