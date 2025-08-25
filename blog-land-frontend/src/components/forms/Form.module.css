@@ -24,6 +24,18 @@
   justify-content: space-between;
 }
 
+.log {
+  font-size: 0.5rem;
+}
+
+.log span {
+  font-weight: 600;
+}
+
+.log span:hover {
+  text-decoration: underline;
+}
+
 .header p {
   font-size: 0.5rem;
 }

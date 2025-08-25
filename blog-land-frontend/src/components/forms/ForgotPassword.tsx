@@ -44,19 +44,18 @@ export default function ForgotPasswordDialog({
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.header}>
             <h5 className={styles.title}>Forgot Password</h5>
-            <p>
-              Remembered your password?{' '}
-              <span
-                onClick={() => {
-                  onClose();
-                  onSwitchToLogin();
-                }}
-              >
-                Back to Login
-              </span>
-            </p>
           </div>
-
+          <p className={styles.log}>
+            Remembered your password?{' '}
+            <span
+              onClick={() => {
+                onClose();
+                onSwitchToLogin();
+              }}
+            >
+              Back to Login
+            </span>
+          </p>
           {/* Email */}
           <div className={styles.inputGroup}>
             <label htmlFor="email" className={styles.label}>
