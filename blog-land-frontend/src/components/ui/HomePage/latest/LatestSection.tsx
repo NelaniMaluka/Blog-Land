@@ -55,7 +55,7 @@ export const LatestSection = () => {
                 <span>{formatViews(recentPost.views)} views</span>
                 <span>{recentPost.readTime} min read</span>
               </div>
-              <a href={ROUTES.POST(recentPost.id)} className={styles.readMore}>
+              <a href={ROUTES.POST(recentPost.id, recentPost.title)} className={styles.readMore}>
                 Read more <ArrowForwardIcon className={styles.readMoreIcon} fontSize="small" />
               </a>
             </div>

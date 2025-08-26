@@ -1,14 +1,34 @@
 import styles from './Navbar.module.css';
-
+import { useEffect, useState } from 'react';
 import AvatarMenu from './Avatar/Avatar';
 import NavbarBottom from './NavbarBottom/NavbarBottom';
 import { ROUTES } from '../../constants/routes';
+import { useNavigate } from 'react-router-dom';
+import { useGetRandomPost } from '../../hooks/usePost';
+import ErrorMessage from '../../features/Snackbars/errorMessage';
 
 interface NavbarProps {
   setOpen: (open: boolean) => void;
 }
 
 function Navbar({ setOpen }: NavbarProps) {
+  const navigate = useNavigate();
+  const { data: post, isLoading, isError, refetch } = useGetRandomPost();
+  const [redirect, setRedirect] = useState(false);
+
+  useEffect(() => {
+    if (redirect && post) {
+      navigate(ROUTES.POST(post.id, post.title));
+      setRedirect(false); // reset redirect
+    }
+  }, [redirect, post, navigate]);
+
+  const handleRandomPostClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    const result = await refetch();
+    setRedirect(true);
+  };
+
   return (
     <>
       <nav className={styles.navbar}>
@@ -33,11 +53,12 @@ function Navbar({ setOpen }: NavbarProps) {
                 </a>
               </span>
               <span className={styles.navbar_Link_mobile}>
-                <a href={ROUTES.RANDOM_POSTS}>
+                <a href="#" onClick={handleRandomPostClick}>
                   <img src="/icons/random.png" alt="Random icon" />
                   <span>Random</span>
                 </a>
               </span>
+
               <span className={styles.navbar_Link_mobile}>
                 <a href={ROUTES.LATEST_POSTS}>
                   <img className={styles.clock} src="/icons/clock.png" alt="Latest icon" />
@@ -59,6 +80,7 @@ function Navbar({ setOpen }: NavbarProps) {
             <NavbarBottom />
           </div>
         </div>
+        {isError && <ErrorMessage message="Failed to load random post" />}
       </nav>
     </>
   );

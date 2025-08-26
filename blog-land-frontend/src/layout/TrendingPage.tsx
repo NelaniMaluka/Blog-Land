@@ -3,12 +3,21 @@ import { PostsLayout } from '../components/layouts/postLayout/PostsLayout';
 import { useGetTrendingPosts } from '../hooks/usePost';
 import { Order } from '../types/post/response';
 import { Helmet } from 'react-helmet-async';
+import { useSearchParams } from 'react-router-dom';
 
 export const TrendingPage = () => {
-  const [page, setPage] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const [page, setPage] = useState(pageParam - 1);
+
   const { data, isLoading, isError } = useGetTrendingPosts({ page, size: 12 });
-  const posts = data?.content ?? [];
   const totalPages = data?.totalPages ?? 0;
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    setSearchParams({ page: String(newPage + 1) }); // URL gets updated
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const title = 'Trending Posts – Blog Land';
   const description =
@@ -52,11 +61,11 @@ export const TrendingPage = () => {
 
       <PostsLayout
         title="Trending"
-        posts={posts}
+        posts={data?.content ?? []}
         isLoading={isLoading}
         isError={isError}
         page={page}
-        setPage={setPage}
+        setPage={handlePageChange}
         totalPages={totalPages}
         order={Order.LATEST}
         setOrder={() => {}}

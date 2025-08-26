@@ -1,17 +1,23 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useGetCategories } from '../hooks/useCategory';
 import { useGetCategoryPosts } from '../hooks/usePost';
 import { PostsLayout } from '../components/layouts/postLayout/PostsLayout';
-import { Order } from '../types/post/response';
-import { PostResponse } from '../types/post/response';
+import { Order, PostResponse } from '../types/post/response';
 import { Helmet } from 'react-helmet-async';
 
 export const CategoryPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: categories } = useGetCategories();
-  const [page, setPage] = useState(0);
-  const [order, setOrder] = useState<Order>(Order.LATEST);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // read from URL
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const orderParam = (searchParams.get('order') as Order) || Order.LATEST;
+
+  // internal state synced with URL
+  const [page, setPage] = useState(pageParam - 1); // backend 0-indexed
+  const [order, setOrder] = useState<Order>(orderParam);
 
   const decodedSlug = decodeURIComponent(slug || '');
   const category = categories?.find((c) => c.name.toLowerCase() === decodedSlug.toLowerCase());
@@ -28,6 +34,18 @@ export const CategoryPage = () => {
   const totalElements: number = data?.totalElements || 0;
   const canonicalUrl = window.location.href;
 
+  // --- handlers that sync URL + state ---
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    setSearchParams({ page: String(newPage + 1), order });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOrderChange = (newOrder: Order) => {
+    setOrder(newOrder);
+    setSearchParams({ page: String(page + 1), order: newOrder });
+  };
+
   // Generate comma-separated keywords from posts
   const keywords = posts.map((p) => p.title).join(', ');
 
@@ -41,10 +59,7 @@ export const CategoryPage = () => {
       '@type': 'BlogPosting',
       headline: p.title,
       url: `${window.location.origin}/post/${p.id}`,
-      author: {
-        '@type': 'Person',
-        name: p.author,
-      },
+      author: { '@type': 'Person', name: p.author },
       datePublished: p.createdAt,
       image: p.postImgUrl || `${window.location.origin}/default-post.jpg`,
     })),
@@ -56,29 +71,23 @@ export const CategoryPage = () => {
         <title>{category?.name ? `${category.name} – Blog Land` : 'Category – Blog Land'}</title>
         <meta
           name="description"
-          content={`Read the latest posts in the ${
-            category?.name || 'category'
-          } on Blog Land, a community-driven platform for writers and readers.`}
+          content={`Read the latest posts in the ${category?.name || 'category'} on Blog Land.`}
         />
         <meta
           name="keywords"
           content={`Blog Land, ${category?.name}, blogging, posts, ${keywords}`}
         />
         <meta name="author" content="Nelani Maluka" />
-
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Open Graph */}
         <meta property="og:title" content={category?.name || 'Category – Blog Land'} />
         <meta
           property="og:description"
-          content={`Explore posts in the ${
-            category?.name || 'category'
-          } on Blog Land, where writers and readers connect.`}
+          content={`Explore posts in the ${category?.name || 'category'} on Blog Land.`}
         />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content={`${window.location.origin}/og-image-category.jpg`} />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -87,7 +96,6 @@ export const CategoryPage = () => {
           name="twitter:description"
           content={`Explore posts in the ${category?.name || 'category'} on Blog Land.`}
         />
-        <meta name="twitter:image" content={`${window.location.origin}/og-image-category.jpg`} />
 
         {/* Structured Data */}
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
@@ -99,10 +107,10 @@ export const CategoryPage = () => {
         isLoading={isLoading}
         isError={isError}
         page={page}
-        setPage={setPage}
+        setPage={handlePageChange}
         totalPages={totalPages}
         order={order}
-        setOrder={setOrder}
+        setOrder={handleOrderChange}
         showOrderButtons={true}
         totalElements={totalElements}
       />

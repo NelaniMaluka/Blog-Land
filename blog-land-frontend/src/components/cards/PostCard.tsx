@@ -40,7 +40,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, categoryName }) => {
           </div>
         </div>
         <div>
-          <a href={ROUTES.POST(post.id)} className={styles.readMore}>
+          <a href={ROUTES.POST(post.id, post.title)} className={styles.readMore}>
             Read more <ArrowForwardIcon className={styles.readMoreIcon} fontSize="small" />
           </a>
         </div>

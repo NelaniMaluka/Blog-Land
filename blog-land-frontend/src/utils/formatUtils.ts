@@ -1,5 +1,12 @@
 export const stripHtml = (html: string) => html.replace(/<\/?[^>]+(>|$)/g, '');
 
+export const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
 export const formatDate = (dateString?: string): string => {
   if (!dateString) return '';
 

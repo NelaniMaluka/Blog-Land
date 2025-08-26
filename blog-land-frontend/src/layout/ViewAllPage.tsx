@@ -1,12 +1,20 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { PostsLayout } from '../components/layouts/postLayout/PostsLayout';
 import { useGetAllPost } from '../hooks/usePost';
 import { Order } from '../types/post/response';
 import { Helmet } from 'react-helmet-async';
 
 export const ViewAllPage = () => {
-  const [order, setOrder] = useState<Order>(Order.LATEST);
-  const [page, setPage] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // read page & order from query params
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const orderParam = (searchParams.get('order') as Order) || Order.LATEST;
+
+  // internal state synced with URL
+  const [page, setPage] = useState(pageParam - 1); // backend is 0-indexed
+  const [order, setOrder] = useState<Order>(orderParam);
 
   const { data, isLoading, isError } = useGetAllPost({ page, size: 12, order });
   const posts = data?.content ?? [];
@@ -23,6 +31,22 @@ export const ViewAllPage = () => {
     name: title,
     description: description,
     url: canonicalUrl,
+  };
+
+  // handlers that sync URL + state
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    setSearchParams({ page: String(newPage + 1), order }); // keep order
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOrderChange = (newOrder: Order) => {
+    setOrder(newOrder);
+
+    setSearchParams({
+      page: String(page + 1),
+      order: newOrder,
+    });
   };
 
   return (
@@ -58,10 +82,10 @@ export const ViewAllPage = () => {
         isLoading={isLoading}
         isError={isError}
         page={page}
-        setPage={setPage}
+        setPage={handlePageChange}
         totalPages={totalPages}
         order={order}
-        setOrder={setOrder}
+        setOrder={handleOrderChange}
         showOrderButtons={true}
         totalElements={data?.totalElements || 0}
       />

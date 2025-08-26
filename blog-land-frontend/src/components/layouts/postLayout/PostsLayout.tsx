@@ -45,19 +45,13 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
         <div className={styles.toggleGroup}>
           <div
             className={`${styles.toggleOption} ${order === Order.LATEST ? styles.active : ''}`}
-            onClick={() => {
-              setOrder(Order.LATEST);
-              setPage(0);
-            }}
+            onClick={() => setOrder(Order.LATEST)} // delegate to parent
           >
             Latest
           </div>
           <div
             className={`${styles.toggleOption} ${order === Order.OLDEST ? styles.active : ''}`}
-            onClick={() => {
-              setOrder(Order.OLDEST);
-              setPage(0);
-            }}
+            onClick={() => setOrder(Order.OLDEST)} // delegate to parent
           >
             Oldest
           </div>

@@ -1,3 +1,5 @@
+import { slugify } from '../utils/formatUtils';
+
 export const ROUTES = {
   // General urls
   HOME: '/',
@@ -11,8 +13,7 @@ export const ROUTES = {
   FORGOTPASSWORD: '/forgot-password',
 
   // Single post urls
-  RANDOM_POSTS: '/posts/random',
-  POST: (id: number) => `/post/${id}`,
+  POST: (id: number, title: string) => `/post/${id}-${slugify(title)}`,
   LATEST_POST_PAGE: (title: string) => `/posts/latest/${title}`,
 
   // Post Groups
