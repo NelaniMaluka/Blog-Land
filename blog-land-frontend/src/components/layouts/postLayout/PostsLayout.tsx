@@ -6,7 +6,6 @@ import { useGetCategories } from '../../../hooks/useCategory';
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
 import BasicBreadcrumbs from '../../breadcrumbs/breadcrumbs';
-import { ROUTES } from '../../../constants/routes';
 
 interface PostsLayoutProps {
   title?: string;
@@ -80,6 +79,10 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
           renderItem={(item) => <PaginationItem {...item} />}
+          siblingCount={1} // only 1 page before and after current
+          boundaryCount={1} // only 1 page at start and end
+          hidePrevButton
+          hideNextButton
         />
       </div>
     );
