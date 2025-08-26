@@ -6,6 +6,7 @@ import { useGetCategories } from '../../../hooks/useCategory';
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
 import BasicBreadcrumbs from '../../breadcrumbs/breadcrumbs';
+import CustomPagination from '../../buttons/Pagination/Pagination';
 
 interface PostsLayoutProps {
   title?: string;
@@ -71,19 +72,7 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
   const renderPagination = () =>
     totalPages > 1 && (
       <div className={styles.pagination}>
-        <Pagination
-          page={page + 1}
-          count={totalPages}
-          onChange={(_, value) => {
-            setPage(value - 1);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          renderItem={(item) => <PaginationItem {...item} />}
-          siblingCount={1} // only 1 page before and after current
-          boundaryCount={1} // only 1 page at start and end
-          hidePrevButton
-          hideNextButton
-        />
+        <CustomPagination page={page} setPage={setPage} totalPages={totalPages} />
       </div>
     );
 

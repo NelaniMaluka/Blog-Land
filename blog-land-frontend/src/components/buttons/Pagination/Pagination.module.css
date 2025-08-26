@@ -1,0 +1,16 @@
+.pagination {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination :global(.MuiPaginationItem-root) {
+  color: #8a8a8a;
+  font-weight: 500;
+  font-size: 0.6rem !important;
+}
+
+.pagination :global(.Mui-selected) {
+  background-color: #1976d2;
+  color: #1976d2;
+}

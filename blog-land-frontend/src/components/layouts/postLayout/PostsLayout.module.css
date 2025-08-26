@@ -111,23 +111,6 @@
   font-size: 0.8rem;
 }
 
-.pagination {
-  margin-top: 3rem;
-  display: flex;
-  justify-content: center;
-}
-
-.pagination :global(.MuiPaginationItem-root) {
-  color: #5f5f5f;
-  font-weight: 500;
-  font-size: 0.6rem !important;
-}
-
-.pagination :global(.Mui-selected) {
-  background-color: #1976d2;
-  color: #1976d2;
-}
-
 @media (max-width: 1024px) {
   .postsGrid {
     grid-template-columns: repeat(2, 1fr);
