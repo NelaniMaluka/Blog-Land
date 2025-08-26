@@ -77,7 +77,6 @@ export const ViewAllPage = () => {
       </Helmet>
 
       <PostsLayout
-        title="All Posts"
         posts={posts}
         isLoading={isLoading}
         isError={isError}

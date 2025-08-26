@@ -9,7 +9,7 @@ import BasicBreadcrumbs from '../../breadcrumbs/breadcrumbs';
 import { ROUTES } from '../../../constants/routes';
 
 interface PostsLayoutProps {
-  title: string;
+  title?: string;
   showOrderButtons?: boolean;
   posts: PostResponse[];
   isLoading: boolean;
@@ -86,7 +86,7 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
 
   const renderErrorOrEmpty = (message: string) => (
     <div className="container">
-      <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
+      <BasicBreadcrumbs page1={title} />
       <div className={styles.holder}>
         {renderHeader()}
         <div className={styles.message}>{message}</div>
@@ -101,7 +101,7 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
   // ----- Main return -----
   return (
     <div className="container">
-      <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={title} />
+      <BasicBreadcrumbs page1={title} />
       <div className={styles.holder}>
         {renderHeader()}
         <LoadingScreen isLoading={isLoading}>

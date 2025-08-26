@@ -8,6 +8,7 @@ import { formatViews } from '../../../utils/formatUtils';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { formatDate } from '../../../utils/formatUtils';
 import { ExperienceLabels } from '../../../types/user/response';
+import BasicBreadcrumbs from '../../breadcrumbs/breadcrumbs';
 
 import styles from './SinglePostLayout.module.css';
 import { PostResponse } from '../../../types/post/response';
@@ -35,6 +36,11 @@ export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutP
     <>
       <LoadingScreen isLoading={isLoading}>
         <div className="container">
+          <BasicBreadcrumbs
+            page1={categoryName || ''}
+            link1={ROUTES.CATEGORY_POSTS(categoryName || '')}
+            page2={post?.title}
+          />
           <div className={styles.holder}>
             <div className={styles.column1}>
               <img src={post?.postImgUrl} alt={post?.title} className={styles.img} />

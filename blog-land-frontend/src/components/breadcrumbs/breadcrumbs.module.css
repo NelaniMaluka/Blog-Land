@@ -17,3 +17,18 @@
   margin: 0 !important;
   vertical-align: middle !important;
 }
+
+.crumb,
+.primary {
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.ellipsis {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 510px !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+}

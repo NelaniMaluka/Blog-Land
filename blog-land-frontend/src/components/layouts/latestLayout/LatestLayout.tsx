@@ -29,7 +29,7 @@ export const LatestLayout = () => {
   if (isError)
     return (
       <div className="container">
-        <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={'Latest'} />
+        <BasicBreadcrumbs page1={'Latest'} />
         <div className={styles.message}>Could not load data.</div>
       </div>
     );
@@ -37,7 +37,7 @@ export const LatestLayout = () => {
   return (
     <LoadingScreen isLoading={isLoading}>
       <div className="container">
-        <BasicBreadcrumbs title="Post" link={ROUTES.VIEW_ALL} page={'Latest'} />
+        <BasicBreadcrumbs page1={'Latest'} />
         <Box className={styles.containerBox}>
           <Masonry
             spacing={2}
