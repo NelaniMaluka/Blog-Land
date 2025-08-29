@@ -363,7 +363,11 @@ export const Profile: React.FC<ProfileProps> = () => {
         <div className={styles.text}>
           <div>
             <h6>Email</h6>
-            <p>This is your magical inbox portal...</p>
+            <p>
+              {' '}
+              This is your magical inbox portal, the one that brings all the notifications,
+              messages, and spam straight to you. Make sure it’s one you actually check!{' '}
+            </p>
           </div>
           <div>
             <input
@@ -391,7 +395,11 @@ export const Profile: React.FC<ProfileProps> = () => {
         <div className={styles.text}>
           <div>
             <h6>Location</h6>
-            <p>Where in the world are you hiding?</p>
+            <p>
+              {' '}
+              Where in the world are you hiding? Your secret lair, favorite city, or that magical
+              spot everyone dreams of visiting — share it with the world!{' '}
+            </p>
           </div>
           <div className={styles.autocompleteWrapper}>
             <PlacesAutocomplete
