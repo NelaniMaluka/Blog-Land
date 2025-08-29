@@ -1,11 +1,13 @@
 // src/hooks/useUser.tsx
 import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { fetchUser, updateUser, deleteUser, submitLogoutUser } from '../services/userService';
-import { setUser, logout } from '../store/authSlice';
+import { setUser, logout, setToken } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserResponse } from '../types/user/response';
 import { RootState } from '../store/store';
 import { ShowSuccessSwal } from '../features/Alerts/SuccessMessage';
+import { UpdateUserRequest } from '../types/user/request';
+import { scheduleLogout } from '../constants/ScheduleLogout';
 
 export function useGetUser(options?: { enabled?: boolean }) {
   const dispatch = useDispatch();
@@ -25,8 +27,20 @@ export function useGetUser(options?: { enabled?: boolean }) {
 }
 
 export const useUpdateUser = () => {
+  const dispatch = useDispatch();
+  const { refetch: refetchUser } = useGetUser();
+
   return useMutation({
-    mutationFn: updateUser,
+    mutationFn: async (payload: { data: UpdateUserRequest }) => {
+      const token = await updateUser(payload.data);
+      dispatch(setToken(token));
+      return token;
+    },
+    onSuccess: async (token) => {
+      const { data } = await refetchUser();
+      scheduleLogout(token, dispatch);
+      ShowSuccessSwal('Profile Updated', `Your profile was successfully updated!`);
+    },
   });
 };
 
@@ -46,7 +60,6 @@ export const useLogoutUser = () => {
     },
     onSuccess: () => {
       dispatch(logout());
-
       ShowSuccessSwal('Logout Successful', `We hope to see you again soon!`);
     },
     onError: () => {

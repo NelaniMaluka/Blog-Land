@@ -13,12 +13,12 @@ export const fetchUser = async (): Promise<UserResponse> => {
   }
 };
 
-export const updateUser = async (payload: UpdateUserRequest): Promise<{ message: string }> => {
+export const updateUser = async (payload: UpdateUserRequest): Promise<string> => {
   const validPayload = validateOrThrow(updateUserSchema, payload);
 
   try {
     const response = await updateUserDetails(validPayload);
-    return response?.data;
+    return response?.data as string;
   } catch (error) {
     throw new Error(
       getAxiosErrorMessage(error, 'User update failed. Please check your credentials.')

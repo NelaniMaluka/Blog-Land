@@ -1,7 +1,16 @@
 .container {
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  justify-content: flex-start;
+  padding: 0; /* remove default padding */
+  margin: 0;
+}
+
+.logo {
+  margin: 0.5rem 0;
+  margin-left: 0.7rem;
+  font-size: 1rem;
 }
 
 .headerContainer {
@@ -10,10 +19,10 @@
 }
 
 .header {
-  padding: 16px;
+  padding: 8px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0px;
   display: flex;
   align-items: center;
 }
@@ -30,7 +39,7 @@
 
 .userName {
   font-weight: 500;
-  font-size: 0.7rem;
+  font-size: 0.5rem;
 }
 
 .userEmail {
@@ -39,8 +48,8 @@
 }
 
 .icon {
-  width: 25px !important;
-  height: 25px !important;
+  width: 21px !important;
+  height: 21px !important;
 }
 
 .text {
@@ -59,11 +68,6 @@
 
 .logout {
   padding: 0px;
-  background-color: rgba(0, 114, 180, 0.918);
-  color: white;
+  color: black;
   font-size: 0.7rem !important;
-}
-
-.logout .icon {
-  color: white;
 }

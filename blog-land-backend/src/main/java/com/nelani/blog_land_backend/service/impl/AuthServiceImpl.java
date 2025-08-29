@@ -4,6 +4,7 @@ import com.nelani.blog_land_backend.Util.Validation.FormValidation;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
 import com.nelani.blog_land_backend.Util.Validation.UserValidation;
 import com.nelani.blog_land_backend.Util.JwtUtil;
+import com.nelani.blog_land_backend.model.ExperienceLevel;
 import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
@@ -46,6 +47,7 @@ public class AuthServiceImpl implements AuthService {
                 // Encodes the password and sets the provider to local
                 user.setPassword(passwordEncoder.encode(password));
                 user.setProvider(Provider.LOCAL);
+                user.setExperience(ExperienceLevel.NEW_BLOGGER);
 
                 // Moderate content
                 moderationValidator.userModeration(user);

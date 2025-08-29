@@ -1,4 +1,5 @@
-import React, { StrictMode } from 'react';
+// index.tsx or main.tsx
+import React, { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
@@ -11,23 +12,49 @@ import { HelmetProvider } from 'react-helmet-async';
 
 const queryClient = new QueryClient();
 
+function loadGoogleMapsApi() {
+  return new Promise<void>((resolve, reject) => {
+    const existingScript = document.getElementById('google-maps');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${
+        import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+      }&libraries=places&loading=async`;
+      script.id = 'google-maps';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject('Failed to load Google Maps script');
+      document.head.appendChild(script);
+    } else {
+      resolve();
+    }
+  });
+}
+
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
 
 const root = createRoot(container);
 
-root.render(
-  <StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <QueryClientProvider client={queryClient}>
-          <HelmetProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-          </HelmetProvider>
-        </QueryClientProvider>
-      </PersistGate>
-    </Provider>
-  </StrictMode>
-);
+loadGoogleMapsApi()
+  .then(() => {
+    root.render(
+      <StrictMode>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <QueryClientProvider client={queryClient}>
+              <HelmetProvider>
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
+              </HelmetProvider>
+            </QueryClientProvider>
+          </PersistGate>
+        </Provider>
+      </StrictMode>
+    );
+  })
+  .catch((err) => {
+    console.error(err);
+  });

@@ -1,22 +1,18 @@
 import * as React from 'react';
 import {
   Avatar,
-  Badge,
   Box,
   Divider,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Tooltip,
 } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import ArticleIcon from '@mui/icons-material/Article';
-import LogoutIcon from '@mui/icons-material/Logout';
 import styles from './SideMenu.module.css';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../../constants/routes';
 import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
+import FallbackAvatars from '../../../common/Avatar';
 
 import { useGetUser, useLogoutUser } from '../../../../hooks/useUser';
 
@@ -40,10 +36,21 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({ selected, onSelect, on
 
   return (
     <Box className={styles.container}>
+      <a href={ROUTES.HOME}>
+        <h3 className={styles.logo}>Blog-Land</h3>
+      </a>
+      <Divider />
       <div className={styles.headerContainer}>
         <LoadingScreen isLoading={isLoading}>
           <Box className={styles.header}>
-            <Avatar className={styles.avatar}>NM</Avatar>
+            <Box className={styles.header}>
+              {user ? (
+                <FallbackAvatars user={user} />
+              ) : (
+                <Avatar sx={{ bgcolor: 'darkgrey', fontSize: '70%' }}>?</Avatar>
+              )}
+            </Box>
+
             <Box className={styles.userInfo}>
               <Box className={styles.userName}>{user?.firstname + ' ' + user?.lastname}</Box>
               <Box className={styles.userEmail}>{user?.email}</Box>
@@ -57,14 +64,14 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({ selected, onSelect, on
       <List dense disablePadding>
         <ListItemButton selected={selected === 'profile'} onClick={() => onSelect('profile')}>
           <ListItemIcon>
-            <AccountCircleIcon className={styles.icon} />
+            <img src="/icons/profile.png" alt="profile-icon" className={styles.icon} />
           </ListItemIcon>
           <ListItemText primary="Profile" primaryTypographyProps={{ className: styles.text }} />
         </ListItemButton>
 
         <ListItemButton selected={selected === 'posts'} onClick={() => onSelect('posts')}>
           <ListItemIcon>
-            <ArticleIcon className={styles.icon} />
+            <img src="/icons/blog.png" alt="blog-icon" className={styles.icon} />
           </ListItemIcon>
           <ListItemText primary="Posts" primaryTypographyProps={{ className: styles.text }} />
         </ListItemButton>
@@ -77,7 +84,7 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({ selected, onSelect, on
       <Box className={styles.logout}>
         <ListItemButton onClick={handleLogout}>
           <ListItemIcon>
-            <LogoutIcon className={styles.icon} />
+            <img src="/icons/logout.png" alt="logout-icon" className={styles.icon} />
           </ListItemIcon>
           <ListItemText primary="Log out" primaryTypographyProps={{ className: styles.text }} />
         </ListItemButton>

@@ -5,6 +5,8 @@ export type UpdateUserRequest = {
   firstname: string;
   lastname: string;
   email: string;
+  summary?: string;
+  title?: string;
   provider: Provider;
   profileIconUrl?: string | null;
   location?: string | null;

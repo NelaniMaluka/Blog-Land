@@ -14,7 +14,7 @@ export enum ExperienceLevel {
   CASUAL_POSTER = 'CASUAL_POSTER',
   COMMUNITY_WRITER = 'COMMUNITY_WRITER',
   FREQUENT_CONTRIBUTOR = 'FREQUENT_CONTRIBUTOR',
-  PRO_BLOGGER = 'EXPERT',
+  PRO_BLOGGER = 'PRO_BLOGGER',
 }
 
 export const ExperienceLabels: Record<ExperienceLevel, string> = {
@@ -44,6 +44,12 @@ export interface UserResponse {
   profileIconUrl?: string | null;
   location?: string | null;
   experience?: ExperienceLevel | null;
-  socials?: Record<string, string>;
   role?: Role;
+  socials: {
+    twitter?: string;
+    github?: string;
+    linkedin?: string;
+    facebook?: string;
+    instagram?: string;
+  };
 }
