@@ -8,7 +8,6 @@ export type UpdateUserRequest = {
   summary?: string;
   title?: string;
   provider: Provider;
-  profileIconUrl?: string | null;
   location?: string | null;
   experience?: ExperienceLevel | null;
   socials?: Record<string, string> | null;

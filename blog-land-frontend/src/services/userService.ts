@@ -1,8 +1,27 @@
-import { getUserDetails, updateUserDetails, deleteUserDetails, logoutUser } from '../api/userApi';
+import {
+  getUserDetails,
+  updateUserDetails,
+  deleteUserDetails,
+  logoutUser,
+  updateProfileIcon,
+} from '../api/userApi';
 import { UserResponse } from '../types/user/response';
 import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
 import { UpdateUserRequest } from '../types/user/request';
 import { updateUserSchema } from '../schemas/userSchema';
+
+export const updateUserProfileImg = async (file: File): Promise<string> => {
+  //const validPayload = validateOrThrow(updateUserSchema, payload);
+
+  try {
+    const response = await updateProfileIcon(file);
+    return response?.data as string;
+  } catch (error) {
+    throw new Error(
+      getAxiosErrorMessage(error, 'Profile image update failed. Could not store file.')
+    );
+  }
+};
 
 export const fetchUser = async (): Promise<UserResponse> => {
   try {

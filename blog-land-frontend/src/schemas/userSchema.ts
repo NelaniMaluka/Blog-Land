@@ -29,7 +29,6 @@ export const updateUserSchema = z.object({
   provider: providerSchema,
   title: z.string().optional(),
   summary: z.string().optional(),
-  profileIconUrl: z.string().optional(),
   location: z.string().optional(),
   experience: experienceSchema.optional(),
   socials: z.record(z.string(), socialLinkSchema).optional(),

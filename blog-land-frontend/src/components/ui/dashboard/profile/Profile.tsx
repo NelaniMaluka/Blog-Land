@@ -7,12 +7,14 @@ import { Divider } from '@mui/material';
 import { useState, useEffect, FormEvent } from 'react';
 import PlacesAutocomplete, { geocodeByAddress } from 'react-places-autocomplete';
 import { FaFacebook, FaLinkedin, FaGithub, FaInstagram, FaTwitter } from 'react-icons/fa';
-import { useUpdateUser } from '../../../../hooks/useUser';
+import { useUpdateUser, useUpdateProfileImage } from '../../../../hooks/useUser';
 import { UpdateUserRequest } from '../../../../types/user/request';
 import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
 import ErrorMessage from '../../../../features/Snackbars/errorMessage';
 import { validateEmail, validateRequired, validateUrl } from '../../../../utils/validationUtils';
 import classNames from 'classnames';
+import FallbackAvatars from '../../../common/Avatar';
+import { updateProfileIcon } from '../../../../api/userApi';
 
 interface ProfileProps {
   user?: UserResponse;
@@ -27,6 +29,7 @@ interface AddressComponent {
 export const Profile: React.FC<ProfileProps> = () => {
   const { data: user, isLoading, isError } = useGetUser();
   const updateUser = useUpdateUser();
+  const updateProfileIcon = useUpdateProfileImage();
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [location, setLocation] = useState(user?.location);
@@ -54,6 +57,7 @@ export const Profile: React.FC<ProfileProps> = () => {
   const [githubError, setGithubError] = useState('');
   const [instagramError, setInstagramError] = useState('');
   const [twitterError, setTwitterError] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const firstnameRef = React.useRef<HTMLInputElement>(null);
   const lastnameRef = React.useRef<HTMLInputElement>(null);
@@ -86,6 +90,8 @@ export const Profile: React.FC<ProfileProps> = () => {
         instagram: user?.socials?.instagram || '',
         twitter: user?.socials?.twitter || '',
       });
+
+      console.log(user);
     }
   }, [user]);
 
@@ -268,6 +274,11 @@ export const Profile: React.FC<ProfileProps> = () => {
       return;
     }
 
+    if (selectedFile) {
+      const response = await updateProfileIcon.mutateAsync(selectedFile);
+      console.log(response);
+    }
+
     const isLocationValid = await validateLocation();
     if (!isLocationValid) return;
 
@@ -312,6 +323,20 @@ export const Profile: React.FC<ProfileProps> = () => {
             <button type="submit">Save</button>{' '}
           </div>{' '}
         </div>{' '}
+        <Divider />
+        {/* Profile Picture */}
+        <div className={styles.text}>
+          <div>
+            <h6>Profile Pictue</h6>
+            <p>
+              Say cheese! This little circle is your chance to shine—or at least not look like a
+              potato.
+            </p>
+          </div>
+          <div>
+            <FallbackAvatars user={user} isProfile onFileSelect={setSelectedFile} />
+          </div>
+        </div>
         <Divider />
         {/* NAME */}
         <div className={styles.text}>

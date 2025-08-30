@@ -1,6 +1,19 @@
 import apiClient from './apiClient';
 import { UpdateUserRequest } from '../types/user/request';
 
+export const updateProfileIcon = async (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await apiClient.post('/user/upload-profile-image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  console.log(response);
+  return response.data;
+};
+
 export const getUserDetails = async () => {
   const response = await apiClient.get('/user/get-user', {});
   return response;

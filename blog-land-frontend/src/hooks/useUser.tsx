@@ -1,6 +1,12 @@
 // src/hooks/useUser.tsx
 import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { fetchUser, updateUser, deleteUser, submitLogoutUser } from '../services/userService';
+import {
+  fetchUser,
+  updateUser,
+  deleteUser,
+  submitLogoutUser,
+  updateUserProfileImg,
+} from '../services/userService';
 import { setUser, logout, setToken } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserResponse } from '../types/user/response';
@@ -25,6 +31,12 @@ export function useGetUser(options?: { enabled?: boolean }) {
 
   return query;
 }
+
+export const useUpdateProfileImage = () => {
+  return useMutation({
+    mutationFn: updateUserProfileImg,
+  });
+};
 
 export const useUpdateUser = () => {
   const dispatch = useDispatch();

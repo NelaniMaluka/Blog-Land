@@ -6,26 +6,30 @@ import com.nelani.blog_land_backend.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.data.redis.core.RedisTemplate;
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.concurrent.TimeUnit;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
-    private final RedisTemplate<String, String> redisTemplate;
-    private final long tokenExpirySeconds = 24 * 60 * 60;
 
-    public UserController(UserService userService, RedisTemplate<String, String> redisTemplate) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.redisTemplate = redisTemplate;
+    }
+
+    @PostMapping("/upload-profile-image")
+    @Transactional
+    public ResponseEntity<?> uploadProfileImage(@RequestParam("file") MultipartFile file) {
+        String response = userService.saveUserProfileImage(file);
+        return  ResponseEntity.ok(response);
     }
 
     @GetMapping("/get-user")
@@ -53,14 +57,9 @@ public class UserController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
 
-
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwtToken = authHeader.substring(7);
-
-            // Skip Redis for now
-//            redisTemplate.opsForValue()
-//                    .set(jwtToken, "blacklisted", tokenExpirySeconds, TimeUnit.SECONDS);
 
         } else {
             throw new RuntimeException("No Authorization header provided or token is missing.");
