@@ -26,7 +26,7 @@ export default function SearchBar() {
         onInputChange={(event, newValue) => setSearchTerm(newValue)}
         onChange={(event, selectedOption) => {
           if (selectedOption && typeof selectedOption !== 'string') {
-            navigate(ROUTES.POST(selectedOption.id));
+            navigate(ROUTES.POST(selectedOption.id, selectedOption.title));
           }
         }}
         loading={isLoading}
