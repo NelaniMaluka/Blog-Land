@@ -4,17 +4,27 @@ import {
   deleteUserDetails,
   logoutUser,
   updateProfileIcon,
+  removeProfileIcon,
 } from '../api/userApi';
 import { UserResponse } from '../types/user/response';
 import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
 import { UpdateUserRequest } from '../types/user/request';
-import { updateUserSchema } from '../schemas/userSchema';
+import { updateUserSchema, fileSchema } from '../schemas/userSchema';
+
+export const fetchUser = async (): Promise<UserResponse> => {
+  try {
+    const response = await getUserDetails();
+    return response?.data;
+  } catch (error) {
+    throw new Error(getAxiosErrorMessage(error, 'Failed to get user details'));
+  }
+};
 
 export const updateUserProfileImg = async (file: File): Promise<string> => {
-  //const validPayload = validateOrThrow(updateUserSchema, payload);
+  const validPayload = validateOrThrow(fileSchema, file);
 
   try {
-    const response = await updateProfileIcon(file);
+    const response = await updateProfileIcon(validPayload);
     return response?.data as string;
   } catch (error) {
     throw new Error(
@@ -23,12 +33,14 @@ export const updateUserProfileImg = async (file: File): Promise<string> => {
   }
 };
 
-export const fetchUser = async (): Promise<UserResponse> => {
+export const removeUserProfileImg = async (): Promise<string> => {
   try {
-    const response = await getUserDetails();
-    return response?.data;
+    const response = await removeProfileIcon();
+    return response?.data as string;
   } catch (error) {
-    throw new Error(getAxiosErrorMessage(error, 'Failed to get user details'));
+    throw new Error(
+      getAxiosErrorMessage(error, 'Profile image removal failed. Could not delete file.')
+    );
   }
 };
 

@@ -10,7 +10,11 @@ export const updateProfileIcon = async (file: File) => {
       'Content-Type': 'multipart/form-data',
     },
   });
-  console.log(response);
+  return response.data;
+};
+
+export const removeProfileIcon = async () => {
+  const response = await apiClient.delete('/user/remove-profile-image', {});
   return response.data;
 };
 

@@ -6,6 +6,7 @@ import {
   deleteUser,
   submitLogoutUser,
   updateUserProfileImg,
+  removeUserProfileImg,
 } from '../services/userService';
 import { setUser, logout, setToken } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,6 +36,12 @@ export function useGetUser(options?: { enabled?: boolean }) {
 export const useUpdateProfileImage = () => {
   return useMutation({
     mutationFn: updateUserProfileImg,
+  });
+};
+
+export const useRemoveProfileImage = () => {
+  return useMutation({
+    mutationFn: removeUserProfileImg,
   });
 };
 

@@ -33,3 +33,12 @@ export const updateUserSchema = z.object({
   experience: experienceSchema.optional(),
   socials: z.record(z.string(), socialLinkSchema).optional(),
 });
+
+// File schema
+export const fileSchema = z
+  .instanceof(File, { message: 'Must be a valid file' })
+  .refine((file) => file.size > 0, { message: 'File cannot be empty' })
+  .refine((file) => file.size <= 2 * 1024 * 1024, { message: 'File must be under 2MB' }) // optional size limit
+  .refine((file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+    message: 'Only JPEG and PNG images are allowed',
+  });

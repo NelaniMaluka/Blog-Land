@@ -13,17 +13,10 @@ import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.service.UserService;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 
 @Service
@@ -32,8 +25,9 @@ public class UserServiceImpl implements UserService {
     private final ModerationValidator moderationValidator;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
-    
+
     private static final String UPLOAD_DIR = "ProfileIcons/";
+    private static final String BackendBaseUrl = "https://blog-land.onrender.com/";
 
     public UserServiceImpl(ModerationValidator moderationValidator, UserRepository userRepository, JwtUtil jwtUtil) {
         this.moderationValidator = moderationValidator;
@@ -43,13 +37,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public String removeUserProfileImage() {
+        // Fetch the user from the repository
+        User currentUser = UserValidation.getOrThrowUnauthorized();
+        User user = userRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Remove the file locally
+        String fileName = FileValidation.removeFile(user.getProfileIconUrl().replace(BackendBaseUrl, ""));
+
+        // Update URL
+        user.setProfileIconUrl("");
+        userRepository.saveAndFlush(user);
+
+        return fileName;
+    }
+
+    @Override
+    @Transactional
     public String saveUserProfileImage(MultipartFile file) {
         // Save file with validation class
         String fileName = FileValidation.saveFile(UPLOAD_DIR, file);
 
         // Build file URL
-        String backendBaseUrl = "https://blog-land.onrender.com/";
-        String fileUrl = backendBaseUrl + UPLOAD_DIR + fileName;
+        String fileUrl = BackendBaseUrl + UPLOAD_DIR + fileName;
 
         // Fetch the user from the repository
         User currentUser = UserValidation.getOrThrowUnauthorized();

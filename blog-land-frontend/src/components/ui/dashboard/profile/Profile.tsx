@@ -7,14 +7,17 @@ import { Divider } from '@mui/material';
 import { useState, useEffect, FormEvent } from 'react';
 import PlacesAutocomplete, { geocodeByAddress } from 'react-places-autocomplete';
 import { FaFacebook, FaLinkedin, FaGithub, FaInstagram, FaTwitter } from 'react-icons/fa';
-import { useUpdateUser, useUpdateProfileImage } from '../../../../hooks/useUser';
+import {
+  useUpdateUser,
+  useUpdateProfileImage,
+  useRemoveProfileImage,
+} from '../../../../hooks/useUser';
 import { UpdateUserRequest } from '../../../../types/user/request';
 import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
 import ErrorMessage from '../../../../features/Snackbars/errorMessage';
 import { validateEmail, validateRequired, validateUrl } from '../../../../utils/validationUtils';
 import classNames from 'classnames';
 import FallbackAvatars from '../../../common/Avatar';
-import { updateProfileIcon } from '../../../../api/userApi';
 
 interface ProfileProps {
   user?: UserResponse;
@@ -30,6 +33,8 @@ export const Profile: React.FC<ProfileProps> = () => {
   const { data: user, isLoading, isError } = useGetUser();
   const updateUser = useUpdateUser();
   const updateProfileIcon = useUpdateProfileImage();
+  const removeProfileIcon = useRemoveProfileImage();
+
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [location, setLocation] = useState(user?.location);
@@ -57,7 +62,7 @@ export const Profile: React.FC<ProfileProps> = () => {
   const [githubError, setGithubError] = useState('');
   const [instagramError, setInstagramError] = useState('');
   const [twitterError, setTwitterError] = useState('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | 'Remove' | null>(null);
 
   const firstnameRef = React.useRef<HTMLInputElement>(null);
   const lastnameRef = React.useRef<HTMLInputElement>(null);
@@ -90,8 +95,6 @@ export const Profile: React.FC<ProfileProps> = () => {
         instagram: user?.socials?.instagram || '',
         twitter: user?.socials?.twitter || '',
       });
-
-      console.log(user);
     }
   }, [user]);
 
@@ -113,7 +116,6 @@ export const Profile: React.FC<ProfileProps> = () => {
         setLocation(formattedLocation);
       }
     } catch (error) {
-      console.error('Error selecting location:', error);
       setLocationError('Unable to verify this location. Please try again.');
     }
   };
@@ -153,7 +155,6 @@ export const Profile: React.FC<ProfileProps> = () => {
       setLocationError('');
       return true;
     } catch (err) {
-      console.error(err);
       setLocationError('Unable to verify this location. Please try again.');
       return false;
     }
@@ -274,11 +275,6 @@ export const Profile: React.FC<ProfileProps> = () => {
       return;
     }
 
-    if (selectedFile) {
-      const response = await updateProfileIcon.mutateAsync(selectedFile);
-      console.log(response);
-    }
-
     const isLocationValid = await validateLocation();
     if (!isLocationValid) return;
 
@@ -298,6 +294,12 @@ export const Profile: React.FC<ProfileProps> = () => {
     };
 
     try {
+      if (selectedFile === 'Remove' && user?.profileIconUrl) {
+        await removeProfileIcon.mutateAsync();
+      }
+      if (selectedFile instanceof File) {
+        await updateProfileIcon.mutateAsync(selectedFile);
+      }
       await updateUser.mutateAsync({ data: userDetails });
     } catch (err) {}
   };
@@ -333,7 +335,7 @@ export const Profile: React.FC<ProfileProps> = () => {
               potato.
             </p>
           </div>
-          <div>
+          <div className={styles.profileIcon}>
             <FallbackAvatars user={user} isProfile onFileSelect={setSelectedFile} />
           </div>
         </div>

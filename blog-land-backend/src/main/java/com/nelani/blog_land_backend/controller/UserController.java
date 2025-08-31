@@ -32,6 +32,13 @@ public class UserController {
         return  ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/remove-profile-image")
+    @Transactional
+    public ResponseEntity<?> removeProfileImage() {
+        String response = userService.removeUserProfileImage();
+        return  ResponseEntity.ok(response);
+    }
+
     @GetMapping("/get-user")
     public ResponseEntity<?> getUseDetails() {
             UserResponse userResponse = userService.getUserDetails();
