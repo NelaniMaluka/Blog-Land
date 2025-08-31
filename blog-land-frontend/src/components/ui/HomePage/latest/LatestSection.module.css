@@ -171,8 +171,9 @@
   }
 
   .featuredContent .title {
-    font-size: 0.75rem;
+    font-size: 0.75rem !important;
     line-height: 0.9rem;
+    height: max-content !important;
   }
 
   .featuredImg {
