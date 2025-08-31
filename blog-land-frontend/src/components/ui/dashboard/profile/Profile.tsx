@@ -304,6 +304,12 @@ export const Profile: React.FC<ProfileProps> = () => {
     } catch (err) {}
   };
 
+  const errorMessage =
+    (updateUser?.error as { message?: string })?.message ||
+    (updateProfileIcon?.error as { message?: string })?.message ||
+    (removeProfileIcon?.error as { message?: string })?.message ||
+    'Something went wrong';
+
   if (isError || !user)
     return (
       <div className="container">
@@ -658,8 +664,8 @@ export const Profile: React.FC<ProfileProps> = () => {
           </div>
         </div>
       </form>
-      {updateUser.isError && (
-        <ErrorMessage message={updateUser?.error?.message || 'Something went wrong'} />
+      {(updateUser.isError || updateProfileIcon.isError || removeProfileIcon.isError) && (
+        <ErrorMessage message={errorMessage} />
       )}
     </LoadingScreen>
   );
