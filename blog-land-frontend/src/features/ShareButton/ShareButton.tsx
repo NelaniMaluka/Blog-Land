@@ -3,6 +3,7 @@ import { FaWhatsapp, FaFacebook, FaTwitter, FaLinkedin, FaLink } from 'react-ico
 import { MdShare } from 'react-icons/md';
 import styles from './ShareButton.module.css';
 import { PostResponse } from '../../types/post/response';
+import { slugify } from '../../utils/formatUtils';
 
 interface ShareFeatureProps {
   post: PostResponse;
@@ -12,7 +13,7 @@ export default function ShareFeature({ post }: ShareFeatureProps) {
   const [open, setOpen] = useState(false);
 
   // Use post info instead of window/document
-  const currentUrl = `${window.location.origin}/posts/${post.id}`;
+  const currentUrl = `${window.location.origin}/post/${post.id}-${slugify(post.title)}`;
   const pageTitle = post.title;
   const pageSummary = post.summary || '';
   const pageImage = post.postImgUrl || '/thumbnail.jpg';
