@@ -26,7 +26,7 @@ public class TechCrunchSeeder {
             UserRepository userRepository,
             CategoryRepository categoryRepository) {
 
-        int totalPostsToSeed = 10;
+        int totalPostsToSeed = 100;
         int pageSize = 20;
         int pages = (int) Math.ceil((double) totalPostsToSeed / pageSize);
         int seededCount = 0;

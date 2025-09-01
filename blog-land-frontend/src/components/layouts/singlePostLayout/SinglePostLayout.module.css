@@ -1,6 +1,6 @@
 .holder {
   display: flex;
-  padding: 2rem 0;
+  padding: 0 0 2rem 0;
 }
 
 .column1 {
@@ -19,12 +19,12 @@
 }
 
 .content h2 {
-  font-size: 1.2rem;
+  font-size: 0.8rem;
   margin-top: 1rem;
 }
 
 .content h3 {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   padding: 0.55rem 0;
 }
 
@@ -41,24 +41,33 @@
   text-decoration: underline;
 }
 
+.holder h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Roboto', sans-serif;
+}
+
 .content h4,
 .content h5,
 .content h6 {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
 }
 
 .title {
-  font-size: 1.1rem;
-  padding: 0.3rem 0;
+  font-size: 0.9rem !important;
+  padding: 0.3rem 0 !important;
 }
 
 .column1 p {
-  font-size: 0.65rem;
+  font-size: 0.59rem;
   padding: 0.5rem 0;
 }
 
 .content p {
-  font-size: 0.65rem;
+  font-size: 0.59rem;
   padding: 0.4rem 0;
 }
 
@@ -85,13 +94,7 @@
 
 /* SinglePostLayout.module.css */
 :global(.wp-block-techcrunch-inline-cta) {
-  background-color: #e0e0e07c;
-  padding: 16px;
-  border-left: 4px solid #ff6600;
-  margin: 16px 0;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 1rem;
+  display: none;
 }
 
 .category {
@@ -111,8 +114,9 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.5rem;
-  margin-top: 0.3rem;
+  margin: 0.5rem 0;
   color: rgb(75, 75, 75);
+  border-bottom: 1px solid rgb(243, 243, 243);
 }
 
 .subDetails svg {
@@ -168,6 +172,57 @@
   align-items: center;
   justify-content: center;
   font-size: 0.8rem;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: none;
+  height: max-content;
+}
+
+.userInfo div {
+  padding-bottom: none;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.userInfo p {
+  font-size: 0.55rem;
+  color: rgb(51, 51, 51);
+  font-weight: 600;
+  height: max-content;
+  padding: 0;
+}
+.userInfo p:first-child {
+  padding-top: 10px;
+}
+
+.userInfo .date {
+  font-size: 0.47rem;
+  color: rgb(51, 51, 51);
+  font-weight: 500;
+}
+
+.readMore {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  font-size: 0.55rem;
+  color: rgba(0, 74, 172, 0.829);
+}
+
+.readMore:hover {
+  color: rgba(0, 87, 201, 0.966);
+  text-decoration: underline;
 }
 
 @media (max-width: 1200px) {

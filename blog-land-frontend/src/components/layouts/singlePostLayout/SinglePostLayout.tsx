@@ -1,14 +1,10 @@
-import { useGetPost } from '../../../hooks/usePost';
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
 import { ROUTES } from '../../../constants/routes';
 import { useGetCategories } from '../../../hooks/useCategory';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { formatViews } from '../../../utils/formatUtils';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { formatDate } from '../../../utils/formatUtils';
-import { ExperienceLabels } from '../../../types/user/response';
 import BasicBreadcrumbs from '../../breadcrumbs/breadcrumbs';
+import FallbackAvatars from '../../common/Avatar';
+import ShareFeature from '../../../features/ShareButton/ShareButton';
 
 import styles from './SinglePostLayout.module.css';
 import { PostResponse } from '../../../types/post/response';
@@ -44,52 +40,39 @@ export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutP
           <div className={styles.holder}>
             <div className={styles.column1}>
               <img src={post?.postImgUrl} alt={post?.title} className={styles.img} />
-              {categoryName && (
-                <a href={ROUTES.CATEGORY_POSTS(categoryName)} className={styles.category}>
-                  {categoryName}
-                </a>
-              )}
-              <span className={styles.date}>{post?.createdAt}</span>
               <h2 className={styles.title}>{post?.title}</h2>
               <p>{post?.summary}</p>
               <div className={styles.subDetails}>
-                <span>
-                  <VisibilityIcon fontSize="small" className={styles.icon} />{' '}
-                  {formatViews(post?.views ?? 0)}
-                </span>
-                <span>
-                  <AccessTimeIcon fontSize="small" className={styles.icon} /> {post?.readTime} min
-                  read
-                </span>
+                {categoryName && (
+                  <a href={ROUTES.CATEGORY_POSTS(categoryName)} className={styles.category}>
+                    {categoryName}
+                  </a>
+                )}
+                <span>{formatViews(post?.views ?? 0)} views</span>
+                <span>{post?.readTime} min read</span>
               </div>
               <div
                 dangerouslySetInnerHTML={{ __html: post?.content || '' }}
                 className={styles.content}
               />
+              {post?.user && (
+                <div className={styles.info}>
+                  <div className={styles.userInfo}>
+                    <div>
+                      <FallbackAvatars user={post!.user} />
+                    </div>
+                    <div>
+                      <p>{post?.user.firstname + ' ' + post?.user.lastname}</p>
+                      <p className={styles.date}>{post?.createdAt}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <ShareFeature post={post} />
+                  </div>
+                </div>
+              )}
             </div>
-            {post?.user && (
-              <div className={styles.column2}>
-                <p className={styles.name}>{post?.user?.firstname + ' ' + post?.user?.lastname}</p>
-                <p className={styles.title1}>{post?.user?.title && post?.user?.title}</p>
-                <p className={styles.experience}>
-                  Experience:{' '}
-                  {post?.user?.experience ? ExperienceLabels[post.user.experience] : 'N/A'}
-                </p>
-
-                <p className={styles.location}>
-                  {post?.user?.location && (
-                    <>
-                      <LocationOnIcon fontSize="small" className={styles.locationIcon} />
-                      {post?.user?.location}
-                    </>
-                  )}
-                </p>
-                <p className={styles.summary}>{post?.user?.summary && post?.user?.summary}</p>
-
-                <p className={styles.joinAt}>joined on {formatDate(post?.user?.joinedAt)}</p>
-                <p>{}</p>
-              </div>
-            )}
+            <div className={styles.column2}></div>
           </div>
         </div>
       </LoadingScreen>
