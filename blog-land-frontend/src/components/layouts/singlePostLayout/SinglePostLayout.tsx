@@ -40,8 +40,6 @@ export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutP
           <div className={styles.holder}>
             <div className={styles.column1}>
               <img src={post?.postImgUrl} alt={post?.title} className={styles.img} />
-              <h2 className={styles.title}>{post?.title}</h2>
-              <p>{post?.summary}</p>
               <div className={styles.subDetails}>
                 {categoryName && (
                   <a href={ROUTES.CATEGORY_POSTS(categoryName)} className={styles.category}>
@@ -51,16 +49,12 @@ export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutP
                 <span>{formatViews(post?.views ?? 0)} views</span>
                 <span>{post?.readTime} min read</span>
               </div>
-              <div
-                dangerouslySetInnerHTML={{ __html: post?.content || '' }}
-                className={styles.content}
-              />
+              <h2 className={styles.title}>{post?.title}</h2>
+              <p>{post?.summary}</p>
               {post?.user && (
                 <div className={styles.info}>
                   <div className={styles.userInfo}>
-                    <div>
-                      <FallbackAvatars user={post!.user} />
-                    </div>
+                    <FallbackAvatars user={post!.user} />
                     <div>
                       <p>{post?.user.firstname + ' ' + post?.user.lastname}</p>
                       <p className={styles.date}>{post?.createdAt}</p>
@@ -71,6 +65,10 @@ export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutP
                   </div>
                 </div>
               )}
+              <div
+                dangerouslySetInnerHTML={{ __html: post?.content || '' }}
+                className={styles.content}
+              />
             </div>
             <div className={styles.column2}></div>
           </div>

@@ -21,26 +21,26 @@ export default function ShareFeature({ post }: ShareFeatureProps) {
   const shareOptions = [
     {
       name: 'WhatsApp',
-      icon: <FaWhatsapp className="text-green-500 text-2xl" />,
+      icon: '/icons/whatsapp.png',
       url: `https://wa.me/?text=${encodeURIComponent(pageTitle + ' ' + currentUrl)}`,
     },
     {
       name: 'Facebook',
-      icon: <FaFacebook className="text-blue-600 text-2xl" />,
+      icon: '/icons/facebook.png',
       url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
         currentUrl
       )}&quote=${encodeURIComponent(pageSummary)}`,
     },
     {
       name: 'Twitter',
-      icon: <FaTwitter className="text-sky-500 text-2xl" />,
+      icon: '/icons/twitter.png',
       url: `https://twitter.com/intent/tweet?url=${encodeURIComponent(
         currentUrl
       )}&text=${encodeURIComponent(pageTitle)}`,
     },
     {
       name: 'LinkedIn',
-      icon: <FaLinkedin className="text-blue-700 text-2xl" />,
+      icon: '/icons/linkedin.png',
       url: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
         currentUrl
       )}&title=${encodeURIComponent(pageTitle)}&summary=${encodeURIComponent(pageSummary)}`,
@@ -50,18 +50,15 @@ export default function ShareFeature({ post }: ShareFeatureProps) {
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(currentUrl);
-      alert('Link copied!');
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
+    } catch (err) {}
   };
 
   return (
     <div>
       {/* Share button */}
       <button onClick={() => setOpen(true)} className={styles.shareButton}>
-        <MdShare className="text-xl" />
-        <span>Share</span>
+        <img src="/icons/share.png" alt="Share Icon" />
+        Share
       </button>
 
       {/* Modal */}
@@ -72,36 +69,37 @@ export default function ShareFeature({ post }: ShareFeatureProps) {
               ✕
             </button>
 
-            {/* Preview */}
-            <div className={styles.preview}>
-              <img src={pageImage} alt={pageTitle} />
-              <div>
-                <h3>{pageTitle}</h3>
-                <p>{currentUrl}</p>
+            {/* Share buttons */}
+            <div className={styles.shareCont}>
+              {' '}
+              Share <hr />
+              <div className={styles.shareOptions}>
+                {shareOptions.map((option) => (
+                  <a
+                    key={option.name}
+                    href={option.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.shareOption}
+                  >
+                    <img src={option.icon} alt="Icon" />
+                    {option.name}
+                  </a>
+                ))}
               </div>
             </div>
 
-            {/* Share buttons */}
-            <div className={styles.shareOptions}>
-              {shareOptions.map((option) => (
-                <a
-                  key={option.name}
-                  href={option.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.shareOption}
-                >
-                  {option.icon}
-                  <span>{option.name}</span>
-                </a>
-              ))}
-            </div>
-
             {/* Copy link */}
-            <button onClick={copyLink} className={styles.copyButton}>
-              <FaLink />
-              Copy link
-            </button>
+            <div className={styles.copyCont}>
+              <div>
+                <FaLink />
+                <p>{currentUrl}</p>
+              </div>
+
+              <button onClick={copyLink} className={styles.copyButton}>
+                Copy
+              </button>
+            </div>
           </div>
         </div>
       )}

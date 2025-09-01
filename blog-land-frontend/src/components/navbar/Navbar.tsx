@@ -19,7 +19,7 @@ function Navbar({ setOpen }: NavbarProps) {
   useEffect(() => {
     if (redirect && post) {
       navigate(ROUTES.POST(post.id, post.title));
-      setRedirect(false); // reset redirect
+      setRedirect(false);
     }
   }, [redirect, post, navigate]);
 

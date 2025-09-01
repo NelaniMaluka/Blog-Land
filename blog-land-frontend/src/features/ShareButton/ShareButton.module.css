@@ -1,13 +1,19 @@
 .shareButton {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1rem;
+  gap: 0.2rem;
+  justify-content: center;
+  font-size: 0.5rem;
+  padding: 0.4rem;
   border-radius: 9999px;
   background: #f3f4f6;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: background 0.2s;
   cursor: pointer;
+}
+
+.shareButton img {
+  width: 0.6rem;
 }
 
 .shareButton:hover {
@@ -28,66 +34,63 @@
   position: relative;
   background: white;
   border-radius: 1rem;
-  padding: 1.5rem;
+  padding: 1rem;
   width: 24rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  width: 85% !important;
+  max-width: 500px;
 }
 
 .closeButton {
   position: absolute;
-  top: 0.5rem;
+  top: 0rem;
   right: 0.5rem;
   color: #6b7280;
   cursor: pointer;
   transition: color 0.2s;
+  padding: 0.3rem;
+  border: none;
+  font-size: 0.8rem;
+  background-color: transparent;
 }
 
 .closeButton:hover {
   color: black;
 }
 
-.preview {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.preview img {
-  width: 5rem;
-  height: 5rem;
-  border-radius: 0.5rem;
-  object-fit: cover;
-}
-
-.preview h3 {
-  font-weight: 600;
-}
-
-.preview p {
-  font-size: 0.875rem;
-  color: #4b5563;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .shareOptions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
   margin-bottom: 1rem;
-}
-
-.shareOption {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
   padding: 0.5rem;
-  border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   transition: background 0.2s;
   text-decoration: none;
   color: inherit;
+}
+
+.shareOptions a {
+  font-size: 0.4rem;
+  flex-direction: column;
+  display: flex;
+  gap: 0.2rem;
+  align-items: center;
+  padding: 0 !important;
+}
+
+.shareCont {
+  font-size: 0.7rem;
+  color: #5c5c5c;
+  padding: 0 !important;
+}
+
+.shareCont hr {
+  border-color: rgb(255, 255, 255);
+}
+
+.shareOption img {
+  width: 1.6rem;
 }
 
 .shareOption:hover {
@@ -95,17 +98,47 @@
 }
 
 .copyButton {
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
+  border: 1px solid #d3d3d3;
+  border-radius: 0 0.5rem 0.5rem 0;
   transition: background 0.2s;
+  width: 20%;
+  height: 1.35rem;
 }
 
 .copyButton:hover {
-  background: #f9fafb;
+  background: #e4e4e4;
+}
+
+.copyCont {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem 0 0 0.5rem;
+  font-size: 0.4rem;
+  padding-left: 0.3rem;
+  width: max-content;
+  justify-content: space-between;
+  background-color: #f5f5f5;
+  width: 80%;
+  height: 1.3rem;
+}
+
+.copyCont p {
+  font-size: 0.5rem !important;
+  margin-left: 0.3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 80%;
+}
+
+.copyCont div {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }

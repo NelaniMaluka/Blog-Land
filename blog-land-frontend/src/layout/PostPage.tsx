@@ -46,20 +46,18 @@ export const PostPage = () => {
         <meta name="keywords" content={keywords} />
         <meta name="author" content={post?.author || 'Nelani Maluka'} />
         <link rel="canonical" href={canonicalUrl} />
-
         {/* Open Graph */}
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content={imageUrl} />
-
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={imageUrl} />
-
+        <meta name="twitter:label1" content="Author" />
         {/* Structured Data */}
         {structuredData && (
           <script type="application/ld+json">{JSON.stringify(structuredData)}</script>

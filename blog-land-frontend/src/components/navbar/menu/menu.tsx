@@ -5,10 +5,13 @@ import List from '@mui/joy/List';
 import ListItemButton from '@mui/joy/ListItemButton';
 import Typography from '@mui/joy/Typography';
 import ModalClose from '@mui/joy/ModalClose';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useGetCategories } from '../../../hooks/useCategory';
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
 import { ROUTES } from '../../../constants/routes';
+import { useGetRandomPost } from '../../../hooks/usePost';
 
 import styles from './menu.module.css';
 import { Link } from 'react-router-dom';
@@ -20,6 +23,22 @@ interface DrawerMobileNavigationProps {
 
 export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNavigationProps) {
   const { data, isLoading } = useGetCategories();
+  const [redirect, setRedirect] = useState(false);
+  const { data: post, isError, refetch } = useGetRandomPost();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (redirect && post) {
+      navigate(ROUTES.POST(post.id, post.title));
+      setRedirect(false);
+    }
+  }, [redirect, post, navigate]);
+
+  const handleRandomPostClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    const result = await refetch();
+    setRedirect(true);
+  };
 
   return (
     <LoadingScreen isLoading={isLoading}>
@@ -40,7 +59,7 @@ export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNa
                 <Typography className={styles.navLinkText}>View All</Typography>
               </a>
 
-              <a href={ROUTES.RANDOM_POSTS} className={styles.navLink}>
+              <a href="#" onClick={handleRandomPostClick} className={styles.navLink}>
                 <img src="/icons/random.png" alt="Random icon" className={styles.navLinkIcon} />
                 <Typography className={styles.navLinkText}>Random</Typography>
               </a>
