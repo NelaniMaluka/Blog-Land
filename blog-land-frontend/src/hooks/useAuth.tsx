@@ -7,10 +7,12 @@ import { RegisterRequest, LoginRequest } from '../types/auth/requests';
 import { useGetUser } from './useUser';
 import { ShowSuccessSwal } from '../features/Alerts/SuccessMessage';
 import { scheduleLogout } from '../constants/ScheduleLogout';
+import { useSnackbar } from '../features/Snackbars/errorMessage';
 
 export function useRegister() {
   const dispatch = useDispatch();
   const { refetch: refetchUser } = useGetUser();
+  const { showError } = useSnackbar();
 
   return useMutation({
     mutationFn: async (payload: RegisterRequest) => {
@@ -26,12 +28,17 @@ export function useRegister() {
         ShowSuccessSwal('Sign-up Successful', `Welcome, ${data.firstname} ${data.lastname || ''}!`);
       }
     },
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
+      showError(msg);
+    },
   });
 }
 
 export function useLogin() {
   const dispatch = useDispatch();
   const { refetch: refetchUser } = useGetUser();
+  const { showError } = useSnackbar();
 
   return useMutation({
     mutationFn: async (payload: LoginRequest) => {
@@ -50,12 +57,17 @@ export function useLogin() {
         );
       }
     },
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
+      showError(msg);
+    },
   });
 }
 
 export function useSetOAuthToken() {
   const dispatch = useDispatch();
   const { refetch: refetchUser } = useGetUser();
+  const { showError } = useSnackbar();
 
   return useMutation({
     mutationFn: async (token: string) => {
@@ -71,6 +83,10 @@ export function useSetOAuthToken() {
           `Welcome back, ${data.firstname} ${data.lastname || ''}!`
         );
       }
+    },
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
+      showError(msg);
     },
   });
 }

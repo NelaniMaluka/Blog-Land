@@ -15,9 +15,10 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 
 interface SuccessMessageProps {
   message: string;
+  severity: 'error' | 'warning' | 'info' | 'success';
 }
 
-export default function SuccessMessage({ message }: SuccessMessageProps) {
+export default function SuccessMessage({ message, severity }: SuccessMessageProps) {
   const [open, setOpen] = React.useState(true);
 
   React.useEffect(() => {
@@ -38,10 +39,9 @@ export default function SuccessMessage({ message }: SuccessMessageProps) {
       sx={{ display: 'flex', alignItems: 'center' }}
     >
       <Alert
-        severity="success"
+        severity={severity}
         icon={false}
         sx={{
-          backgroundColor: '#2e7d32',
           color: '#fff',
           fontSize: '0.5rem',
           display: 'flex',

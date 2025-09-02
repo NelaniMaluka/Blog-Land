@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { FaWhatsapp, FaFacebook, FaTwitter, FaLinkedin, FaLink } from 'react-icons/fa';
-import { MdShare } from 'react-icons/md';
+import { FaLink } from 'react-icons/fa';
 import styles from './ShareButton.module.css';
 import { PostResponse } from '../../types/post/response';
 import { slugify } from '../../utils/formatUtils';
+import SuccessMessage from '../Snackbars/successMessage';
 
 interface ShareFeatureProps {
   post: PostResponse;
@@ -11,12 +11,12 @@ interface ShareFeatureProps {
 
 export default function ShareFeature({ post }: ShareFeatureProps) {
   const [open, setOpen] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
 
   // Use post info instead of window/document
   const currentUrl = `${window.location.origin}/post/${post.id}-${slugify(post.title)}`;
   const pageTitle = post.title;
   const pageSummary = post.summary || '';
-  const pageImage = post.postImgUrl || '/thumbnail.jpg';
 
   const shareOptions = [
     {
@@ -50,7 +50,14 @@ export default function ShareFeature({ post }: ShareFeatureProps) {
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(currentUrl);
-    } catch (err) {}
+      // Reset showMessage to trigger SuccessMessage again
+      setShowMessage(false);
+
+      // Next tick, set it true
+      setTimeout(() => setShowMessage(true), 10);
+    } catch (err) {
+      setShowMessage(false);
+    }
   };
 
   return (
@@ -103,6 +110,7 @@ export default function ShareFeature({ post }: ShareFeatureProps) {
           </div>
         </div>
       )}
+      {showMessage && <SuccessMessage message="Link copied to clipboard" severity="info" />}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import DashboardRoutes from './routes/DashboardRoutes';
 import { useEffect } from 'react';
 import Layout from './components/layouts/Layout';
 import { ROUTES } from './constants/routes';
-import Swal from 'sweetalert2';
+import { SnackbarProvider } from './features/Snackbars/errorMessage';
 
 // ScrollToTop Component
 const ScrollToTop = () => {
@@ -21,19 +21,21 @@ const ScrollToTop = () => {
 function App() {
   return (
     <>
-      <ScrollToTop />
+      <SnackbarProvider>
+        <ScrollToTop />
 
-      <Routes>
-        {/* All pages that should use Navbar + Footer */}
-        <Route path={ROUTES.HOME} element={<Layout noLayout={false} />}>
-          {MainRoutes()}
-        </Route>
+        <Routes>
+          {/* All pages that should use Navbar + Footer */}
+          <Route path={ROUTES.HOME} element={<Layout noLayout={false} />}>
+            {MainRoutes()}
+          </Route>
 
-        {/* Dashboard with no Navbar/Footer */}
-        <Route path={ROUTES.DASHBOARD_PROFILE} element={<Layout noLayout />}>
-          {DashboardRoutes()}
-        </Route>
-      </Routes>
+          {/* Dashboard with no Navbar/Footer */}
+          <Route path={ROUTES.DASHBOARD_PROFILE} element={<Layout noLayout />}>
+            {DashboardRoutes()}
+          </Route>
+        </Routes>
+      </SnackbarProvider>
     </>
   );
 }

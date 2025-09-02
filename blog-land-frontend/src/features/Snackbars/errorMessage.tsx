@@ -1,70 +1,57 @@
-import * as React from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import Slide from '@mui/material/Slide';
-import { SlideProps } from '@mui/material/Slide';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import MuiAlert from '@mui/material/Alert';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
-function SlideTransition(props: SlideProps) {
-  return <Slide {...props} direction="up" />;
+interface SnackbarContextValue {
+  showError: (msg: string) => void;
 }
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const SnackbarContext = createContext<SnackbarContextValue | undefined>(undefined);
 
-interface ErrorMessageProps {
-  message: string;
-}
+export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [message, setMessage] = useState<string | null>(null);
 
-export default function ErrorMessage({ message }: ErrorMessageProps) {
-  const [open, setOpen] = React.useState(true);
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setOpen(false);
-    }, 2500); 
-
-    return () => clearTimeout(timer);
-  }, []);
+  const showError = (msg: string) => {
+    setMessage(msg);
+    setTimeout(() => setMessage(null), 2500);
+  };
 
   return (
-    <Snackbar
-      open={open}
-      TransitionComponent={SlideTransition}
-      autoHideDuration={2500}
-      onClose={() => setOpen(false)}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      sx={{ display: 'flex', alignItems: 'center' }}
-    >
-      <Alert
-        severity="error"
-        icon={false}
-        sx={{
-          backgroundColor: '#d32f2f',
-          color: '#fff',
-          fontSize: '0.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-          gap: '6px',
-          minHeight: 'unset',
-          height: '36px',
-          '& .MuiAlert-message': {
-            display: 'flex',
-            alignItems: 'center',
-            padding: 0,
-          },
-          '& .MuiAlert-action': {
-            display: 'flex',
-            alignItems: 'center',
-            padding: 0,
-          },
-        }}
+    <SnackbarContext.Provider value={{ showError }}>
+      {children}
+
+      <Snackbar
+        open={!!message}
+        autoHideDuration={2500}
+        onClose={() => setMessage(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
-        <ErrorOutlineIcon sx={{ fontSize: '1rem', color: '#fff', paddingRight: '0.4rem' }} />
-        {message}
-      </Alert>
-    </Snackbar>
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          severity="error"
+          icon={<ErrorOutlineIcon sx={{ fontSize: '1rem', color: '#fff' }} />}
+          sx={{
+            backgroundColor: '#d32f2f',
+            color: '#fff',
+            fontSize: '0.57rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '3px',
+            height: '36px',
+          }}
+        >
+          {message}
+        </MuiAlert>
+      </Snackbar>
+    </SnackbarContext.Provider>
   );
-}
+};
+
+export const useSnackbar = () => {
+  const ctx = useContext(SnackbarContext);
+  if (!ctx) throw new Error('useSnackbar must be used within SnackbarProvider');
+  return ctx;
+};

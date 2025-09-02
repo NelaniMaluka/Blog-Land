@@ -1,24 +1,20 @@
 import React, { useState } from 'react';
 import styles from './Footer.module.css';
-import {
-  FaLinkedin,
-  FaFacebookF,
-  FaInstagram,
-  FaGithub,
-  FaHome,
-  FaEnvelope,
-  FaPhone,
-} from 'react-icons/fa';
+import { FaLinkedin, FaFacebookF, FaInstagram, FaGithub } from 'react-icons/fa';
 import { ROUTES } from '../../constants/routes';
 import LoadingScreen from '../../features/LoadingScreen/LoadingScreen';
 import { useNewsletterSubscription } from '../../hooks/useNewsletter';
-import ErrorMessage from '../../features/Snackbars/errorMessage';
 import SuccessMessage from '../../features/Snackbars/successMessage';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useGetRandomPost } from '../../hooks/usePost';
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
 
   const newsletter = useNewsletterSubscription();
+  const navigate = useNavigate();
+  const { data: post, isLoading, isError, refetch } = useGetRandomPost();
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,9 +23,22 @@ const Footer: React.FC = () => {
       setEmail('');
     } catch (error) {}
   };
-  if (newsletter.isSuccess) {
-    console.log(newsletter.data);
-  }
+
+  const [redirect, setRedirect] = useState(false);
+
+  useEffect(() => {
+    if (redirect && post) {
+      navigate(ROUTES.POST(post.id, post.title));
+      setRedirect(false);
+    }
+  }, [redirect, post, navigate]);
+
+  const handleRandomPostClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log('click');
+    const result = await refetch();
+    setRedirect(true);
+  };
 
   return (
     <footer className={styles.footer}>
@@ -91,7 +100,9 @@ const Footer: React.FC = () => {
               <a href={ROUTES.ABOUT}>About</a>
               <a href={ROUTES.LATEST_POSTS}>Latest</a>
               <a href={ROUTES.TRENDING_POSTS}>Trending</a>
-              <a href={ROUTES.RANDOM_POSTS}>Random</a>
+              <a href="#" onClick={handleRandomPostClick}>
+                Random
+              </a>
             </div>
 
             <div className={styles.footerCol}>
@@ -128,10 +139,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </LoadingScreen>
-      {newsletter.isSuccess && <SuccessMessage message={newsletter.data} />}
-      {newsletter.isError && (
-        <ErrorMessage message={newsletter?.error?.message || 'Something went wrong'} />
-      )}
+      {newsletter.isSuccess && <SuccessMessage message={newsletter.data} severity="success" />}
     </footer>
   );
 };

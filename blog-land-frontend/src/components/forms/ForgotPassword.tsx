@@ -8,7 +8,6 @@ import { validateEmail } from '../../utils/validationUtils';
 import { useState, FormEvent } from 'react';
 import { useForgotPassword } from '../../hooks/usePassword';
 import LoadingScreen from '../../features/LoadingScreen/LoadingScreen';
-import ErrorMessage from '../../features/Snackbars/errorMessage';
 
 interface ForgotPasswordDialogProps {
   open: boolean;
@@ -111,10 +110,6 @@ export default function ForgotPasswordDialog({
             Send Reset Link
           </Button>
         </form>
-
-        {forgotPassword.isError && (
-          <ErrorMessage message={forgotPassword?.error?.message || 'Something went wrong'} />
-        )}
       </Dialog>
     </LoadingScreen>
   );

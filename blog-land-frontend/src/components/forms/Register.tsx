@@ -7,7 +7,6 @@ import styles from './Form.module.css';
 import GoogleOAuthButton from '../buttons/GoogleButtons/GoogleOAuthButton';
 import LoadingScreen from '../../features/LoadingScreen/LoadingScreen';
 import { useRegister } from '../../hooks/useAuth';
-import ErrorMessage from '../../features/Snackbars/errorMessage';
 import { validateRequired, validateEmail, validatePassword } from '../../utils/validationUtils';
 import Fade from '@mui/material/Fade';
 import { useEffect, useState, FormEvent } from 'react';
@@ -272,9 +271,6 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
           </form>
         </Dialog>
       </LoadingScreen>
-      {register.isError && (
-        <ErrorMessage message={register?.error?.message || 'Something went wrong'} />
-      )}
     </>
   );
 }

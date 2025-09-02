@@ -8,7 +8,6 @@ import GoogleOAuthButton from '../buttons/GoogleButtons/GoogleOAuthButton';
 import LoadingScreen from '../../features/LoadingScreen/LoadingScreen';
 import { useLogin, useSetOAuthToken } from '../../hooks/useAuth';
 import { validateEmail, validatePassword } from '../../utils/validationUtils';
-import ErrorMessage from '../../features/Snackbars/errorMessage';
 import Fade from '@mui/material/Fade';
 import { useEffect, useState, FormEvent } from 'react';
 import { oauth } from '../../services/authService';
@@ -167,8 +166,6 @@ export default function LoginDialog({
           <GoogleOAuthButton onClick={() => oauth()} />
         </form>
       </Dialog>
-
-      {login.isError && <ErrorMessage message={login?.error?.message || 'Something went wrong'} />}
     </LoadingScreen>
   );
 }

@@ -2,7 +2,7 @@ import { subscribeToNewsletter } from '../api/newsletterApi';
 import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
 import { emailSchema } from '../schemas/generalSchema';
 
-export const submitNewsletterSubscription = async (email: string): Promise<{ message: string }> => {
+export const submitNewsletterSubscription = async (email: string): Promise<string> => {
   const validPayload = validateOrThrow(emailSchema, { email });
 
   try {

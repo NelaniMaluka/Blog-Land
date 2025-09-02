@@ -14,7 +14,6 @@ import {
 } from '../../../../hooks/useUser';
 import { UpdateUserRequest } from '../../../../types/user/request';
 import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
-import ErrorMessage from '../../../../features/Snackbars/errorMessage';
 import { validateEmail, validateRequired, validateUrl } from '../../../../utils/validationUtils';
 import classNames from 'classnames';
 import FallbackAvatars from '../../../common/Avatar';
@@ -664,9 +663,6 @@ export const Profile: React.FC<ProfileProps> = () => {
           </div>
         </div>
       </form>
-      {(updateUser.isError || updateProfileIcon.isError || removeProfileIcon.isError) && (
-        <ErrorMessage message={errorMessage} />
-      )}
     </LoadingScreen>
   );
 };

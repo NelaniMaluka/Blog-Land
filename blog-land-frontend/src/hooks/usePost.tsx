@@ -19,16 +19,28 @@ import { Order } from '../types/post/response';
 import { useMutation } from '@tanstack/react-query';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { PaginatedPosts } from '../types/post/response';
+import { useSnackbar } from '../features/Snackbars/errorMessage';
+import { PostResponse } from '../types/post/response';
+import { useEffect } from 'react';
 
 export const useSearchPost = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedTerm = useDebounce(searchTerm, 300);
+  const { showError } = useSnackbar();
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error } = useQuery<PostResponse[], Error>({
     queryKey: ['search', debouncedTerm],
     queryFn: () => fetchSearchedPosts(debouncedTerm),
     enabled: !!debouncedTerm,
   });
+
+  useEffect(() => {
+    if (isError && error) {
+      const msg =
+        (error as any)?.response?.data?.message || error.message || 'Failed to fetch posts';
+      showError(msg);
+    }
+  }, [isError, error, showError]);
 
   return {
     searchTerm,
@@ -101,31 +113,55 @@ export const useGetAllUserPost = (payload: {
 
   return useQuery({
     queryKey: ['userPosts', page, size],
-    queryFn: () => fetchAllUserPosts({ page, size }), // only pass page & size
-    enabled: options?.enabled ?? true, // default true
+    queryFn: () => fetchAllUserPosts({ page, size }),
+    enabled: options?.enabled ?? true,
   });
 };
 
 export const useAddViewCount = () => {
+  const { showError } = useSnackbar();
+
   return useMutation({
     mutationFn: submitView,
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
+      showError(msg);
+    },
   });
 };
 
 export const useAddPost = () => {
+  const { showError } = useSnackbar();
+
   return useMutation({
     mutationFn: submitPost,
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
+      showError(msg);
+    },
   });
 };
 
 export const useUpdatePost = () => {
+  const { showError } = useSnackbar();
+
   return useMutation({
     mutationFn: updatePosts,
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
+      showError(msg);
+    },
   });
 };
 
 export const useDeletePost = () => {
+  const { showError } = useSnackbar();
+
   return useMutation({
     mutationFn: deletePosts,
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
+      showError(msg);
+    },
   });
 };

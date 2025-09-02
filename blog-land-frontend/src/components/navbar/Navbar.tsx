@@ -5,8 +5,6 @@ import NavbarBottom from './NavbarBottom/NavbarBottom';
 import { ROUTES } from '../../constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useGetRandomPost } from '../../hooks/usePost';
-import ErrorMessage from '../../features/Snackbars/errorMessage';
-
 interface NavbarProps {
   setOpen: (open: boolean) => void;
 }
@@ -80,7 +78,6 @@ function Navbar({ setOpen }: NavbarProps) {
             <NavbarBottom />
           </div>
         </div>
-        {isError && <ErrorMessage message="Failed to load random post" />}
       </nav>
     </>
   );
