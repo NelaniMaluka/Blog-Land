@@ -5,48 +5,47 @@ Built with a clean layered architecture (Controller → Service → Repository) 
 
 ---
 
-## 🚀 Features
+## Features
 
-### 🔐 Authentication & Security
+### Authentication & Security
 - JWT-based authentication  
-- OAuth2 (social login ready)  
+- Google OAuth2 
 - Role-based access  
 
-### 📝 Content Management
+### Content Management
 - CRUD for posts, categories, users, comments, likes  
 - Pagination for posts  
 - Newsletter subscription & email integration  
 
-### 🌱 Data Seeding
+### Data Seeding
 - Initial seeders for users, blog posts, and categories  
 - Scheduled seeder to boost under-engaged categories  
 
-### ⚖️ Validation & Error Handling
+### Validation & Error Handling
 - Centralized validation logic (`utils/validation`)  
 - Global exception handling  
 
-### 🤖 AI Integration
+### AI Integration
 - [Hugging Face API](https://huggingface.co/) for content moderation  
 
-### 🗄️ Database Support
+### Database Support
 - H2 (development)  
 - MySQL (production-ready, planned)  
-- Redis for caching and session management  
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Core**: Java 17, Spring Boot 3.5  
 - **Security**: Spring Security, JWT, OAuth2  
-- **Database**: H2 (dev), MySQL (planned), Redis  
+- **Database**: H2 (dev), MySQL (planned)
 - **Build Tools**: Maven, Lombok, MapStruct  
 - **DevOps**: Docker, Render (deployment), Dependabot (dependency updates)  
 - **Testing**: JUnit + Spring Boot Starter Test  
 
 ---
 
-## 📂 Folder Structure
+## Folder Structure
 
 src/main/java/com/nelani/blogland  
 ├── config/          # App configuration (security, DB, etc.)  
@@ -57,7 +56,7 @@ src/main/java/com/nelani/blogland
 ├── repository/     # Spring Data repositories  
 ├── response/       # Standard API response wrappers  
 ├── service/        # Service interfaces  
-├── serviceImpl/    # Service implementations  
+    ├── serviceImpl/    # Service implementations  
 ├── seeder/         # Initial + scheduled seeders  
 └── utils/  
     ├── validation/ # Entity validation logic  
@@ -65,7 +64,7 @@ src/main/java/com/nelani/blogland
 
 ---
 
-## ⚙️ Getting Started
+## Getting Started
 
 ### Prerequisites
 - Java 17+  
@@ -92,7 +91,7 @@ docker build -t blogland-backend .
 docker run -p 8080:8080 blogland-backend
 ```
 
-### 🧪 Testing
+### Testing
 All services have unit tests.  
 Tests are run automatically during the Docker build and must pass before deployment.
 
@@ -101,13 +100,13 @@ Run locally with:
 mvn test
 ```
 
-### 📦 Deployment
+### Deployment
 - Hosted on Render  
 - Docker build runs unit tests before deploying  
 
 ---
 
-## 🔮 Roadmap
+## Roadmap
 
 - ✅ JWT & OAuth2 authentication  
 - ✅ CRUD for posts, categories, comments, users  
@@ -117,18 +116,18 @@ mvn test
 
 ---
 
-## 🤝 Contributing
+## Contributing
 Contributions are welcome!  
 Please open an issue or submit a pull request.
 
 ---
 
-## 📜 License
+## License
 MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-## 💡 Notes
+## Notes
 - Automated dependency updates powered by Dependabot.  
 - Built to be production-quality (Docker + Render + tests).  
 - Scalable with Redis + MySQL (planned).  
