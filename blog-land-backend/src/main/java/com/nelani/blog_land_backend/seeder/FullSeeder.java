@@ -1,6 +1,7 @@
 package com.nelani.blog_land_backend.seeder;
 
 import com.nelani.blog_land_backend.repository.CategoryRepository;
+import com.nelani.blog_land_backend.repository.LikeRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -20,12 +21,13 @@ public class FullSeeder {
             PasswordEncoder passwordEncoder,
             CategoryRepository categoryRepository,
             PostRepository postRepository,
+            LikeRepository likeRepository,
             RestTemplate restTemplate) {
 
         return args -> {
             new UserSeeder().seed(userRepository, passwordEncoder);
             new CategorySeeder().seed(categoryRepository);
-            new TechCrunchSeeder().seed(restTemplate, postRepository, userRepository, categoryRepository );
+            new TechCrunchSeeder().seed(restTemplate, postRepository, userRepository, categoryRepository, likeRepository );
         };
     }
 }

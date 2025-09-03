@@ -2,9 +2,11 @@ package com.nelani.blog_land_backend.seeder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nelani.blog_land_backend.model.Category;
+import com.nelani.blog_land_backend.model.Like;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
+import com.nelani.blog_land_backend.repository.LikeRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.repository.UserRepository;
 
@@ -24,7 +26,7 @@ public class TechCrunchSeeder {
             RestTemplate restTemplate,
             PostRepository postRepository,
             UserRepository userRepository,
-            CategoryRepository categoryRepository) {
+            CategoryRepository categoryRepository, LikeRepository likeRepository) {
 
         int totalPostsToSeed = 100;
         int pageSize = 20;
@@ -98,6 +100,29 @@ public class TechCrunchSeeder {
                                 .build();
 
                         postRepository.save(post);
+
+                        // Add random likes
+                        int randomLikes = 1 + random.nextInt(5); // 1 to 5 likes per post
+                        Set<Long> likedUserIds = new HashSet<>();
+                        for (int i = 0; i < randomLikes; i++) {
+                            User randomUser = users.get(random.nextInt(users.size()));
+
+                            // avoid duplicate likes from same user
+                            if (likedUserIds.add(randomUser.getId())) {
+                                // fetch managed user from repository
+                                User managedUser = userRepository.findById(randomUser.getId())
+                                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+                                Like like = Like.builder()
+                                        .post(post)
+                                        .user(managedUser)
+                                        .likedAt(LocalDateTime.now()) // explicitly set likedAt
+                                        .build();
+
+                                likeRepository.save(like);
+                            }
+                        }
+
                         seededCount++;
 
                     } catch (Exception innerEx) {
@@ -113,7 +138,7 @@ public class TechCrunchSeeder {
         System.out.println("✅ Seeded " + seededCount + " TechCrunch posts.");
     }
 
-    // 🧠 Score-Based Category Matching
+    // Score-Based Category Matching
     private Category determineCategoryByScore(String title, String content, List<Category> categories) {
         String combined = (title + " " + content).toLowerCase();
 

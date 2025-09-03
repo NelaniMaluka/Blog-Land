@@ -11,6 +11,8 @@ import styles from './Avatar.module.css';
 import LoginDialog from '../../forms/Login';
 import RegisterDialog from '../../forms/Register';
 import ForgotPasswordDialog from '../../forms/ForgotPassword';
+import { useQueryClient } from '@tanstack/react-query';
+import { useDialog } from '../../../features/LoginProvider/LoginProvider';
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -18,6 +20,10 @@ export default function AvatarMenu() {
   const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
   const [openForgotDialog, setOpenForgotDialog] = useState(false);
   const logout = useLogoutUser();
+  const queryClient = useQueryClient();
+
+  const { openLogin, openRegister, openForgot, hideAll, showLogin, showRegister, showForgot } =
+    useDialog();
 
   const open = Boolean(anchorEl);
   const auth = store.getState().auth.isAuthenticated;
@@ -28,6 +34,7 @@ export default function AvatarMenu() {
   const handleLogout = () => {
     logout.mutate();
     handleCloseMenu();
+    queryClient.clear();
   };
 
   return (
@@ -74,19 +81,20 @@ export default function AvatarMenu() {
               <MenuItem
                 key="register"
                 onClick={() => {
-                  setOpenRegisterDialog(true);
                   handleCloseMenu();
+                  showRegister();
                 }}
                 className={styles.menuItem}
               >
                 <img className={styles.menuIcon} src="/icons/register.png" alt="register icon" />
                 Register
               </MenuItem>,
+
               <MenuItem
                 key="login"
                 onClick={() => {
-                  setOpenLoginDialog(true);
                   handleCloseMenu();
+                  showLogin();
                 }}
                 className={styles.menuItem}
               >
@@ -98,35 +106,35 @@ export default function AvatarMenu() {
 
       {/* Login */}
       <LoginDialog
-        open={openLoginDialog}
-        onClose={() => setOpenLoginDialog(false)}
+        open={openLogin}
+        onClose={hideAll}
         onSwitchToRegister={() => {
-          setOpenLoginDialog(false);
-          setOpenRegisterDialog(true);
+          hideAll();
+          setTimeout(showRegister, 100);
         }}
         onSwitchToForgot={() => {
-          setOpenLoginDialog(false);
-          setOpenForgotDialog(true);
+          hideAll();
+          setTimeout(showForgot, 100);
         }}
       />
 
       {/* Register */}
       <RegisterDialog
-        open={openRegisterDialog}
-        onClose={() => setOpenRegisterDialog(false)}
+        open={openRegister}
+        onClose={hideAll}
         onSwitchToLogin={() => {
-          setOpenRegisterDialog(false);
-          setOpenLoginDialog(true);
+          hideAll();
+          setTimeout(showLogin, 100);
         }}
       />
 
       {/* Forgot Password */}
       <ForgotPasswordDialog
-        open={openForgotDialog}
-        onClose={() => setOpenForgotDialog(false)}
+        open={openForgot}
+        onClose={hideAll}
         onSwitchToLogin={() => {
-          setOpenForgotDialog(false);
-          setOpenLoginDialog(true);
+          hideAll();
+          setTimeout(showLogin, 100);
         }}
       />
     </>

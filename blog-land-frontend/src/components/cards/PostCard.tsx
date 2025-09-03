@@ -1,10 +1,8 @@
 import React from 'react';
 import styles from './PostCard.module.css';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { ROUTES } from '../../constants/routes';
-import { formatViews } from '../../utils/formatUtils';
+import { formatDigit } from '../../utils/formatUtils';
 import FallbackAvatars from '../common/Avatar';
 import { PostResponse } from '../../types/post/response';
 
@@ -18,12 +16,12 @@ export const PostCard: React.FC<PostCardProps> = ({ post, categoryName }) => {
     <div key={post.id} className={styles.post}>
       <img src={post.postImgUrl} alt="img" />
       <div className={styles.subDetails}>
+        <span>{formatDigit(post.views)} views</span>
         {categoryName && (
           <a href={ROUTES.CATEGORY_POSTS(categoryName)} className={styles.category}>
             {categoryName}
           </a>
         )}
-        <span>{formatViews(post.views)} views</span>
         <span>{post.readTime} min read</span>
       </div>
       <p className={styles.title}>{post.title}</p>

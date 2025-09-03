@@ -51,7 +51,8 @@ public class SecurityConfig {
                                                                 "/api/post/get/**",
                                                                 "/api/comments/get/**",
                                                                 "/api/post/api/search/**",
-                                                                "/ProfileIcons/**")
+                                                                "/ProfileIcons/**",
+                                                                "/api/like/get/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2.successHandler(customSuccessHandler))

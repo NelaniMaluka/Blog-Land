@@ -6,7 +6,7 @@ import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
 import { ROUTES } from '../../../../constants/routes';
 import { PostCard } from '../../../cards/PostCard';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { formatViews } from '../../../../utils/formatUtils';
+import { formatDigit } from '../../../../utils/formatUtils';
 
 export const LatestSection = () => {
   const {
@@ -45,12 +45,12 @@ export const LatestSection = () => {
               <p className={styles.title}>{recentPost.title}</p>
               <p>{recentPost.summary}</p>
               <div className={styles.subDetails}>
+                <span>{formatDigit(recentPost.views)} views</span>
                 {category && (
                   <a href={`/category/${encodeURIComponent(category)}`} className={styles.category}>
                     {category}
                   </a>
                 )}
-                <span>{formatViews(recentPost.views)} views</span>
                 <span>{recentPost.readTime} min read</span>
               </div>
               <a href={ROUTES.POST(recentPost.id, recentPost.title)} className={styles.readMore}>

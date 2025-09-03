@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../../constants/routes';
 import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
 import FallbackAvatars from '../../../common/Avatar';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { useGetUser, useLogoutUser } from '../../../../hooks/useUser';
 
@@ -28,10 +29,12 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({ selected, onSelect, on
   const { data: user, isLoading, isError } = useGetUser();
   const navigate = useNavigate();
   const logout = useLogoutUser();
+  const queryClient = useQueryClient();
 
   const handleLogout = () => {
     logout.mutateAsync();
     navigate(ROUTES.HOME);
+    queryClient.clear();
   };
 
   return (

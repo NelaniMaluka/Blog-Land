@@ -163,6 +163,13 @@ h6 {
   font-weight: 500;
 }
 
+.featCont {
+  display: flex;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 @media (max-width: 1200px) {
   .holder {
     display: block;

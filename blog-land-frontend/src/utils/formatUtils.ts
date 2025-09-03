@@ -57,7 +57,7 @@ export const formatDate = (dateString?: string): string => {
   return 'just now';
 };
 
-export function formatViews(num: number) {
+export function formatDigit(num: number) {
   if (num >= 1000) {
     return (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1) + 'K';
   }

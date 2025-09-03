@@ -26,6 +26,7 @@ public class PostResponse {
     private String summary;
     private String postImgUrl;
     private Long views;
+    private Long likes;
     private String references;
     private String author;
     private String source;

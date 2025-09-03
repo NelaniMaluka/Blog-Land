@@ -66,8 +66,12 @@ public class Post {
     private Category category;
 
     @Builder.Default
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, orphanRemoval = true )
     private List<Comment> comments = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Like> likes = new ArrayList<>();
 
     public void setContent(String content) {
         this.content = content;

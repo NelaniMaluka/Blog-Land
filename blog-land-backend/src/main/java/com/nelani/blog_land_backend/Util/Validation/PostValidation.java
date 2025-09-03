@@ -2,6 +2,7 @@ package com.nelani.blog_land_backend.Util.Validation;
 
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.model.User;
+import com.nelani.blog_land_backend.repository.PostRepository;
 
 import java.util.List;
 import java.util.Optional;

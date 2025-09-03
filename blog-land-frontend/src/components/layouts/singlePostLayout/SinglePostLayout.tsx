@@ -1,10 +1,11 @@
 import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
 import { ROUTES } from '../../../constants/routes';
 import { useGetCategories } from '../../../hooks/useCategory';
-import { formatViews } from '../../../utils/formatUtils';
+import { formatDigit } from '../../../utils/formatUtils';
 import BasicBreadcrumbs from '../../breadcrumbs/breadcrumbs';
 import FallbackAvatars from '../../common/Avatar';
 import ShareFeature from '../../../features/ShareButton/ShareButton';
+import LikeButton from '../../../features/likeButton/LikeButton';
 
 import styles from './SinglePostLayout.module.css';
 import { PostResponse } from '../../../types/post/response';
@@ -41,12 +42,12 @@ export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutP
             <div className={styles.column1}>
               <img src={post?.postImgUrl} alt={post?.title} className={styles.img} />
               <div className={styles.subDetails}>
+                <span>{formatDigit(post?.views ?? 0)} views</span>
                 {categoryName && (
                   <a href={ROUTES.CATEGORY_POSTS(categoryName)} className={styles.category}>
                     {categoryName}
                   </a>
                 )}
-                <span>{formatViews(post?.views ?? 0)} views</span>
                 <span>{post?.readTime} min read</span>
               </div>
               <h2 className={styles.title}>{post?.title}</h2>
@@ -60,7 +61,8 @@ export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutP
                       <p className={styles.date}>{post?.createdAt}</p>
                     </div>
                   </div>
-                  <div>
+                  <div className={styles.featCont}>
+                    <LikeButton postId={post.id} />
                     <ShareFeature post={post} />
                   </div>
                 </div>
