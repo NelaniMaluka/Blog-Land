@@ -115,6 +115,9 @@
   .postsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
+  .holder {
+    padding: 0;
+  }
 }
 
 @media (max-width: 768px) {
