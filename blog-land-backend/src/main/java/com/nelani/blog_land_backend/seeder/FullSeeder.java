@@ -27,8 +27,8 @@ public class FullSeeder {
         return args -> {
             new UserSeeder().seed(userRepository, passwordEncoder);
             new CategorySeeder().seed(categoryRepository);
-            new TechCrunchSeeder().seed(restTemplate, postRepository, userRepository, categoryRepository, likeRepository );
+            new TechCrunchSeeder().seed(restTemplate, postRepository, userRepository, categoryRepository,
+                    likeRepository);
         };
     }
 }
-
