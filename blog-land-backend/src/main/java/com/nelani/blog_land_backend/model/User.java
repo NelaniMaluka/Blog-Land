@@ -87,7 +87,7 @@ public class User {
 
         @Builder.Default
         @BatchSize(size = 10)
-        @ElementCollection(fetch = FetchType.LAZY)
+        @ElementCollection(fetch = FetchType.EAGER)
         @CollectionTable(name = "author_socials", joinColumns = @JoinColumn(name = "author_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
                         "author_id", "platform" }))
         @Column(name = "url")
