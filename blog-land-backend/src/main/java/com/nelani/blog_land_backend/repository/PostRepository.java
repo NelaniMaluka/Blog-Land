@@ -27,15 +27,15 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
   // Random published post
   @Query(value = """
-          SELECT * FROM blog_posts
-          WHERE is_draft = false
-            AND (scheduled_at IS NULL OR scheduled_at <= NOW())
-            AND id >= (
-                SELECT FLOOR(RAND() * (SELECT MAX(id) FROM blog_posts))
-            )
-          ORDER BY id ASC
-          LIMIT 1
-      """, nativeQuery = true)
+        SELECT * FROM blog.BLOG_POSTS
+        WHERE IS_DRAFT = FALSE
+          AND (SCHEDULED_AT IS NULL OR SCHEDULED_AT <= NOW())
+          AND ID >= (
+              SELECT FLOOR(RAND() * (SELECT MAX(ID) FROM blog.BLOG_POSTS))
+          )
+        ORDER BY ID ASC
+        LIMIT 1
+    """, nativeQuery = true)
   Post findRandomPost();
 
   // Count only published posts in category

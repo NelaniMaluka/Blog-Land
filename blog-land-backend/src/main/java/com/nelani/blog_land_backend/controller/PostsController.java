@@ -40,7 +40,7 @@ public class PostsController {
 
         @GetMapping("/get/random-post")
         public ResponseEntity<?> getRandomPost() {
-                Post post = postRepository.findRandomPost(); // Gets random post
+                Post post = postRepository.findRandomPost();
 
                 // Formats the random post and returns it
                 PostResponse response = PostBuilder.generateUserPostWithUserInfo(post);
