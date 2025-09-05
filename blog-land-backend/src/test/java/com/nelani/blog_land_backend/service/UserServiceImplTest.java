@@ -2,6 +2,7 @@ package com.nelani.blog_land_backend.service;
 
 import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
+import com.nelani.blog_land_backend.dto.UserDto;
 import com.nelani.blog_land_backend.model.ExperienceLevel;
 import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.User;
@@ -99,13 +100,13 @@ public class UserServiceImplTest {
         @Test
         void updateUserDetails_ShouldSaveValidUser() {
                 // Arrange
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("Maluka");
                 user.setEmail("nelani@example.com");
-                user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
                 user.setExperience(ExperienceLevel.CASUAL_POSTER);
+                user.setProvider(Provider.LOCAL);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -146,13 +147,14 @@ public class UserServiceImplTest {
         @Test
         void updateUserDetails_ShouldThrowException_WhenFirstnameIsEmpty() {
                 // Arrange
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("   ");
                 user.setLastname("Maluka");
                 user.setEmail("nelani@example.com");
-                user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
                 user.setExperience(ExperienceLevel.CASUAL_POSTER);
+                user.setProvider(Provider.LOCAL);
+
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -171,13 +173,13 @@ public class UserServiceImplTest {
         @Test
         void updateUserDetails_ShouldThrowException_WhenLastnameIsEmpty() {
                 // Arrange
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("    ");
                 user.setEmail("nelani@example.com");
-                user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
                 user.setExperience(ExperienceLevel.CASUAL_POSTER);
+                user.setProvider(Provider.LOCAL);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -196,13 +198,13 @@ public class UserServiceImplTest {
         @Test
         void updateUserDetails_ShouldThrowException_WhenEmailIsInvalid() {
                 // Arrange
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("Maluka");
                 user.setEmail("invalid-email");
-                user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
                 user.setExperience(ExperienceLevel.CASUAL_POSTER);
+                user.setProvider(Provider.LOCAL);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -222,13 +224,13 @@ public class UserServiceImplTest {
 
         @Test
         void updateUserDetails_ShouldThrowException_WhenProviderIsInvalid() {
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("Maluka");
                 user.setEmail("nelani@example.com");
-                user.setProvider(Provider.GOOGLE);
                 user.setLocation("Johannesburg, South Africa");
                 user.setExperience(ExperienceLevel.CASUAL_POSTER);
+                user.setProvider(Provider.LOCAL);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -237,7 +239,7 @@ public class UserServiceImplTest {
 
                 User existingUser = new User();
                 existingUser.setEmail("nelani@example.com");
-                existingUser.setProvider(Provider.LOCAL);
+                existingUser.setProvider(Provider.GOOGLE);
 
                 when(userRepository.findByEmail("nelani@example.com"))
                                 .thenReturn(Optional.of(existingUser));
@@ -254,7 +256,7 @@ public class UserServiceImplTest {
                                 () -> userService.updateUserDetails(user));
 
                 assertEquals(
-                                "This account was registered with LOCAL . Please log in using your LOCAL provider.",
+                                "This account was registered with GOOGLE . Please log in using your GOOGLE provider.",
                                 exception.getMessage());
 
                 verify(userRepository, never()).save(any());
@@ -262,13 +264,13 @@ public class UserServiceImplTest {
 
         @Test
         void updateUserDetails_ShouldSave_WhenLocationIsEmpty() {
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("Maluka");
                 user.setEmail("nelani@example.com");
-                user.setProvider(Provider.LOCAL);
                 user.setLocation("    ");
                 user.setExperience(ExperienceLevel.CASUAL_POSTER);
+                user.setProvider(Provider.LOCAL);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -307,13 +309,13 @@ public class UserServiceImplTest {
 
         @Test
         void updateUserDetails_ShouldSave_WhenExperienceIsEmpty() {
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("Maluka");
                 user.setEmail("nelani@example.com");
-                user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
                 user.setExperience(null);
+                user.setProvider(Provider.LOCAL);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -352,14 +354,14 @@ public class UserServiceImplTest {
 
         @Test
         void updateUserDetails_ShouldSave_WhenSocialsIsEmpty() {
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("Maluka");
                 user.setEmail("nelani@example.com");
-                user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
                 user.setExperience(ExperienceLevel.CASUAL_POSTER);
                 user.setSocials(null);
+                user.setProvider(Provider.LOCAL);
 
                 User existingUser = new User();
                 existingUser.setEmail("nelani@example.com");
@@ -393,13 +395,13 @@ public class UserServiceImplTest {
 
         @Test
         void updateUserDetails_ShouldThrowException_WhenFailModeration() {
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("bitch");
                 user.setLastname("fuck");
                 user.setEmail("nelani@example.com");
-                user.setProvider(Provider.LOCAL);
                 user.setLocation("Johannesburg, South Africa");
                 user.setExperience(ExperienceLevel.CASUAL_POSTER);
+                user.setProvider(Provider.LOCAL);
 
                 Map<String, String> socials = new HashMap<>();
                 socials.put("Instagram", "www.instagram");
@@ -438,7 +440,7 @@ public class UserServiceImplTest {
                 when(securityContext.getAuthentication()).thenReturn(null);
                 SecurityContextHolder.setContext(securityContext);
 
-                User userUpdate = new User();
+                UserDto userUpdate = new UserDto();
                 userUpdate.setFirstname("Nelani");
                 userUpdate.setLastname("Maluka");
                 userUpdate.setEmail("nelani@example.com");

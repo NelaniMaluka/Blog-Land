@@ -24,8 +24,7 @@ public class ModerationClient {
     public void validateContent(String content) {
         Map<String, Double> flagged = getFlaggedLabels(content);
         if (!flagged.isEmpty()) {
-            StringBuilder sb = new StringBuilder("Content flagged for moderation:\n");
-            flagged.forEach((label, score) -> sb.append("- ").append(label).append(": ").append(String.format("%.2f", score)).append("\n"));
+            StringBuilder sb = new StringBuilder("Content flagged for moderation.\n");
             throw new ValidationException(sb.toString());
         }
     }
@@ -65,7 +64,7 @@ public class ModerationClient {
                         continue; // retry
                     }
 
-                    throw new ValidationException("Hugging Face error: " + errorMsg);
+                    throw new ValidationException("Hugging Face error.");
                 }
 
                 // Normal parsing
@@ -87,7 +86,7 @@ public class ModerationClient {
             }
 
         } catch (Exception e) {
-            throw new ValidationException("Moderation service error: " + e.getMessage());
+            throw new ValidationException("Moderation service error.");
         }
 
         return flaggedLabels;

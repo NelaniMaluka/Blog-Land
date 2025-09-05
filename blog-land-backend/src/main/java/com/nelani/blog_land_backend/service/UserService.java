@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.service;
 
-import com.nelani.blog_land_backend.model.User;
+import com.nelani.blog_land_backend.dto.UserDto;
 import com.nelani.blog_land_backend.response.UserResponse;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,7 +11,7 @@ public interface UserService {
 
     UserResponse getUserDetails();
 
-    String updateUserDetails(User user);
+    String updateUserDetails(UserDto user);
 
     void deleteUserDetails();
 }

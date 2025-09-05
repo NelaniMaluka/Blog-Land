@@ -92,9 +92,9 @@ public class User {
                         "author_id", "platform" }))
         @Column(name = "url")
         @MapKeyColumn(name = "platform")
-        private Map<@NotBlank(message = "Platform name cannot be blank") @Size(max = 50, message = "Platform name must not exceed 50 characters") String,
+        private Map<@Size(max = 50, message = "Platform name must not exceed 50 characters") String,
 
-                        @NotBlank(message = "URL cannot be blank") @Size(max = 500, message = "URL must not exceed 500 characters") String> socials = new HashMap<>();
+                         @Size(max = 500, message = "URL must not exceed 500 characters") String> socials = new HashMap<>();
 
         @Override
         public String toString() {

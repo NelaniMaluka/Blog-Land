@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.model.User;
+import com.nelani.blog_land_backend.dto.UserDto;
 import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.service.UserService;
 
@@ -29,32 +29,32 @@ public class UserController {
     @Transactional
     public ResponseEntity<?> uploadProfileImage(@RequestParam("file") MultipartFile file) {
         String response = userService.saveUserProfileImage(file);
-        return  ResponseEntity.ok(response);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/remove-profile-image")
     @Transactional
     public ResponseEntity<?> removeProfileImage() {
         String response = userService.removeUserProfileImage();
-        return  ResponseEntity.ok(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/get-user")
     public ResponseEntity<?> getUseDetails() {
-            UserResponse userResponse = userService.getUserDetails();
-            return ResponseEntity.ok(userResponse);
+        UserResponse userResponse = userService.getUserDetails();
+        return ResponseEntity.ok(userResponse);
     }
 
     @PutMapping("/update-user")
-    public ResponseEntity<?> updateUseDetails(@RequestBody User user) {
-            String newToken = userService.updateUserDetails(user);
-            return ResponseEntity.ok(newToken);
+    public ResponseEntity<?> updateUseDetails(@RequestBody UserDto user) {
+        String newToken = userService.updateUserDetails(user);
+        return ResponseEntity.ok(newToken);
     }
 
     @DeleteMapping("/delete-user")
     public ResponseEntity<?> deleteUseDetails() {
-            userService.deleteUserDetails();
-            return ResponseEntity.ok("Success, Successfully deleted your account");
+        userService.deleteUserDetails();
+        return ResponseEntity.ok("Success, Successfully deleted your account");
     }
 
     @PostMapping("/log-out")

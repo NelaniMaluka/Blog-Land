@@ -4,6 +4,7 @@ import com.nelani.blog_land_backend.Util.Builders.UserBuilder;
 import com.nelani.blog_land_backend.Util.Validation.FileValidation;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
 import com.nelani.blog_land_backend.Util.Validation.UserValidation;
+import com.nelani.blog_land_backend.dto.UserDto;
 import com.nelani.blog_land_backend.model.ExperienceLevel;
 import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.response.UserResponse;
@@ -84,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public String updateUserDetails(User updateUser) {
+    public String updateUserDetails(UserDto updateUser) {
         // Validate fields
         String firstname = FormValidation.assertRequiredField(updateUser.getFirstname(), "Firstname");
         String lastname = FormValidation.assertRequiredField(updateUser.getLastname(), "Lastname");
@@ -108,6 +109,14 @@ public class UserServiceImpl implements UserService {
         // Validates user provider
         UserValidation.assertUserProvider(user, provider, "This account was registered with " + user.getProvider()
                 + " . Please log in using your " + user.getProvider() + " provider.");
+
+        if (socials != null) {
+            user.getSocials().clear();   // Hibernate tracks changes
+            socials.entrySet().stream()
+                    .filter(e -> e.getKey() != null && !e.getKey().isBlank()
+                            && e.getValue() != null && !e.getValue().isBlank())
+                    .forEach(e -> user.getSocials().put(e.getKey(), e.getValue()));
+        }
 
         user.setFirstname(firstname);
         user.setLastname(lastname);
