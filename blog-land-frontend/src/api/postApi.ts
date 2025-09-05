@@ -14,6 +14,11 @@ export const getRandomPost = async () => {
   return response;
 };
 
+export const getRandomPosts = async () => {
+  const response = await apiClient.get('/post/get/random-posts', {});
+  return response;
+};
+
 export const getPost = async (id: number) => {
   const response = await apiClient.get(`post/get/post/${id}`, {});
   return response;

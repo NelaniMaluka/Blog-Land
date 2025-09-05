@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   fetchSearchedPosts,
   fetchRandomPost,
+  fetchRandomPosts,
   fetchPost,
   fetchAllPosts,
   fetchTopPosts,
@@ -54,6 +55,14 @@ export const useSearchPost = () => {
 
 export const useGetRandomPost = () => {
   return useQuery({ queryKey: ['randomPost'], queryFn: () => fetchRandomPost() });
+};
+
+export const useGetRandomPosts = () => {
+  return useQuery({
+    queryKey: ['randomPosts'],
+    queryFn: () => fetchRandomPosts(),
+    refetchOnWindowFocus: true,
+  });
 };
 
 export const useGetPost = (payload: { id: number }) => {

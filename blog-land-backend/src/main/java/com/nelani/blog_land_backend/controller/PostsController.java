@@ -47,6 +47,18 @@ public class PostsController {
                 return ResponseEntity.ok(response);
         }
 
+        @GetMapping("/get/random-posts")
+        public ResponseEntity<?> getRandomPosts() {
+                List<Post> posts = postRepository.findRandomPosts();
+
+                // Formats the random posts and returns them
+                List<PostResponse> response = posts.stream()
+                        .map(PostBuilder::generatePost)
+                        .toList();
+
+                return ResponseEntity.ok(response);
+        }
+
         @GetMapping("/get/top-post")
         public ResponseEntity<?> getTopPost() {
                 List<CategoryWithPostsDTO> posts = postService.getTopCategoriesWithPosts(); // Gets random post

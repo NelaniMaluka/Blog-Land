@@ -6,6 +6,10 @@ import BasicBreadcrumbs from '../../breadcrumbs/breadcrumbs';
 import FallbackAvatars from '../../common/Avatar';
 import ShareFeature from '../../../features/ShareButton/ShareButton';
 import LikeButton from '../../../features/likeButton/LikeButton';
+import { useGetRandomPosts } from '../../../hooks/usePost';
+import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import styles from './SinglePostLayout.module.css';
 import { PostResponse } from '../../../types/post/response';
@@ -18,6 +22,12 @@ interface SinglePostLayoutProps {
 
 export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutProps) => {
   const { data: categoriesData } = useGetCategories();
+  const { data: randomPostsData } = useGetRandomPosts();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['randomPosts'] });
+  }, [post?.id, queryClient]);
 
   const category = categoriesData?.find((c) => c.id === post?.categoryId);
   const categoryName = category?.name;
@@ -72,7 +82,30 @@ export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutP
                 className={styles.content}
               />
             </div>
-            <div className={styles.column2}></div>
+            <div className={styles.column2}>
+              <h3>You Might Also Like:</h3>
+              <div className={styles.postCont}>
+                {randomPostsData &&
+                  randomPostsData.map((randomPost) => (
+                    <Link
+                      key={randomPost.id}
+                      className={styles.card}
+                      to={ROUTES.POST(randomPost.id, randomPost.title)}
+                    >
+                      <div className={styles.imageHolder}>
+                        <img src={randomPost.postImgUrl} alt="post image" />
+                      </div>
+                      <div className={styles.textHolder}>
+                        <h3>{randomPost.title}</h3>
+                        <div className={styles.subText}>
+                          <span>{formatDigit(randomPost.views)} views</span>
+                          <span>{randomPost.createdAt}</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+            </div>
           </div>
         </div>
       </LoadingScreen>

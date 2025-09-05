@@ -59,7 +59,15 @@ export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNa
                 <Typography className={styles.navLinkText}>View All</Typography>
               </a>
 
-              <a href="#" onClick={handleRandomPostClick} className={styles.navLink}>
+              <a
+                href="#"
+                onClick={async (e) => {
+                  e.preventDefault;
+                  setOpen(false);
+                  await handleRandomPostClick(e);
+                }}
+                className={styles.navLink}
+              >
                 <img src="/icons/random.png" alt="Random icon" className={styles.navLinkIcon} />
                 <Typography className={styles.navLinkText}>Random</Typography>
               </a>

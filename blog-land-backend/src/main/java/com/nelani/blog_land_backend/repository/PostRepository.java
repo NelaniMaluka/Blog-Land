@@ -38,6 +38,16 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     """, nativeQuery = true)
   Post findRandomPost();
 
+  // 10 random published posts
+  @Query(value = """
+        SELECT * FROM blog.BLOG_POSTS
+        WHERE IS_DRAFT = FALSE
+          AND (SCHEDULED_AT IS NULL OR SCHEDULED_AT <= NOW())
+        ORDER BY RAND()
+        LIMIT 25
+    """, nativeQuery = true)
+  List<Post> findRandomPosts();
+
   // Count only published posts in category
   @Query("SELECT COUNT(p) FROM Post p WHERE p.category.id = :categoryId AND " +
       "p.isDraft = false AND (p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP)")

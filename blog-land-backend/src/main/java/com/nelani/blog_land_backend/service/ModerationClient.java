@@ -32,6 +32,9 @@ public class ModerationClient {
 
     public Map<String, Double> getFlaggedLabels(String content) {
         Map<String, Double> flaggedLabels = new HashMap<>();
+        int maxRetries = 3;
+        int retryDelayMs = 3000;
+
         try {
             String escapedContent = content.replace("\"", "\\\"");
             String json = "{ \"inputs\": \"" + escapedContent + "\" }";
@@ -43,25 +46,48 @@ public class ModerationClient {
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
 
-            HttpResponse<String> response = HttpClient.newHttpClient()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            HttpClient client = HttpClient.newHttpClient();
 
-            JSONArray outerArray = new JSONArray(response.body());
-            JSONArray scoresArray = outerArray.getJSONArray(0);
+            for (int attempt = 1; attempt <= maxRetries; attempt++) {
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            for (int i = 0; i < scoresArray.length(); i++) {
-                JSONObject labelScore = scoresArray.getJSONObject(i);
-                String label = labelScore.getString("label");
-                double score = labelScore.getDouble("score");
+                System.out.println("HF Response status: " + response.statusCode());
+                System.out.println("HF Response body: " + response.body());
 
-                double threshold = getThresholdForLabel(label);
-                if (score > threshold) {
-                    flaggedLabels.put(label, score);
+                // If Hugging Face responds with an error (not an array)
+                if (!response.body().trim().startsWith("[")) {
+                    JSONObject errorObj = new JSONObject(response.body());
+                    String errorMsg = errorObj.optString("error", "Unknown Hugging Face error");
+
+                    if (errorMsg.toLowerCase().contains("loading") && attempt < maxRetries) {
+                        System.out.println("Model still loading... retrying in " + retryDelayMs + "ms");
+                        Thread.sleep(retryDelayMs);
+                        continue; // retry
+                    }
+
+                    throw new ValidationException("Hugging Face error: " + errorMsg);
                 }
+
+                // Normal parsing
+                JSONArray outerArray = new JSONArray(response.body());
+                JSONArray scoresArray = outerArray.getJSONArray(0);
+
+                for (int i = 0; i < scoresArray.length(); i++) {
+                    JSONObject labelScore = scoresArray.getJSONObject(i);
+                    String label = labelScore.getString("label");
+                    double score = labelScore.getDouble("score");
+
+                    double threshold = getThresholdForLabel(label);
+                    if (score > threshold) {
+                        flaggedLabels.put(label, score);
+                    }
+                }
+
+                break; // parsed successfully, no need to retry
             }
 
         } catch (Exception e) {
-            throw new ValidationException("Moderation service error.");
+            throw new ValidationException("Moderation service error: " + e.getMessage());
         }
 
         return flaggedLabels;

@@ -2,6 +2,7 @@ import { PostResponse, Order, PostWithCategoryResponse } from '../types/post/res
 import {
   searchPosts,
   getRandomPost,
+  getRandomPosts,
   getPost,
   getAllPosts,
   getTopPosts,
@@ -47,6 +48,22 @@ export const fetchRandomPost = async (): Promise<PostResponse> => {
       summary: data.summary ? he.decode(stripHtml(data.summary)) : null,
       createdAt: formatDate(data.createdAt),
     };
+  } catch (error) {
+    throw new Error(getAxiosErrorMessage(error, 'Failed to get random post'));
+  }
+};
+
+export const fetchRandomPosts = async (): Promise<PostResponse[]> => {
+  try {
+    const response = await getRandomPosts();
+    const data = response?.data;
+
+    return data.map((raw: PostResponse) => ({
+      ...raw,
+      title: he.decode(stripHtml(raw.title)),
+      summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
+      createdAt: formatDate(raw.createdAt),
+    }));
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get random post'));
   }
