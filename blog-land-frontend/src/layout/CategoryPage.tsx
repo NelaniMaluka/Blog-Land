@@ -112,7 +112,7 @@ export const CategoryPage = () => {
         order={order}
         setOrder={handleOrderChange}
         showOrderButtons={true}
-        totalElements={totalElements}
+        totalElements={data?.totalElements || 0}
       />
     </>
   );
