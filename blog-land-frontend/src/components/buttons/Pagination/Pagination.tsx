@@ -14,23 +14,22 @@ const CustomPagination: React.FC<CustomPaginationProps> = ({ page, setPage, tota
 
   const getPages = (): (number | '...')[] => {
     const pages: (number | '...')[] = [];
+    const delta = 1; // how many pages around current page to show
 
-    if (page <= 1) {
-      // Start
-      pages.push(1, 2, 3);
-      if (totalPages > 4) pages.push('...');
-      if (totalPages > 3) pages.push(totalPages);
-    } else if (page >= totalPages - 2) {
-      // End
-      pages.push(1);
-      if (totalPages > 4) pages.push('...');
-      pages.push(totalPages - 2, totalPages - 1, totalPages);
-    } else {
-      // Middle
-      pages.push(1, '...');
-      pages.push(page, page + 1, page + 2);
-      pages.push('...', totalPages);
+    const left = Math.max(2, page + 1 - delta); // start of middle section
+    const right = Math.min(totalPages - 1, page + 1 + delta); // end of middle section
+
+    pages.push(1); // first page
+
+    if (left > 2) pages.push('...'); // left ellipsis
+
+    for (let i = left; i <= right; i++) {
+      pages.push(i);
     }
+
+    if (right < totalPages - 1) pages.push('...'); // right ellipsis
+
+    if (totalPages > 1) pages.push(totalPages); // last page
 
     return pages;
   };
