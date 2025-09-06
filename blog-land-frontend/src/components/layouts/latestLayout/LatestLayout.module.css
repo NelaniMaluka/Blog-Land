@@ -1,7 +1,7 @@
 .containerBox {
   width: 100% !important;
   min-height: 200vh !important;
-  padding: 1.5rem 0 3rem 0 !important;
+  padding: 0rem 0 3rem 0 !important;
 }
 
 .item {
@@ -52,4 +52,11 @@
   align-items: center;
   justify-content: center;
   font-size: 0.8rem;
+}
+
+/* Show overlay on Tablet and Mobile by default */
+@media (max-width: 1024px) {
+  .overlay {
+    transform: translateY(0) !important;
+  }
 }

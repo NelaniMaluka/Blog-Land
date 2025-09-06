@@ -121,7 +121,7 @@ public class PostsController {
         @PostMapping("/get/posts/view/{postId}")
         public ResponseEntity<?> incrementViewCount(@PathVariable Long postId) {
                 postService.incrementViews(postId);
-                return ResponseEntity.ok().build();
+                return ResponseEntity.ok("Successfully added your view");
         }
 
         @PostMapping("/add-user-posts")

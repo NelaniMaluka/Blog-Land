@@ -10,6 +10,7 @@ import { useGetRandomPosts } from '../../../hooks/usePost';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAddViewCount } from '../../../hooks/usePost';
 
 import styles from './SinglePostLayout.module.css';
 import { PostResponse } from '../../../types/post/response';
@@ -23,10 +24,12 @@ interface SinglePostLayoutProps {
 export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutProps) => {
   const { data: categoriesData } = useGetCategories();
   const { data: randomPostsData } = useGetRandomPosts();
+  const addView = useAddViewCount();
   const queryClient = useQueryClient();
 
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ['randomPosts'] });
+    if (post?.id) addView.mutateAsync(post.id);
   }, [post?.id, queryClient]);
 
   const category = categoriesData?.find((c) => c.id === post?.categoryId);

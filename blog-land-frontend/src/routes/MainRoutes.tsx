@@ -22,7 +22,7 @@ const MainRoutes = () => (
     <Route path={ROUTES.LATEST_POSTS} element={<LatestPage />} />
     <Route path="/category/:slug" element={<CategoryPage />} />
     <Route path="/post/:idAndSlug" element={<PostPage />} />
-    <Route path="/latest/post/:slug" element={<LatestPostPage />} />
+    <Route path="/posts/latest/:slug" element={<LatestPostPage />} />
   </>
 );
 
