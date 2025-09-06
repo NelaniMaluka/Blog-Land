@@ -14,8 +14,10 @@ import { ROUTES } from '../../../../constants/routes';
 import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
 import FallbackAvatars from '../../../common/Avatar';
 import { useQueryClient } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../store/store';
 
-import { useGetUser, useLogoutUser } from '../../../../hooks/useUser';
+import { useLogoutUser } from '../../../../hooks/useUser';
 
 export type MenuKey = 'profile' | 'posts';
 
@@ -26,7 +28,7 @@ interface SidebarMenuProps {
 }
 
 export const SidebarMenu: React.FC<SidebarMenuProps> = ({ selected, onSelect, onLogout }) => {
-  const { data: user, isLoading, isError } = useGetUser();
+  const user = useSelector((state: RootState) => state.auth.user);
   const navigate = useNavigate();
   const logout = useLogoutUser();
   const queryClient = useQueryClient();
@@ -44,22 +46,20 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({ selected, onSelect, on
       </a>
       <Divider />
       <div className={styles.headerContainer}>
-        <LoadingScreen isLoading={isLoading}>
+        <Box className={styles.header}>
           <Box className={styles.header}>
-            <Box className={styles.header}>
-              {user ? (
-                <FallbackAvatars user={user} />
-              ) : (
-                <Avatar sx={{ bgcolor: 'darkgrey', fontSize: '70%' }}>?</Avatar>
-              )}
-            </Box>
-
-            <Box className={styles.userInfo}>
-              <Box className={styles.userName}>{user?.firstname + ' ' + user?.lastname}</Box>
-              <Box className={styles.userEmail}>{user?.email}</Box>
-            </Box>
+            {user ? (
+              <FallbackAvatars user={user} />
+            ) : (
+              <Avatar sx={{ bgcolor: 'darkgrey', fontSize: '70%' }}>?</Avatar>
+            )}
           </Box>
-        </LoadingScreen>
+
+          <Box className={styles.userInfo}>
+            <Box className={styles.userName}>{user?.firstname + ' ' + user?.lastname}</Box>
+            <Box className={styles.userEmail}>{user?.email}</Box>
+          </Box>
+        </Box>
       </div>
 
       <Divider />

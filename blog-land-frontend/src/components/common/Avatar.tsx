@@ -1,15 +1,14 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Box } from '@mui/material';
 import { UserResponse } from '../../types/user/response';
 import { useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
 import styles from './Avatar.module.css';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 interface FallbackAvatarsProps {
-  user: UserResponse;
+  user: UserResponse | null;
   isProfile?: boolean;
   onFileSelect?: (file: File | 'Remove' | null) => void;
 }
@@ -18,14 +17,23 @@ export default function FallbackAvatars({ user, isProfile, onFileSelect }: Fallb
   const location = useLocation();
   const isProfilePage = location.pathname === '/dashboard/profile';
 
-  const [avatarUrl, setAvatarUrl] = React.useState(user.profileIconUrl || '/broken-image.jpg');
+  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(user?.profileIconUrl || null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    setAvatarUrl(
-      user.profileIconUrl ? `${user.profileIconUrl}?t=${Date.now()}` : '/broken-image.jpg'
-    );
-  }, [user.profileIconUrl]);
+  React.useEffect(() => {
+    if (user?.profileIconUrl) {
+      setAvatarUrl(`${user.profileIconUrl}?t=${Date.now()}`);
+    } else {
+      setAvatarUrl(null);
+    }
+  }, [user?.profileIconUrl]);
+
+  const initials =
+    user?.firstname && user?.lastname
+      ? `${user.firstname[0]}${user.lastname[0]}`.toUpperCase()
+      : user?.firstname
+      ? user.firstname[0].toUpperCase()
+      : '?';
 
   const handleAvatarClick = () => {
     if (isProfilePage && fileInputRef.current && isProfile) {
@@ -43,27 +51,30 @@ export default function FallbackAvatars({ user, isProfile, onFileSelect }: Fallb
   };
 
   const handleRemoveAvatar = () => {
-    setAvatarUrl('/broken-image.jpg');
+    setAvatarUrl(null);
     onFileSelect?.('Remove');
   };
 
   return (
     <Box className={styles.avatarContainer} onClick={handleAvatarClick}>
       <Avatar
-        src={avatarUrl}
-        alt={`${user.firstname} ${user.lastname}`}
+        src={avatarUrl || undefined}
+        alt={`${user?.firstname} ${user?.lastname}`}
         className={styles.avatar}
-      />
+      >
+        {!avatarUrl && initials}
+      </Avatar>
+
       {isProfilePage && isProfile && (
         <>
           <Box className={styles.editIcon}>
             <EditIcon sx={{ fontSize: 16, color: '#fff' }} />
           </Box>
-          {avatarUrl !== '/broken-image.jpg' && (
+          {avatarUrl && (
             <Box
               className={styles.removeIcon}
               onClick={(e) => {
-                e.stopPropagation(); // prevent triggering file input
+                e.stopPropagation();
                 handleRemoveAvatar();
               }}
             >
@@ -72,6 +83,7 @@ export default function FallbackAvatars({ user, isProfile, onFileSelect }: Fallb
           )}
         </>
       )}
+
       <input
         ref={fileInputRef}
         type="file"

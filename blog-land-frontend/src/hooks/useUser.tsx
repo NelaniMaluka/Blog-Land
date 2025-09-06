@@ -16,20 +16,24 @@ import { ShowSuccessSwal } from '../features/Alerts/SuccessMessage';
 import { UpdateUserRequest } from '../types/user/request';
 import { scheduleLogout } from '../constants/ScheduleLogout';
 import { useSnackbar } from '../features/Snackbars/errorMessage';
+import { useEffect } from 'react';
 
-export function useGetUser(options?: { enabled?: boolean }) {
+export function useGetUser() {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
-  const query = useQuery<UserResponse, Error>({
+  const query = useQuery<UserResponse, Error, UserResponse>({
     queryKey: ['user'],
     queryFn: fetchUser,
     enabled: isAuthenticated,
-    onSuccess: (data: UserResponse) => {
-      dispatch(setUser(data));
-    },
-    ...options,
-  } as UseQueryOptions<UserResponse, Error, UserResponse, readonly unknown[]>);
+  });
+
+  // Handle success case with useEffect
+  useEffect(() => {
+    if (query.data) {
+      dispatch(setUser(query.data));
+    }
+  }, [query.data, dispatch]);
 
   return query;
 }

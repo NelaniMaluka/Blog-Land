@@ -13,12 +13,12 @@ import RegisterDialog from '../../forms/Register';
 import ForgotPasswordDialog from '../../forms/ForgotPassword';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDialog } from '../../../features/LoginProvider/LoginProvider';
+import FallbackAvatars from '../../common/Avatar';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [openLoginDialog, setOpenLoginDialog] = useState(false);
-  const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
-  const [openForgotDialog, setOpenForgotDialog] = useState(false);
   const logout = useLogoutUser();
   const queryClient = useQueryClient();
 
@@ -26,7 +26,8 @@ export default function AvatarMenu() {
     useDialog();
 
   const open = Boolean(anchorEl);
-  const auth = store.getState().auth.isAuthenticated;
+  const auth = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
   const handleCloseMenu = () => setAnchorEl(null);
@@ -40,7 +41,11 @@ export default function AvatarMenu() {
   return (
     <>
       <IconButton onClick={handleClick} size="small">
-        <Avatar src="/broken-image.jpg" className={styles.avatarButton} />
+        {auth ? (
+          <FallbackAvatars user={user} />
+        ) : (
+          <Avatar src="/broken-image.jpg" className={styles.avatarButton} />
+        )}
       </IconButton>
 
       <Menu

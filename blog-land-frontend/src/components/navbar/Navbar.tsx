@@ -5,6 +5,7 @@ import NavbarBottom from './NavbarBottom/NavbarBottom';
 import { ROUTES } from '../../constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useGetRandomPost } from '../../hooks/usePost';
+
 interface NavbarProps {
   setOpen: (open: boolean) => void;
 }
