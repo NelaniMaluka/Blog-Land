@@ -7,6 +7,7 @@ import he from 'he';
 import BasicBreadcrumbs from '../../breadcrumbs/breadcrumbs';
 import { ROUTES } from '../../../constants/routes';
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 import styles from './LatestLayout.module.css';
 
@@ -56,12 +57,12 @@ export const LatestLayout = () => {
                   className={styles.item}
                   style={{ '--item-height': `${heightVh}vh` } as React.CSSProperties}
                 >
-                  <a href={ROUTES.LATEST_POST_PAGE(post.title)}>
+                  <Link to={ROUTES.LATEST_POST_PAGE(post.title)} state={{ post }}>
                     <img src={post.postImgUrl} alt={post.title} />
                     <div className={styles.overlay}>
                       <p>{he.decode(post.title)}</p>
                     </div>
-                  </a>
+                  </Link>
                 </div>
               );
             })}

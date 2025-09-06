@@ -14,7 +14,7 @@ import { UserResponse } from '../types/user/response';
 import { RootState } from '../store/store';
 import { ShowSuccessSwal } from '../features/Alerts/SuccessMessage';
 import { UpdateUserRequest } from '../types/user/request';
-import { scheduleLogout } from '../constants/ScheduleLogout';
+import { scheduleLogout } from '../features/ScheduleLogout';
 import { useSnackbar } from '../features/Snackbars/errorMessage';
 import { useEffect } from 'react';
 

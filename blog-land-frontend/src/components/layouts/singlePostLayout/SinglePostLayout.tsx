@@ -55,7 +55,7 @@ export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutP
             <div className={styles.column1}>
               <img src={post?.postImgUrl} alt={post?.title} className={styles.img} />
               <div className={styles.subDetails}>
-                <span>{formatDigit(post?.views ?? 0)} views</span>
+                {post?.id && <span>{formatDigit(post?.views ?? 0)} views</span>}
                 {categoryName && (
                   <a href={ROUTES.CATEGORY_POSTS(categoryName)} className={styles.category}>
                     {categoryName}

@@ -1,13 +1,11 @@
-import { useGetLatestPosts } from '../hooks/usePost';
-import { useParams } from 'react-router-dom';
 import { SinglePostLayout } from '../components/layouts/singlePostLayout/SinglePostLayout';
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
+import { PostResponse } from '../types/post/response';
 
 export const LatestPostPage = () => {
-  const { slug } = useParams<{ slug?: string }>();
-  const { data: latestPosts, isLoading, isError } = useGetLatestPosts({ page: 1, size: 20 });
-
-  const post = latestPosts?.find((post) => post.title === slug);
+  const location = useLocation();
+  const post = location.state?.post as PostResponse | undefined;
 
   const canonicalUrl = window.location.href;
 
@@ -71,7 +69,7 @@ export const LatestPostPage = () => {
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
 
-      <SinglePostLayout post={post} isLoading={isLoading} isError={isError} />
+      <SinglePostLayout post={post} isLoading={false} isError={false} />
     </>
   );
 };

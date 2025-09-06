@@ -6,7 +6,7 @@ import { createUser, authenticateUser } from '../services/authService';
 import { RegisterRequest, LoginRequest } from '../types/auth/requests';
 import { useGetUser } from './useUser';
 import { ShowSuccessSwal } from '../features/Alerts/SuccessMessage';
-import { scheduleLogout } from '../constants/ScheduleLogout';
+import { scheduleLogout } from '../features/ScheduleLogout';
 import { useSnackbar } from '../features/Snackbars/errorMessage';
 
 export function useRegister() {
