@@ -69,7 +69,7 @@ export const LatestPostPage = () => {
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
 
-      <SinglePostLayout post={post} isLoading={false} isError={false} />
+      <SinglePostLayout post={post} isLoading={false} isError={false} isLatest={true} />
     </>
   );
 };

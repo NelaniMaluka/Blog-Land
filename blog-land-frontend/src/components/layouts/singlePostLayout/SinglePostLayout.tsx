@@ -19,9 +19,10 @@ interface SinglePostLayoutProps {
   post?: PostResponse;
   isLoading: boolean;
   isError?: boolean;
+  isLatest?: boolean;
 }
 
-export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutProps) => {
+export const SinglePostLayout = ({ post, isLoading, isError, isLatest }: SinglePostLayoutProps) => {
   const { data: categoriesData } = useGetCategories();
   const { data: randomPostsData } = useGetRandomPosts();
   const addView = useAddViewCount();
@@ -47,8 +48,8 @@ export const SinglePostLayout = ({ post, isLoading, isError }: SinglePostLayoutP
       <LoadingScreen isLoading={isLoading}>
         <div className="container">
           <BasicBreadcrumbs
-            page1={categoryName || ''}
-            link1={ROUTES.CATEGORY_POSTS(categoryName || '')}
+            page1={categoryName || (isLatest ? 'Latest' : '')}
+            link1={isLatest ? ROUTES.LATEST_POSTS : ROUTES.CATEGORY_POSTS(categoryName || '')}
             page2={post?.title}
           />
           <div className={styles.holder}>
