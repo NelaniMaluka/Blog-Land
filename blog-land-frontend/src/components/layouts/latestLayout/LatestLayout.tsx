@@ -11,13 +11,19 @@ import { Link } from 'react-router-dom';
 
 import styles from './LatestLayout.module.css';
 
-const heights = [45, 33, 39, 37, 41, 35, 43, 38, 35, 39, 40, 35, 43, 35, 48, 42, 36, 44, 39, 41];
+const heights = [
+  45, 33, 39, 37, 41, 35, 43, 38, 35, 39, 40, 35, 43, 35, 48, 42, 36, 44, 39, 41, 45, 33, 39, 37,
+  41, 35, 43, 38, 35, 39, 40, 35, 43, 35, 48, 42, 36, 44, 39, 41,
+];
 const MOBILE_BREAKPOINT = 600;
 const MOBILE_HEIGHT_VH = 30;
 
 export const LatestLayout = () => {
-  const { data: latestPosts, isLoading, isError } = useGetLatestPosts({ page: 1, size: 20 });
+  const { data: dataSet1, isLoading, isError } = useGetLatestPosts({ page: 1, size: 20 });
+  const { data: dataSet2 } = useGetLatestPosts({ page: 2, size: 20 });
   const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+
+  const latestPosts = [...(dataSet1 ?? []), ...(dataSet2 ?? [])];
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
