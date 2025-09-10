@@ -39,6 +39,7 @@ const Comments = ({ postId }: CommentsProps) => {
 
   const user = useSelector((state: RootState) => state.auth.user);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const addComment = useAddComment();
 
   const [readyPostId, setReadyPostId] = useState<number | null>(null);
 
@@ -54,9 +55,10 @@ const Comments = ({ postId }: CommentsProps) => {
     page: 0,
     size: 20,
   });
-  const { data: userComments } = useGetUserCommentsWithPostId(readyPostId ?? 0);
 
-  const addComment = useAddComment();
+  const { data: userComments = [] } = useGetUserCommentsWithPostId(readyPostId ?? 0, {
+    enabled: isAuthenticated && !!readyPostId,
+  });
 
   const handleAddComment = (e: FormEvent) => {
     e.preventDefault();
@@ -94,7 +96,7 @@ const Comments = ({ postId }: CommentsProps) => {
 
   return (
     <section className={styles.commentSection}>
-      <h4>{postCount} Comments:</h4>
+      <h5>{postCount} Comments:</h5>
       <form className={styles.inputRow} onSubmit={handleAddComment}>
         <div className={styles.col1}>
           {isAuthenticated ? (
@@ -105,7 +107,7 @@ const Comments = ({ postId }: CommentsProps) => {
         </div>
         <div className={styles.col2}>
           <input
-            placeholder="Write a comment"
+            placeholder="Write a comment..."
             value={isComment}
             onChange={(e) => setIsComment(e.target.value)}
           />

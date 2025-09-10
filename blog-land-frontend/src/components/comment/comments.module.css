@@ -1,5 +1,10 @@
 .commentSection {
   width: 100%;
+  margin: 1rem 0;
+}
+
+.commentSection h5 {
+  color: rgb(58, 58, 58);
 }
 
 .inputRow {
@@ -119,5 +124,10 @@
   .emojiCont {
     margin-top: 18rem !important;
     margin-left: -2rem;
+  }
+
+  .emojiCont > div {
+    transform: scale(0.85);
+    transform-origin: top left;
   }
 }
