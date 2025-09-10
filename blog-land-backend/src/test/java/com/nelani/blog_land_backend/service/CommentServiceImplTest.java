@@ -113,11 +113,10 @@ public class CommentServiceImplTest {
                 commentService.addComment(commentDto);
 
                 // Assert
-                ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-                verify(userRepository, times(1)).save(userCaptor.capture());
-                User savedUser = userCaptor.getValue();
+                ArgumentCaptor<Comment> commentCaptor = ArgumentCaptor.forClass(Comment.class);
+                verify(commentRepository, times(1)).save(commentCaptor.capture());
+                Comment savedComment = commentCaptor.getValue();
 
-                Comment savedComment = savedUser.getComments().get(0);
                 assertEquals("I like your post", savedComment.getContent());
                 assertEquals(1L, savedComment.getPost().getId());
         }
