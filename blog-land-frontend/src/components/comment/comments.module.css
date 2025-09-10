@@ -51,6 +51,7 @@
   position: absolute;
   z-index: 9999;
   margin-top: 15rem !important;
+  transition: transform 0.3s ease;
 }
 
 .comment {
