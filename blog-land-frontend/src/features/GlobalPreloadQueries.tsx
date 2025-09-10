@@ -7,7 +7,6 @@ import {
   useGetLatestPosts,
   useGetAllUserPost,
 } from '../hooks/usePost';
-import { useGetAllUserComments } from '../hooks/useComment';
 import { Order } from '../types/post/response';
 import { store } from '../store/store';
 
@@ -20,9 +19,8 @@ export function GlobalPreloadQueries() {
   useGetTrendingPosts({ page: 0, size: 12 });
 
   // Always call, but disable fetching if not authenticated
-  useGetUser({ enabled: isAuthenticated });
+  useGetUser();
   useGetAllUserPost({ page: 0, size: 10, options: { enabled: isAuthenticated } });
-  useGetAllUserComments({ page: 0, size: 10, options: { enabled: isAuthenticated } });
 
   return null;
 }

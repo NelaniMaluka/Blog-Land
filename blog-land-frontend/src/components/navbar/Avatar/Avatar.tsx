@@ -6,7 +6,6 @@ import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
 import { ROUTES } from '../../../constants/routes';
 import { useLogoutUser } from '../../../hooks/useUser';
-import { store } from '../../../store/store';
 import styles from './Avatar.module.css';
 import LoginDialog from '../../forms/Login';
 import RegisterDialog from '../../forms/Register';

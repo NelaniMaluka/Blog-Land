@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,11 +12,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommentResponse {
     private Long id;
-    private Long postId;
     private String content;
-    private String author;
-    private String profileImgUrl;
     private LocalDateTime createdAt;
+    private UserResponse user;
 }

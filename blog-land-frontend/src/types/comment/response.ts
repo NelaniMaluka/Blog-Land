@@ -1,8 +1,12 @@
+import { UserResponse } from '../user/response';
+
 export interface CommentResponse {
   id: number;
-  postId: number;
   content: string;
-  author: string;
-  profileImgUrl?: string | null;
+  user: UserResponse;
   createdAt: string;
+}
+
+export interface UserCommentsResponse {
+  id: number;
 }

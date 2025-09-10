@@ -1,9 +1,13 @@
 package com.nelani.blog_land_backend.controller;
 
 import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
+import com.nelani.blog_land_backend.Util.Validation.FormValidation;
+import com.nelani.blog_land_backend.Util.Validation.PostValidation;
 import com.nelani.blog_land_backend.dto.CommentDto;
 import com.nelani.blog_land_backend.model.Comment;
+import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.repository.CommentRepository;
+import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.response.CommentResponse;
 import com.nelani.blog_land_backend.service.CommentService;
 
@@ -12,6 +16,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/comments")
@@ -25,15 +32,13 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @GetMapping("/get/comments")
-    public ResponseEntity<?> getAllComments(@RequestParam int page, @RequestParam int size) {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<Comment> postPage = commentRepository.findAll(pageable);
-            Page<CommentResponse> responsePage = postPage.map(PostBuilder::mapComment);
-            return ResponseEntity.ok(responsePage);
+    @GetMapping("/get/comments-count")
+    public ResponseEntity<?> getCommentsCountByPost(@RequestParam Long postId) {
+        long count = commentService.getCountByPostId(postId);
+        return ResponseEntity.ok(count);
     }
 
-    @GetMapping("/get/category")
+    @GetMapping("/get/comments")
     public ResponseEntity<?> getAllCommentsByCategory(@RequestParam Long postId, @RequestParam int page,
             @RequestParam int size) {
             Page<CommentResponse> responsePage = commentService.getByPostId(postId, page, size);
@@ -41,9 +46,8 @@ public class CommentController {
     }
 
     @GetMapping("/get-user-comments")
-    public ResponseEntity<?> getAllCommentsByUserId( @RequestParam int page,
-            @RequestParam int size) {
-            Page<CommentResponse> responsePage = commentService.getByUserId( page, size);
+    public ResponseEntity<?> getAllCommentsByUserId( @RequestParam int postId) {
+            List<CommentResponse> responsePage = commentService.getByUserId( postId);
             return ResponseEntity.ok(responsePage);
     }
 

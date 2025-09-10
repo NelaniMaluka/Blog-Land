@@ -11,6 +11,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.nelani.blog_land_backend.Util.Builders.UserBuilder.publicUserWithMinimalDetails;
+
 public class PostBuilder {
 
     public static PostResponse generateUserPostWithUserInfo(Post post) {
@@ -43,7 +45,7 @@ public class PostBuilder {
         response.setViews(post.getViewCount());
         response.setSummary(post.getSummary());
         response.setCommentCount(post.getComments() != null ? post.getComments().size() : 0);
-        response.setUser(UserBuilder.publicUserWithMinimalDetails(post.getUser()));
+        response.setUser(publicUserWithMinimalDetails(post.getUser()));
         response.setDraft(post.isDraft());
         return response;
     }
@@ -70,22 +72,25 @@ public class PostBuilder {
         return comments.stream()
                 .map(c -> new CommentResponse(
                         c.getId(),
-                        c.getPost().getId(),
                         c.getContent(),
-                        c.getUser().getFirstname() + " " + c.getUser().getLastname(),
-                        c.getUser().getProfileIconUrl(),
-                        c.getCreatedAt()))
+                        c.getCreatedAt(),
+                        publicUserWithMinimalDetails(c.getUser())
+                ))
                 .toList();
     }
 
     public static CommentResponse mapComment(Comment comment) {
         CommentResponse response = new CommentResponse();
         response.setId(comment.getId());
-        response.setPostId(comment.getPost().getId());
         response.setContent(comment.getContent());
-        response.setAuthor(comment.getUser().getFirstname() + " " + comment.getUser().getLastname());
-        response.setProfileImgUrl(comment.getUser().getProfileIconUrl());
         response.setCreatedAt(comment.getCreatedAt());
+        response.setUser( publicUserWithMinimalDetails(comment.getUser()));
+        return response;
+    }
+
+    public static CommentResponse mapCommentIds(Comment comment) {
+        CommentResponse response = new CommentResponse();
+        response.setId(comment.getId());
         return response;
     }
 

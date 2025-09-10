@@ -8,17 +8,19 @@ import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.CommentRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
-import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.response.CommentResponse;
 import com.nelani.blog_land_backend.service.CommentService;
 
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Comparator;
 import java.util.Optional;
 
 @Service
@@ -27,16 +29,26 @@ public class CommentServiceImpl implements CommentService {
     private final EntityManager entityManager;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
     private final ModerationValidator moderationValidator;
 
-    public CommentServiceImpl(EntityManager entityManager, CommentRepository commentRepository,
-            PostRepository postRepository, UserRepository userRepository, ModerationValidator moderationValidator) {
+    public CommentServiceImpl(EntityManager entityManager, CommentRepository commentRepository, PostRepository postRepository, ModerationValidator moderationValidator) {
         this.entityManager = entityManager;
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
-        this.userRepository = userRepository;
         this.moderationValidator = moderationValidator;
+    }
+
+    @Override
+    @Transactional
+    public long getCountByPostId(Long postId) {
+        // Validate fields
+        FormValidation.assertRequiredField(postId, "Post Id");
+
+        // Check if the post exists
+        Optional<Post> post = postRepository.findById(postId);
+        PostValidation.assertPostExists(post);
+
+        return commentRepository.countByPost(post.get());
     }
 
     @Override
@@ -53,27 +65,32 @@ public class CommentServiceImpl implements CommentService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Comment> commentPage = commentRepository.findByPostId(id, pageable);
 
-        // Convert to CommentResponse while retaining pagination metadata
-        return commentPage.map(PostBuilder::mapComment);
+        // Sort comments before mapping
+        List<CommentResponse> sorted = commentPage.getContent().stream()
+                .sorted(Comparator.comparing(Comment::getCreatedAt).reversed()) // newest first
+                .map(PostBuilder::mapComment)
+                .toList();
+
+        // Re-wrap in a PageImpl to preserve pagination metadata
+        return new PageImpl<>(sorted, commentPage.getPageable(), commentPage.getTotalElements());
     }
 
     @Override
     @Transactional
-    public Page<CommentResponse> getByUserId(int page, int size) {
+    public List<CommentResponse> getByUserId(long postId) {
+        // Validate fields
+        FormValidation.assertRequiredField(postId, "Post Id");
+
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
-        // Fetch paginated comment by user
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Comment> commentPage = commentRepository.findByUserId(user.getId(), pageable);
+        // Fetch comments by user and post
+        List<Comment> comments = commentRepository.findByUserIdAndPostId(user.getId(), postId);
 
-        // Checks if users have posts
-        if (commentPage.isEmpty()) {
-            return Page.empty(pageable);
-        }
-
-        // Convert to CommentResponse while retaining pagination metadata
-        return commentPage.map(PostBuilder::mapComment);
+        // Map to response DTO
+        return comments.stream()
+                .map(PostBuilder::mapCommentIds)
+                .toList();
     }
 
     @Override
@@ -100,8 +117,7 @@ public class CommentServiceImpl implements CommentService {
         // Moderate content
         moderationValidator.commentModeration(newComment);
 
-        user.getComments().add(newComment);
-        userRepository.save(user); // Save the new comment
+        commentRepository.save(newComment); // Save the new comment
     };
 
     @Override

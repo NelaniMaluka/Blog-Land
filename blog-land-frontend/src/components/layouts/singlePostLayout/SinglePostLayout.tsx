@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAddViewCount } from '../../../hooks/usePost';
+import Comments from '../../comment/comments';
 
 import styles from './SinglePostLayout.module.css';
 import { PostResponse } from '../../../types/post/response';
@@ -85,6 +86,7 @@ export const SinglePostLayout = ({ post, isLoading, isError, isLatest }: SingleP
                 dangerouslySetInnerHTML={{ __html: post?.content || '' }}
                 className={styles.content}
               />
+              {!isLatest && <Comments postId={post?.id} />}
             </div>
             <div className={styles.column2}>
               <h3>You Might Also Like:</h3>

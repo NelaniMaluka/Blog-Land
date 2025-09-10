@@ -19,7 +19,6 @@ const LikeButton = ({ postId }: LikeButtonProps) => {
   const { showLogin } = useDialog();
   const { data } = useGetPostLikesCount(postId);
   const [isLiked, setIsLiked] = useState(false);
-  const [openLoginDialog, setOpenLoginDialog] = useState(false);
   const addLike = useAddLike();
   const removeLike = useRemoveLike();
   const { data: userLikes } = useGetUserLikes();
