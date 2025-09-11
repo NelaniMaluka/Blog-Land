@@ -2,6 +2,8 @@ import {
   useGetCommentsCountByPost,
   useGetCommentsWithPostId,
   useAddComment,
+  useDeleteComment,
+  useUpdateComment,
 } from '../../hooks/useComment';
 import { Avatar } from '@mui/material';
 import FallbackAvatars from '../common/Avatar';
@@ -14,6 +16,8 @@ import data from '@emoji-mart/data';
 import { useEffect } from 'react';
 import { useGetUserCommentsWithPostId } from '../../hooks/useComment';
 import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 import styles from './comments.module.css';
 
@@ -34,12 +38,30 @@ interface EmojiClickData {
 const Comments = ({ postId }: CommentsProps) => {
   const { showLogin } = useDialog();
   const [isComment, setIsComment] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editContent, setEditContent] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
 
   const user = useSelector((state: RootState) => state.auth.user);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const addComment = useAddComment();
+  const updateComment = useUpdateComment();
+  const deleteComment = useDeleteComment();
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuCommentId, setMenuCommentId] = useState<number | null>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>, commentId: number) => {
+    setAnchorEl(event.currentTarget);
+    setMenuCommentId(commentId);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setMenuCommentId(null);
+  };
 
   const [readyPostId, setReadyPostId] = useState<number | null>(null);
 
@@ -72,9 +94,17 @@ const Comments = ({ postId }: CommentsProps) => {
     } catch {}
   };
 
+  const handleUpdateComment = (id: number) => {
+    updateComment.mutateAsync({ id: id, content: editContent, postId: postId! });
+  };
+
   const handleEmojiSelect = (emoji: EmojiClickData) => {
     setIsComment((prev) => prev + emoji.native);
     setShowEmojiPicker(false); // close after selecting
+  };
+
+  const handleDeleteComment = (id: number) => {
+    deleteComment.mutateAsync(id);
   };
 
   // Close emoji picker on outside click
@@ -154,13 +184,88 @@ const Comments = ({ postId }: CommentsProps) => {
                     <p className={styles.date}>{comment.createdAt}</p>
                   </div>
                   <div className={styles.commentText}>
-                    <p>{comment.content} </p>
+                    {editingCommentId === comment.id ? (
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleUpdateComment(comment.id);
+                          setEditingCommentId(null);
+                        }}
+                      >
+                        <input
+                          value={editContent}
+                          onChange={(e) => setEditContent(e.target.value)}
+                          className={styles.editInput}
+                          aria-label="Edit your comment"
+                        />
+                        <div>
+                          <button type="submit">Save</button>
+                          <button
+                            className={styles.cancel}
+                            type="button"
+                            onClick={() => setEditingCommentId(null)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <p>{comment.content}</p>
+                    )}
                   </div>
                 </div>
                 {match && isAuthenticated && (
-                  <IconButton sx={{ height: 'max-content', width: 'max-content' }}>
-                    <img src="/icons/menu-v.png" alt="menu" />
-                  </IconButton>
+                  <>
+                    <IconButton
+                      sx={{ height: 'max-content', width: 'max-content' }}
+                      onClick={(e) => handleClick(e, comment.id)}
+                    >
+                      <img src="/icons/menu-v.png" alt="menu" />
+                    </IconButton>
+
+                    <Menu
+                      anchorEl={anchorEl}
+                      open={open && menuCommentId === comment.id}
+                      onClose={handleCloseMenu}
+                      PaperProps={{ elevation: 4, className: styles.menuPaper }}
+                      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                      anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                      disableScrollLock
+                    >
+                      <MenuItem
+                        key="update"
+                        onClick={() => {
+                          setEditingCommentId(comment.id);
+                          setEditContent(comment.content);
+                          handleCloseMenu();
+                        }}
+                        className={styles.menuItem}
+                      >
+                        <img
+                          className={styles.menuIcon}
+                          src="/icons/update.png"
+                          alt="update icon"
+                        />
+                        Update
+                      </MenuItem>
+
+                      <MenuItem
+                        key="delete"
+                        onClick={() => {
+                          handleDeleteComment(comment.id);
+                          handleCloseMenu();
+                        }}
+                        className={styles.menuItem}
+                      >
+                        <img
+                          className={styles.menuIcon}
+                          src="/icons/delete.png"
+                          alt="delete icon"
+                        />
+                        Delete
+                      </MenuItem>
+                    </Menu>
+                  </>
                 )}
               </div>
             </div>

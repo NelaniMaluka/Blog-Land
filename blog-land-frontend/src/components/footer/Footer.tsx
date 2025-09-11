@@ -97,7 +97,6 @@ const Footer: React.FC = () => {
 
             <div className={styles.footerCol}>
               <h5>Navigate</h5>
-              <a href={ROUTES.ABOUT}>About</a>
               <a href={ROUTES.LATEST_POSTS}>Latest</a>
               <a href={ROUTES.TRENDING_POSTS}>Trending</a>
               <a href="#" onClick={handleRandomPostClick}>

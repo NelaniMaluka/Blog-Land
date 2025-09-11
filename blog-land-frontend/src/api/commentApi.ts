@@ -32,9 +32,7 @@ export const addComment = async (payload: AddCommentRequest) => {
 };
 
 export const updateComment = async (payload: UpdateCommentRequest) => {
-  const response = await apiClient.post('/comments/update-user-comments', {
-    payload,
-  });
+  const response = await apiClient.put('/comments/update-user-comments', payload);
   return response;
 };
 

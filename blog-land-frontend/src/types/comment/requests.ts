@@ -5,6 +5,6 @@ export type AddCommentRequest = {
 
 export type UpdateCommentRequest = {
   id: number;
-  postId: number;
   content: string;
+  postId: number;
 };

@@ -26,7 +26,7 @@ export const useGetCommentsWithPostId = (
   return useQuery<CommentResponse[], Error>({
     queryKey: ['comments', payload],
     queryFn: () => fetchCommentsWithPostId(payload),
-    enabled: !!payload.postId, // don’t run if postId is falsy
+    enabled: !!payload.postId,
     ...options,
   });
 };
@@ -38,8 +38,8 @@ export const useGetUserCommentsWithPostId = (
   return useQuery<UserCommentsResponse[], Error>({
     queryKey: ['userComments', postId],
     queryFn: () => fetchUserCommentsWithPostId(postId),
-    enabled: !!postId, // default guard
-    ...options, // safely merge user-provided options
+    enabled: !!postId,
+    ...options,
   });
 };
 
@@ -56,13 +56,25 @@ export const useAddComment = () => {
 };
 
 export const useUpdateComment = () => {
+  const { showError } = useSnackbar();
+
   return useMutation({
     mutationFn: updateComments,
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
+      showError(msg);
+    },
   });
 };
 
 export const useDeleteComment = () => {
+  const { showError } = useSnackbar();
+
   return useMutation({
     mutationFn: deleteComments,
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
+      showError(msg);
+    },
   });
 };

@@ -3,7 +3,6 @@ import { slugify } from '../utils/formatUtils';
 export const ROUTES = {
   // General urls
   HOME: '/',
-  ABOUT: '/about',
   PRIVACY_POLICY: '/privacy-policy',
   TERMS_AND_CONDITIONS: '/terms-and-conditions',
 

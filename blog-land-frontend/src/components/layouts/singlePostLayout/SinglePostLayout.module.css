@@ -208,6 +208,7 @@ h6 {
   -webkit-box-orient: vertical !important;
   -webkit-line-clamp: 3 !important;
   line-clamp: 3;
+  line-height: 0.56rem !important;
   height: 1.7rem !important;
   overflow: hidden;
 }
