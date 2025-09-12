@@ -30,7 +30,7 @@ export const LatestSection = () => {
   if (!recentPost) return null; // nothing to render yet
 
   return (
-    <div className="container">
+    <section className="container">
       <LoadingScreen isLoading={recentLoading || categoriesLoading}>
         <div className={styles.latestContainer}>
           <div className={styles.row1}>
@@ -38,7 +38,7 @@ export const LatestSection = () => {
             <a href={ROUTES.VIEW_ALL}>View All</a>
           </div>
 
-          <div className={styles.featuredPost}>
+          <article className={styles.featuredPost}>
             <img src={recentPost.postImgUrl} alt="img" className={styles.featuredImg} />
             <div className={styles.featuredContent}>
               <span className={styles.date}>{recentPost.createdAt}</span>
@@ -57,7 +57,7 @@ export const LatestSection = () => {
                 Read more <ArrowForwardIcon className={styles.readMoreIcon} fontSize="small" />
               </a>
             </div>
-          </div>
+          </article>
 
           <div className={styles.gridPosts}>
             {recentData?.content.slice(1).map((post) => {
@@ -67,6 +67,6 @@ export const LatestSection = () => {
           </div>
         </div>
       </LoadingScreen>
-    </div>
+    </section>
   );
 };

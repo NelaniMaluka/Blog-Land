@@ -11,21 +11,14 @@ import { useGetRandomPost } from '../../hooks/usePost';
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
-
-  const newsletter = useNewsletterSubscription();
   const navigate = useNavigate();
-  const { data: post, isLoading, isError, refetch } = useGetRandomPost();
-
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await newsletter.mutateAsync(email);
-      setEmail('');
-    } catch (error) {}
-  };
-
   const [redirect, setRedirect] = useState(false);
 
+  // hooks
+  const newsletter = useNewsletterSubscription();
+  const { data: post, refetch } = useGetRandomPost();
+
+  // get random post
   useEffect(() => {
     if (redirect && post) {
       navigate(ROUTES.POST(post.id, post.title));
@@ -35,9 +28,16 @@ const Footer: React.FC = () => {
 
   const handleRandomPostClick = async (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log('click');
     const result = await refetch();
     setRedirect(true);
+  };
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await newsletter.mutateAsync(email);
+      setEmail('');
+    } catch (error) {}
   };
 
   return (
@@ -90,8 +90,8 @@ const Footer: React.FC = () => {
                 <h2>Blog-Land</h2>
               </a>
               <p>
-                Thanks for visiting our blog! Dive into our latest articles, explore popular topics,
-                and stay connected for fresh insights every week.
+                Thanks for visiting Blog Land! Explore the latest articles, browse trending topics,
+                and stay inspired by the community’s content every week.
               </p>
             </div>
 

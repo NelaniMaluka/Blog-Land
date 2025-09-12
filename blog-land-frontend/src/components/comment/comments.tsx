@@ -42,16 +42,54 @@ const Comments = ({ postId }: CommentsProps) => {
   const [editContent, setEditContent] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuCommentId, setMenuCommentId] = useState<number | null>(null);
+  const [readyPostId, setReadyPostId] = useState<number | null>(null);
+  const open = Boolean(anchorEl);
 
+  // Auth data
   const user = useSelector((state: RootState) => state.auth.user);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  // Mutations
   const addComment = useAddComment();
   const updateComment = useUpdateComment();
   const deleteComment = useDeleteComment();
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [menuCommentId, setMenuCommentId] = useState<number | null>(null);
-  const open = Boolean(anchorEl);
+  // Checks if post id is here before running
+  useEffect(() => {
+    if (postId) {
+      setReadyPostId(postId);
+    }
+  }, [postId]);
+
+  // Fetching post data
+  const { data: postCount } = useGetCommentsCountByPost(readyPostId ?? 0);
+  const { data: comments } = useGetCommentsWithPostId({
+    postId: readyPostId ?? 0,
+    page: 0,
+    size: 20,
+  });
+  const { data: userComments = [] } = useGetUserCommentsWithPostId(readyPostId ?? 0, {
+    enabled: isAuthenticated && !!readyPostId,
+  });
+
+  // Close emoji picker on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    if (showEmojiPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showEmojiPicker]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>, commentId: number) => {
     setAnchorEl(event.currentTarget);
@@ -62,25 +100,6 @@ const Comments = ({ postId }: CommentsProps) => {
     setAnchorEl(null);
     setMenuCommentId(null);
   };
-
-  const [readyPostId, setReadyPostId] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (postId) {
-      setReadyPostId(postId);
-    }
-  }, [postId]);
-
-  const { data: postCount } = useGetCommentsCountByPost(readyPostId ?? 0);
-  const { data: comments } = useGetCommentsWithPostId({
-    postId: readyPostId ?? 0,
-    page: 0,
-    size: 20,
-  });
-
-  const { data: userComments = [] } = useGetUserCommentsWithPostId(readyPostId ?? 0, {
-    enabled: isAuthenticated && !!readyPostId,
-  });
 
   const handleAddComment = (e: FormEvent) => {
     e.preventDefault();
@@ -107,26 +126,11 @@ const Comments = ({ postId }: CommentsProps) => {
     deleteComment.mutateAsync(id);
   };
 
-  // Close emoji picker on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
-        setShowEmojiPicker(false);
-      }
-    };
-
-    if (showEmojiPicker) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showEmojiPicker]);
-
   return (
     <section className={styles.commentSection}>
       <h5>{postCount} Comments:</h5>
+
+      {/* Add comment form */}
       <form className={styles.inputRow} onSubmit={handleAddComment}>
         <div className={styles.col1}>
           {isAuthenticated ? (
@@ -172,6 +176,7 @@ const Comments = ({ postId }: CommentsProps) => {
 
           return (
             <div className={styles.comment} key={comment.id}>
+              {/* User info */}
               <div className={styles.col1}>
                 <FallbackAvatars user={comment.user} />
               </div>
@@ -183,7 +188,10 @@ const Comments = ({ postId }: CommentsProps) => {
                     </p>
                     <p className={styles.date}>{comment.createdAt}</p>
                   </div>
+
+                  {/* Comment details */}
                   <div className={styles.commentText}>
+                    {/* Update comment form  */}
                     {editingCommentId === comment.id ? (
                       <form
                         onSubmit={(e) => {
@@ -214,6 +222,8 @@ const Comments = ({ postId }: CommentsProps) => {
                     )}
                   </div>
                 </div>
+
+                {/* if user authenticated and post belongs to them show menu */}
                 {match && isAuthenticated && (
                   <>
                     <IconButton

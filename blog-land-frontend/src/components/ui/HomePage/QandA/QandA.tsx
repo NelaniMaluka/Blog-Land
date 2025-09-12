@@ -11,7 +11,7 @@ import styles from './QandA.module.css';
 
 export default function QandASection() {
   return (
-    <div className={styles.QandAContainer}>
+    <section className={styles.QandAContainer}>
       <div className="container">
         <div className={styles.row1}>
           <div>
@@ -106,6 +106,6 @@ export default function QandASection() {
           </AccordionDetails>
         </Accordion>
       </div>
-    </div>
+    </section>
   );
 }

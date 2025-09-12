@@ -1,12 +1,15 @@
 .hero {
   height: 80vh;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
   background-image: url('/background-images/hero.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .column1,

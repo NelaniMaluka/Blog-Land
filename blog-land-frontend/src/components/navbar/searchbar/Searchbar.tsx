@@ -11,7 +11,7 @@ import { ROUTES } from '../../../constants/routes';
 import { useNavigate } from 'react-router-dom';
 
 export default function SearchBar() {
-  const { searchTerm, setSearchTerm, results, isLoading, isError, error } = useSearchPost();
+  const { searchTerm, setSearchTerm, results, isLoading } = useSearchPost();
   const navigate = useNavigate();
 
   return (

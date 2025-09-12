@@ -17,8 +17,8 @@ export const TrendingSection = () => {
 
   return (
     <LoadingScreen isLoading={trendingLoading || categoriesLoading}>
-      <div className={styles.trendingContainer}>
-        <div className="container">
+      <section className="container">
+        <div className={styles.trendingContainer}>
           <div className={styles.row1}>
             <h2>Trending</h2>
             <a href={ROUTES.TRENDING_POSTS}>View All</a>
@@ -31,7 +31,7 @@ export const TrendingSection = () => {
             })}
           </div>
         </div>
-      </div>
+      </section>
     </LoadingScreen>
   );
 };

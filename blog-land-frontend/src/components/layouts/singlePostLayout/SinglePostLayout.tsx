@@ -24,18 +24,19 @@ interface SinglePostLayoutProps {
 }
 
 export const SinglePostLayout = ({ post, isLoading, isError, isLatest }: SinglePostLayoutProps) => {
+  // Hooks
   const { data: categoriesData } = useGetCategories();
   const { data: randomPostsData } = useGetRandomPosts();
   const addView = useAddViewCount();
   const queryClient = useQueryClient();
 
+  const category = categoriesData?.find((c) => c.id === post?.categoryId);
+  const categoryName = category?.name;
+
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ['randomPosts'] });
     if (post?.id) addView.mutateAsync(post.id);
   }, [post?.id, queryClient]);
-
-  const category = categoriesData?.find((c) => c.id === post?.categoryId);
-  const categoryName = category?.name;
 
   if (isError)
     return (
@@ -45,7 +46,7 @@ export const SinglePostLayout = ({ post, isLoading, isError, isLatest }: SingleP
     );
 
   return (
-    <>
+    <article>
       <LoadingScreen isLoading={isLoading}>
         <div className="container">
           <BasicBreadcrumbs
@@ -54,7 +55,8 @@ export const SinglePostLayout = ({ post, isLoading, isError, isLatest }: SingleP
             page2={post?.title}
           />
           <div className={styles.holder}>
-            <div className={styles.column1}>
+            {/* Post */}
+            <section className={styles.column1}>
               <img src={post?.postImgUrl} alt={post?.title} className={styles.img} />
               <div className={styles.subDetails}>
                 {post?.id && <span>{formatDigit(post?.views ?? 0)} views</span>}
@@ -86,9 +88,12 @@ export const SinglePostLayout = ({ post, isLoading, isError, isLatest }: SingleP
                 dangerouslySetInnerHTML={{ __html: post?.content || '' }}
                 className={styles.content}
               />
+              {/* Comments Section */}
               {!isLatest && <Comments postId={post?.id} />}
-            </div>
-            <div className={styles.column2}>
+            </section>
+
+            {/* Recommended posts */}
+            <section className={styles.column2}>
               <h3>You Might Also Like:</h3>
               <div className={styles.postCont}>
                 {randomPostsData &&
@@ -111,10 +116,10 @@ export const SinglePostLayout = ({ post, isLoading, isError, isLatest }: SingleP
                     </Link>
                   ))}
               </div>
-            </div>
+            </section>
           </div>
         </div>
       </LoadingScreen>
-    </>
+    </article>
   );
 };

@@ -22,6 +22,7 @@ export const LatestLayout = () => {
   const { data: dataSet1, isLoading, isError } = useGetLatestPosts({ page: 1, size: 20 });
   const { data: dataSet2 } = useGetLatestPosts({ page: 2, size: 20 });
   const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+  const isMobile = windowWidth < MOBILE_BREAKPOINT;
 
   const latestPosts = [...(dataSet1 ?? []), ...(dataSet2 ?? [])];
 
@@ -30,8 +31,6 @@ export const LatestLayout = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const isMobile = windowWidth < MOBILE_BREAKPOINT;
 
   if (isError)
     return (
@@ -43,7 +42,7 @@ export const LatestLayout = () => {
 
   return (
     <LoadingScreen isLoading={isLoading}>
-      <div className="container">
+      <section className="container">
         <BasicBreadcrumbs page1={'Latest'} />
         <Box className={styles.containerBox}>
           <Masonry
@@ -74,7 +73,7 @@ export const LatestLayout = () => {
             })}
           </Masonry>
         </Box>
-      </div>
+      </section>
     </LoadingScreen>
   );
 };

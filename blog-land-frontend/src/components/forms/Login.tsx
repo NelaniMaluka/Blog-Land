@@ -29,11 +29,12 @@ export default function LoginDialog({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const login = useLogin();
-  const setOAuthToken = useSetOAuthToken();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Hooks
+  const login = useLogin();
+  const setOAuthToken = useSetOAuthToken();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);

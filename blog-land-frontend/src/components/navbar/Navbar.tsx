@@ -12,7 +12,7 @@ interface NavbarProps {
 
 function Navbar({ setOpen }: NavbarProps) {
   const navigate = useNavigate();
-  const { data: post, isLoading, isError, refetch } = useGetRandomPost();
+  const { data: post, refetch } = useGetRandomPost();
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ function Navbar({ setOpen }: NavbarProps) {
     <>
       <nav className={styles.navbar}>
         <div className="container">
-          <div className={`${styles.navbar_row} ${styles['navbar_row--top']}`}>
+          <section className={`${styles.navbar_row} ${styles['navbar_row--top']}`}>
             <div className={styles.navbar_Logo}>
               <img
                 src="/icons/menu.png"
@@ -74,7 +74,7 @@ function Navbar({ setOpen }: NavbarProps) {
                 <AvatarMenu />
               </span>
             </div>
-          </div>
+          </section>
           <div className={`${styles.navbar_row} ${styles['navbar_row--bottom']}`}>
             <NavbarBottom />
           </div>

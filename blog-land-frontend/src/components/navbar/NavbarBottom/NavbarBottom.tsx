@@ -8,9 +8,10 @@ import { Link } from 'react-router-dom';
 import { ROUTES } from '../../../constants/routes';
 
 export default function NavbarBottom() {
+  // Hook
   const { data: categories, isLoading, isError } = useGetCategories();
   return (
-    <div className={`${styles.navbar_row} ${styles['navbar_row--bottom']}`}>
+    <section className={`${styles.navbar_row} ${styles['navbar_row--bottom']}`}>
       <LoadingScreen isLoading={isLoading}>
         <div className={styles.dropdown}>
           <span className={styles.dropdownTitle}>Categories</span>{' '}
@@ -27,6 +28,6 @@ export default function NavbarBottom() {
       <div className={styles.searchbar}>
         <SearchBar />
       </div>
-    </div>
+    </section>
   );
 }

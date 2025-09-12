@@ -18,18 +18,19 @@ import { RootState } from '../../../store/store';
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const logout = useLogoutUser();
-  const queryClient = useQueryClient();
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+  const handleCloseMenu = () => setAnchorEl(null);
 
   const { openLogin, openRegister, openForgot, hideAll, showLogin, showRegister, showForgot } =
     useDialog();
 
-  const open = Boolean(anchorEl);
+  // hooks
+  const logout = useLogoutUser();
+  const queryClient = useQueryClient();
+
   const auth = useSelector((state: RootState) => state.auth.isAuthenticated);
   const user = useSelector((state: RootState) => state.auth.user);
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
-  const handleCloseMenu = () => setAnchorEl(null);
 
   const handleLogout = () => {
     logout.mutate();

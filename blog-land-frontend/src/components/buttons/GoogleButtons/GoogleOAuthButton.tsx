@@ -9,6 +9,7 @@ interface GoogleOAuthButtonProps {
 }
 
 export default function GoogleOAuthButton({ onClick, redirectUrl }: GoogleOAuthButtonProps) {
+  // Redirect to OAuth
   const handleClick = () => {
     if (onClick) onClick();
     if (redirectUrl) {

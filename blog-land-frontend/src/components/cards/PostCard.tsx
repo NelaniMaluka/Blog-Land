@@ -13,8 +13,11 @@ interface PostCardProps {
 
 export const PostCard: React.FC<PostCardProps> = ({ post, categoryName }) => {
   return (
-    <div key={post.id} className={styles.post}>
+    <article key={post.id} className={styles.post}>
+      {/* image */}
       <img src={post.postImgUrl} alt="img" />
+
+      {/* views, category, read-time  */}
       <div className={styles.subDetails}>
         <span>{formatDigit(post.views)} views</span>
         {categoryName && (
@@ -24,9 +27,12 @@ export const PostCard: React.FC<PostCardProps> = ({ post, categoryName }) => {
         )}
         <span>{post.readTime} min read</span>
       </div>
+
+      {/* Title and Summary */}
       <p className={styles.title}>{post.title}</p>
       <p>{post.summary}</p>
 
+      {/* User and Read-more */}
       <div className={styles.info}>
         <div className={styles.userInfo}>
           <div>
@@ -43,6 +49,6 @@ export const PostCard: React.FC<PostCardProps> = ({ post, categoryName }) => {
           </a>
         </div>
       </div>
-    </div>
+    </article>
   );
 };

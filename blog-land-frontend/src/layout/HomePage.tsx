@@ -4,6 +4,7 @@ import { Article } from '../components/ui/HomePage/article/Article';
 import { LatestSection } from '../components/ui/HomePage/latest/LatestSection';
 import { TrendingSection } from '../components/ui/HomePage/trending/Trending';
 import QandASection from '../components/ui/HomePage/QandA/QandA';
+import AboutSection from '../components/ui/HomePage/HowWorksSection/about';
 
 function HomePage() {
   const canonicalUrl = window.location.href;
@@ -92,8 +93,8 @@ function HomePage() {
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
       <Hero />
+      <AboutSection />
       <LatestSection />
-
       <TrendingSection />
       <Article />
       <QandASection />

@@ -5,6 +5,7 @@ import { useState } from 'react';
 function AuthDialogsContainer() {
   const [openLogin, setOpenLogin] = useState(false);
   const [openRegister, setOpenRegister] = useState(false);
+  const [openForgot, setOpenForgot] = useState(false);
 
   return (
     <>
@@ -14,6 +15,10 @@ function AuthDialogsContainer() {
         onSwitchToRegister={() => {
           setOpenLogin(false);
           setOpenRegister(true);
+        }}
+        onSwitchToForgot={() => {
+          setOpenLogin(false);
+          setOpenForgot(true);
         }}
       />
       <RegisterDialog

@@ -22,6 +22,8 @@ export default function ForgotPasswordDialog({
 }: ForgotPasswordDialogProps) {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // hooks
   const forgotPassword = useForgotPassword();
 
   const handleSubmit = async (e: FormEvent) => {

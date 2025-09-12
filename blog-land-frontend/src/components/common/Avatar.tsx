@@ -6,7 +6,7 @@ import { Box } from '@mui/material';
 import { UserResponse } from '../../types/user/response';
 import { useLocation } from 'react-router-dom';
 import styles from './Avatar.module.css';
-
+import { useEffect } from 'react';
 interface FallbackAvatarsProps {
   user: UserResponse | null;
   isProfile?: boolean;
@@ -16,11 +16,13 @@ interface FallbackAvatarsProps {
 export default function FallbackAvatars({ user, isProfile, onFileSelect }: FallbackAvatarsProps) {
   const location = useLocation();
   const isProfilePage = location.pathname === '/dashboard/profile';
-
   const [avatarUrl, setAvatarUrl] = React.useState<string | null>(user?.profileIconUrl || null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  React.useEffect(() => {
+  {
+    /* Check if the profile icon is present */
+  }
+  useEffect(() => {
     if (user?.profileIconUrl) {
       setAvatarUrl(`${user.profileIconUrl}?t=${Date.now()}`);
     } else {
@@ -28,6 +30,9 @@ export default function FallbackAvatars({ user, isProfile, onFileSelect }: Fallb
     }
   }, [user?.profileIconUrl]);
 
+  {
+    /* initial format */
+  }
   const initials =
     user?.firstname && user?.lastname
       ? `${user.firstname[0]}${user.lastname[0]}`.toUpperCase()
@@ -35,6 +40,9 @@ export default function FallbackAvatars({ user, isProfile, onFileSelect }: Fallb
       ? user.firstname[0].toUpperCase()
       : '?';
 
+  {
+    /* show upload bar */
+  }
   const handleAvatarClick = () => {
     if (isProfilePage && fileInputRef.current && isProfile) {
       fileInputRef.current.click();

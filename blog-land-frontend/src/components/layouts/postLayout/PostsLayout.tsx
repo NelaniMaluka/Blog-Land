@@ -92,7 +92,7 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
 
   // ----- Main return -----
   return (
-    <div className="container">
+    <section className="container">
       <BasicBreadcrumbs page1={title} />
       <div className={styles.holder}>
         {renderHeader()}
@@ -101,6 +101,6 @@ export const PostsLayout: React.FC<PostsLayoutProps> = ({
           {renderPagination()}
         </LoadingScreen>
       </div>
-    </div>
+    </section>
   );
 };

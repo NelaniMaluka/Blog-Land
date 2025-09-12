@@ -27,11 +27,14 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
   const [password, setPassword] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const register = useRegister();
-  const setOAuthToken = useSetOAuthToken();
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Hooks
+  const register = useRegister();
+  const setOAuthToken = useSetOAuthToken();
+
+  // Handle OAuth token
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
@@ -39,6 +42,20 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
       setOAuthToken.mutate(token, { onSuccess: () => navigate('/') });
     }
   }, [location.search, navigate, setOAuthToken]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleScroll = () => {
+      onClose();
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+    };
+  }, [open, onClose]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -61,20 +78,6 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
       setIsSubmitted(true);
     }
   };
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleScroll = () => {
-      onClose();
-    };
-
-    window.addEventListener('scroll', handleScroll, true);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll, true);
-    };
-  }, [open, onClose]);
 
   return (
     <>

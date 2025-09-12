@@ -303,12 +303,6 @@ export const Profile: React.FC<ProfileProps> = () => {
     } catch (err) {}
   };
 
-  const errorMessage =
-    (updateUser?.error as { message?: string })?.message ||
-    (updateProfileIcon?.error as { message?: string })?.message ||
-    (removeProfileIcon?.error as { message?: string })?.message ||
-    'Something went wrong';
-
   if (isError || !user)
     return (
       <div className="container">
@@ -319,7 +313,7 @@ export const Profile: React.FC<ProfileProps> = () => {
   return (
     <LoadingScreen isLoading={updateUser.isPending}>
       <form className={styles.profile} onSubmit={handleSubmit}>
-        <div className={styles.heading}>
+        <section className={styles.heading}>
           {' '}
           <div>
             {' '}
@@ -329,7 +323,7 @@ export const Profile: React.FC<ProfileProps> = () => {
             {' '}
             <button type="submit">Save</button>{' '}
           </div>{' '}
-        </div>{' '}
+        </section>{' '}
         <Divider />
         {/* Profile Picture */}
         <div className={styles.text}>

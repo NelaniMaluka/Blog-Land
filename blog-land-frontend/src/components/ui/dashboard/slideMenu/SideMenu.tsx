@@ -11,12 +11,10 @@ import {
 import styles from './SideMenu.module.css';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../../constants/routes';
-import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
 import FallbackAvatars from '../../../common/Avatar';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
-
 import { useLogoutUser } from '../../../../hooks/useUser';
 
 export type MenuKey = 'profile' | 'posts';
@@ -30,6 +28,8 @@ interface SidebarMenuProps {
 export const SidebarMenu: React.FC<SidebarMenuProps> = ({ selected, onSelect, onLogout }) => {
   const user = useSelector((state: RootState) => state.auth.user);
   const navigate = useNavigate();
+
+  // Hooks
   const logout = useLogoutUser();
   const queryClient = useQueryClient();
 

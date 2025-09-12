@@ -50,7 +50,7 @@ export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNa
         </Box>
 
         {/* Mobile nav links */}
-        <>
+        <section>
           <h2 className={styles.categoriesHeader}>Discover</h2>
           <Box className={styles.navLinks}>
             <Box className={styles.navLinksColumn}>
@@ -83,7 +83,7 @@ export default function DrawerMobileNavigation({ open, setOpen }: DrawerMobileNa
               </a>
             </Box>
           </Box>
-        </>
+        </section>
 
         {/* Categories header */}
         <h2 className={styles.categoriesHeader}>Categories</h2>

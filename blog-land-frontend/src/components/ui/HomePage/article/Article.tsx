@@ -8,14 +8,14 @@ export const Article = () => {
   if (error) return <></>;
 
   return (
-    <div className={styles.articleContainers}>
+    <section className={styles.articleContainers}>
       <LoadingScreen isLoading={isLoading}>
         <div className="container">
           <div className={styles.row1}>
             <h2>News</h2>
           </div>
 
-          <div className={styles.row2}>
+          <article className={styles.row2}>
             {data?.length
               ? data.map((article, index) => (
                   <div key={index} className={styles.article}>
@@ -30,9 +30,9 @@ export const Article = () => {
                   </div>
                 ))
               : null}
-          </div>
+          </article>
         </div>
       </LoadingScreen>
-    </div>
+    </section>
   );
 };
