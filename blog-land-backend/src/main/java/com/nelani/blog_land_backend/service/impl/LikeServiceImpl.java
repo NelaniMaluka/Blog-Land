@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.service.impl;
 
+import com.nelani.blog_land_backend.Util.Sockets.LikesSocket;
 import com.nelani.blog_land_backend.Util.Validation.LikeValidation;
 import com.nelani.blog_land_backend.Util.Validation.PostValidation;
 import com.nelani.blog_land_backend.Util.Validation.UserValidation;
@@ -22,10 +23,12 @@ public class LikeServiceImpl implements LikeService {
 
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
+    private final LikesSocket likesSocket;
 
-    public LikeServiceImpl(PostRepository postRepository, LikeRepository likeRepository) {
+    public LikeServiceImpl(PostRepository postRepository, LikeRepository likeRepository, LikesSocket likesSocket) {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
+        this.likesSocket = likesSocket;
     }
 
     @Override
@@ -78,6 +81,9 @@ public class LikeServiceImpl implements LikeService {
 
         likeRepository.save(like);
 
+        // update socket
+        likesSocket.updatePostLikes( likeRepository, post.get());
+
         return "Like Successfully saved";
     }
 
@@ -99,6 +105,9 @@ public class LikeServiceImpl implements LikeService {
         LikeValidation.assertLikeBelongsToUser(like.get(), user);
 
         likeRepository.delete(like.get());
+
+        // update socket
+        likesSocket.updatePostLikes( likeRepository, post.get());
 
         return "Like Successfully removed";
     }

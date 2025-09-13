@@ -1,7 +1,7 @@
 import apiClient from './apiClient';
 
 export const getPostLikesCount = async (postId: number) => {
-  const response = await apiClient.get(`/like/get/post-likes/${postId}`, {});
+  const response = await apiClient.get(`/like/get/post-likes/${postId}`);
   return response;
 };
 

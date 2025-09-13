@@ -1,5 +1,5 @@
 // index.tsx or main.tsx
-import React, { StrictMode, useEffect } from 'react';
+import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
@@ -10,6 +10,10 @@ import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { store, persistor } from './store/store';
 import { HelmetProvider } from 'react-helmet-async';
+import './polyfills';
+
+// Polyfill global for sockjs-client
+(window as any).global = window;
 
 const queryClient = new QueryClient();
 
@@ -58,6 +62,4 @@ loadGoogleMapsApi()
       </StrictMode>
     );
   })
-  .catch((err) => {
-    console.error(err);
-  });
+  .catch((err) => {});

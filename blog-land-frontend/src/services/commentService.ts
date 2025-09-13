@@ -81,7 +81,6 @@ export const updateComments = async (
 
 export const deleteComments = async (id: number): Promise<{ message: string }> => {
   const validPayload = validateOrThrow(idSchema, { id });
-
   try {
     const response = await deleteComment(validPayload.id);
     return response?.data;

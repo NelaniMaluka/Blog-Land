@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.service.impl;
 
+import com.nelani.blog_land_backend.Util.Sockets.CommentSocket;
 import com.nelani.blog_land_backend.Util.Validation.*;
 import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
 import com.nelani.blog_land_backend.dto.CommentDto;
@@ -30,12 +31,14 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final ModerationValidator moderationValidator;
+    private final CommentSocket commentSocket;
 
-    public CommentServiceImpl(EntityManager entityManager, CommentRepository commentRepository, PostRepository postRepository, ModerationValidator moderationValidator) {
+    public CommentServiceImpl(EntityManager entityManager, CommentRepository commentRepository, PostRepository postRepository, ModerationValidator moderationValidator, CommentSocket commentSocket) {
         this.entityManager = entityManager;
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.moderationValidator = moderationValidator;
+        this.commentSocket = commentSocket;
     }
 
     @Override
@@ -118,6 +121,10 @@ public class CommentServiceImpl implements CommentService {
         moderationValidator.commentModeration(newComment);
 
         commentRepository.save(newComment); // Save the new comment
+
+        // Update the socket
+        commentSocket.updateCommentCount(post.get());
+        commentSocket.addNewComments(post.get(), newComment);
     };
 
     @Override
@@ -149,6 +156,9 @@ public class CommentServiceImpl implements CommentService {
         moderationValidator.commentModeration(existingComment);
 
         commentRepository.save(existingComment); // Save comment
+
+        // Update the socket
+        commentSocket.updateComment(post.get(), existingComment);
     }
 
     @Override
@@ -160,19 +170,24 @@ public class CommentServiceImpl implements CommentService {
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
 
-        // Checks if the comment exists
-        Optional<Comment> comment = commentRepository.findById(commentId);
-        Comment existingComment = CommentValidation.assertCommentExist(comment);
+        // Get the comment
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        // Checks if the comment belongs to the user
-        CommentValidation.assertCommentBelongsToUser(existingComment, user);
+        // Check ownership
+        CommentValidation.assertCommentBelongsToUser(comment, user);
 
-        User commentOwner = existingComment.getUser();
-        existingComment.setUser(null); // break the link from comment to user
+        // Remove from user collection (triggers orphanRemoval if configured)
+        comment.getUser().getComments().remove(comment);
 
-        commentOwner.getComments().remove(existingComment); // triggers orphanRemoval
-        commentRepository.delete(existingComment);
-        entityManager.flush(); // should cascade delete comments and likes
-        entityManager.clear(); // refresh context
+        // Delete the comment
+        commentRepository.delete(comment);
+
+        // Optionally flush to commit immediately
+        entityManager.flush();
+
+        // Update sockets
+        commentSocket.updateCommentCount(comment.getPost());
+        commentSocket.deleteComment(comment.getPost(), commentId);
     }
 }

@@ -61,14 +61,17 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       "p.isDraft = false AND (p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP)")
   Page<Post> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
+  // Formula for getting what's trending
   @Query("""
-          SELECT p FROM Post p
-          LEFT JOIN p.likes l
-          WHERE p.isDraft = false
-            AND (p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP)
-          GROUP BY p
-          ORDER BY (p.viewCount * 0.6 + COUNT(l) * 0.4) DESC
-      """)
+       SELECT p 
+       FROM Post p
+       LEFT JOIN p.likes l      
+       LEFT JOIN p.comments c   
+       WHERE p.isDraft = false
+         AND (p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP)
+       GROUP BY p
+       ORDER BY (p.viewCount * 0.5 + COUNT(l) * 0.3 + COUNT(c) * 0.2) DESC
+   """)
   Page<Post> findTrendingPosts(Pageable pageable);
 
   // Category filter, only published

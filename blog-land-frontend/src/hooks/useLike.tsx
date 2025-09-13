@@ -8,12 +8,23 @@ import { useQuery } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { useSnackbar } from '../features/Snackbars/errorMessage';
 import { store } from '../store/store';
+import { useQueryClient } from '@tanstack/react-query';
+import { useWebSocket } from './useWebSocket';
 
 export const useGetPostLikesCount = (postId: number) => {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  // React Query for initial fetch
+  const query = useQuery({
     queryKey: ['postLikes', postId],
     queryFn: () => fetchPostLikesCount(postId),
   });
+
+  useWebSocket(`/topic/like/post-likes/${postId}`, (message) => {
+    queryClient.setQueryData(['postLikes', postId], Number(message));
+  });
+
+  return query;
 };
 
 export const useGetUserLikes = () => {
