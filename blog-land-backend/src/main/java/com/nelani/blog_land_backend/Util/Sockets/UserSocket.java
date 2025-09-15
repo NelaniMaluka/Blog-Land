@@ -1,10 +1,7 @@
 package com.nelani.blog_land_backend.Util.Sockets;
 
-import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
 import com.nelani.blog_land_backend.Util.Builders.UserBuilder;
-import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.model.User;
-import com.nelani.blog_land_backend.response.PostResponse;
 import com.nelani.blog_land_backend.response.UserResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -26,7 +23,6 @@ public class UserSocket {
         messagingTemplate.convertAndSendToUser(
                 user.getId().toString(),
                 "/queue/user/update",
-                userResponse
-        );
+                userResponse);
     }
 }

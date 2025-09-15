@@ -36,8 +36,8 @@ public class AuthServiceImpl implements AuthService {
         public String registerUser(User user) {
                 // Validate fields
                 String email = FormValidation.assertValidatedEmail(user.getEmail());
-                String firstname = FormValidation.assertRequiredField(user.getFirstname(), "Firstname");
-                String lastname = FormValidation.assertRequiredField(user.getLastname(), "Lastname");
+                FormValidation.assertRequiredField(user.getFirstname(), "Firstname");
+                FormValidation.assertRequiredField(user.getLastname(), "Lastname");
                 String password = FormValidation.assertValidatedPassword(user.getPassword());
 
                 // Checks if a user exists with the provided email

@@ -1,9 +1,7 @@
 package com.nelani.blog_land_backend.Util.Sockets;
 
 import com.nelani.blog_land_backend.dto.CategoryDto;
-import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
-import com.nelani.blog_land_backend.repository.LikeRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;

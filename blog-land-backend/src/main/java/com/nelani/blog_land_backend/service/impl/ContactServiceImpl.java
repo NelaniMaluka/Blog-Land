@@ -21,9 +21,9 @@ public class ContactServiceImpl implements ContactService {
     @Transactional
     public void getInfo(Contact contact) {
         // Validate fields
-        String fullName = FormValidation.assertRequiredField(contact.getFullName(), "Full Name");
-        String email = FormValidation.assertValidatedEmail(contact.getEmail());
-        String message = FormValidation.assertRequiredField(contact.getMessage(), "Message");
+        FormValidation.assertRequiredField(contact.getFullName(), "Full Name");
+        FormValidation.assertValidatedEmail(contact.getEmail());
+        FormValidation.assertRequiredField(contact.getMessage(), "Message");
 
         contactRepository.save(contact); // Save the contact message
     }

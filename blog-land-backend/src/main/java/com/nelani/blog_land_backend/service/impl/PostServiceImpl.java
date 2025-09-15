@@ -10,7 +10,6 @@ import com.nelani.blog_land_backend.model.*;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
 import com.nelani.blog_land_backend.repository.CustomPostRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
-import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.response.PostResponse;
 import com.nelani.blog_land_backend.service.PostService;
 
@@ -34,16 +33,16 @@ public class PostServiceImpl implements PostService {
     private final EntityManager entityManager;
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
     private final CustomPostRepository customPostRepository;
     private final ModerationValidator moderationValidator;
     private final PostSocket postSocket;
 
-    public PostServiceImpl(EntityManager entityManager, CategoryRepository categoryRepository, PostRepository postRepository, UserRepository userRepository, CustomPostRepository customPostRepository, ModerationValidator moderationValidator, PostSocket postSocket) {
+    public PostServiceImpl(EntityManager entityManager, CategoryRepository categoryRepository,
+            PostRepository postRepository, CustomPostRepository customPostRepository,
+            ModerationValidator moderationValidator, PostSocket postSocket) {
         this.entityManager = entityManager;
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
-        this.userRepository = userRepository;
         this.customPostRepository = customPostRepository;
         this.moderationValidator = moderationValidator;
         this.postSocket = postSocket;
@@ -159,7 +158,6 @@ public class PostServiceImpl implements PostService {
         }).toList();
 
     }
-
 
     @Override
     @Transactional
