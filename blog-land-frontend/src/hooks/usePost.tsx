@@ -23,6 +23,11 @@ import { PaginatedPosts } from '../types/post/response';
 import { useSnackbar } from '../features/Snackbars/errorMessage';
 import { PostResponse } from '../types/post/response';
 import { useEffect } from 'react';
+import { useWebSocket } from './useWebSocket';
+import { useQueryClient } from '@tanstack/react-query';
+import { formatDate } from '../utils/formatUtils';
+import { stripHtml } from '../utils/formatUtils';
+import he from 'he';
 
 export const useSearchPost = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -66,11 +71,29 @@ export const useGetRandomPosts = () => {
 };
 
 export const useGetPost = (payload: { id: number }) => {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
     queryKey: ['singlePost', payload],
     queryFn: () => fetchPost(payload),
     enabled: !!payload,
   });
+
+  useWebSocket(`/topic/post/update/${payload.id}`, (message) => {
+    const raw = JSON.parse(message);
+    const updatedPost: PostResponse = {
+      ...raw,
+      title: he.decode(stripHtml(raw.title)),
+      summary: raw.summary ? he.decode(stripHtml(raw.summary)) : null,
+      createdAt: formatDate(raw.createdAt),
+    };
+
+    queryClient.setQueryData(['singlePost', payload], () => {
+      return updatedPost;
+    });
+  });
+
+  return query;
 };
 
 export const useGetAllPost = (payload: { page: number; size: number; order: Order }) => {

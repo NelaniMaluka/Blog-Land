@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.service.impl;
 
+import com.nelani.blog_land_backend.Util.Sockets.PostSocket;
 import com.nelani.blog_land_backend.Util.Validation.*;
 import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
 import com.nelani.blog_land_backend.dto.CategoryWithPostsDTO;
@@ -36,16 +37,16 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final CustomPostRepository customPostRepository;
     private final ModerationValidator moderationValidator;
+    private final PostSocket postSocket;
 
-    public PostServiceImpl(EntityManager entityManager, CategoryRepository categoryRepository,
-            PostRepository postRepository, UserRepository userRepository, CustomPostRepository customPostRepository,
-            ModerationValidator moderationValidator) {
+    public PostServiceImpl(EntityManager entityManager, CategoryRepository categoryRepository, PostRepository postRepository, UserRepository userRepository, CustomPostRepository customPostRepository, ModerationValidator moderationValidator, PostSocket postSocket) {
         this.entityManager = entityManager;
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.customPostRepository = customPostRepository;
         this.moderationValidator = moderationValidator;
+        this.postSocket = postSocket;
     }
 
     @Override
@@ -87,7 +88,10 @@ public class PostServiceImpl implements PostService {
 
         // Adds a view to the post
         post.setViewCount(post.getViewCount() + 1);
-        postRepository.save(post); // Saves the post with the updated views
+        postRepository.save(post); // Save the post with the updated views
+
+        // Update the socket
+        postSocket.updatePost(post);
     }
 
     @Override
@@ -197,7 +201,8 @@ public class PostServiceImpl implements PostService {
         CategoryValidation.assertCategoryExists(category);
 
         // Checks if the user has a post with the same title
-        PostValidation.assertUserHasPostWithSameTitle(user.getPosts(), title);
+        List<Post> userPosts = postRepository.findAllByUserId(user.getId());
+        PostValidation.assertUserHasPostWithSameTitle(userPosts, title);
 
         // Build new post
         Post newPost = Post.builder()
@@ -216,8 +221,10 @@ public class PostServiceImpl implements PostService {
         // Moderate content
         moderationValidator.postModeration(newPost);
 
-        user.getPosts().add(newPost);
-        userRepository.save(user); // Save the new post
+        postRepository.save(newPost); // Save the new post
+
+        // Update the socket
+        postSocket.addNewPost(newPost);
     };
 
     @Override
@@ -265,6 +272,9 @@ public class PostServiceImpl implements PostService {
         moderationValidator.postModeration(updatedPost);
 
         postRepository.save(updatedPost); // Save updated post
+
+        // Update the socket
+        postSocket.updatePost(updatedPost);
     }
 
     @Override
@@ -289,6 +299,9 @@ public class PostServiceImpl implements PostService {
         postOwner.getPosts().remove(existingPost); // triggers orphanRemoval
         entityManager.flush(); // should cascade delete comments and likes
         entityManager.clear(); // refresh context
+
+        // Update the socket
+        postSocket.deletePost(postId);
     }
 
     private int calculateRelevanceScore(Post post, String keyword) {

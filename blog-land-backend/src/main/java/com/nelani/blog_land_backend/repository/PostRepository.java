@@ -17,6 +17,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
   long countByCategory(Category category);
 
+  List<Post> findAllByUserId(Long userId);
+
   // Only published posts
   @Query("SELECT p FROM Post p WHERE p.isDraft = false AND " +
       "(p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP)")

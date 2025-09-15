@@ -6,41 +6,48 @@ import { useEffect, useRef } from 'react';
 let client: Client | null = null;
 const subscriptionsMap = new Map<string, StompSubscription>();
 
-export const useWebSocket = (topic: string, onMessage: (message: string) => void) => {
+export const useWebSocket = (
+  topic: string,
+  onMessage: (message: string) => void,
+  token?: string
+) => {
   const onMessageRef = useRef(onMessage);
-  onMessageRef.current = onMessage; // always keep latest callback
+  onMessageRef.current = onMessage;
 
   useEffect(() => {
     // Initialize client if not yet created
     if (!client) {
-      const socket = new SockJS('http://localhost:8080/ws');
+      const socket = new SockJS('https://blog-land.onrender.com/ws');
       client = new Client({
         webSocketFactory: () => socket,
         reconnectDelay: 5000,
-        debug: (msg) => console.log('[STOMP]', msg),
+        debug: () => {},
       });
 
       client.activate();
     }
 
-    const subscribeTopic = (t: string) => {
-      if (client && client.connected && !subscriptionsMap.has(t)) {
-        const sub = client.subscribe(t, (msg) => {
-          onMessageRef.current(msg.body);
+    const subscribeTopic = () => {
+      if (client && client.connected && !subscriptionsMap.has(topic)) {
+        const sub = client.subscribe(topic, (msg) => {
+          onMessageRef.current(msg.body); // still calls your callback, no logs
         });
-        subscriptionsMap.set(t, sub);
+        subscriptionsMap.set(topic, sub);
       }
     };
 
+    // Set JWT before connect
+    if (client && token) {
+      client.connectHeaders = { Authorization: `Bearer ${token}` };
+    }
+
     if (client?.connected) {
-      // Already connected, subscribe immediately
-      subscribeTopic(topic);
+      subscribeTopic();
     } else {
-      // If not connected, override onConnect once
       const originalOnConnect = client!.onConnect;
       client!.onConnect = (frame: Frame) => {
-        originalOnConnect?.(frame); // call original with frame
-        subscribeTopic(topic);
+        originalOnConnect?.(frame);
+        subscribeTopic();
       };
     }
 
@@ -52,5 +59,5 @@ export const useWebSocket = (topic: string, onMessage: (message: string) => void
         subscriptionsMap.delete(topic);
       }
     };
-  }, [topic]);
+  }, [topic, token]);
 };

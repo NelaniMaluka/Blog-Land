@@ -1,5 +1,5 @@
 // src/hooks/useUser.tsx
-import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   fetchUser,
   updateUser,
@@ -17,8 +17,11 @@ import { UpdateUserRequest } from '../types/user/request';
 import { scheduleLogout } from '../features/ScheduleLogout';
 import { useSnackbar } from '../features/Snackbars/errorMessage';
 import { useEffect } from 'react';
+import { useWebSocket } from './useWebSocket';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function useGetUser() {
+  const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
@@ -34,6 +37,16 @@ export function useGetUser() {
       dispatch(setUser(query.data));
     }
   }, [query.data, dispatch]);
+
+  const token = useSelector((state: RootState) => state.auth.jwtToken) ?? undefined;
+  useWebSocket(
+    '/user/queue/user/update',
+    (message) => {
+      const raw = JSON.parse(message);
+      queryClient.setQueryData(['user'], () => raw);
+    },
+    token
+  );
 
   return query;
 }
@@ -64,7 +77,6 @@ export const useRemoveProfileImage = () => {
 
 export const useUpdateUser = () => {
   const dispatch = useDispatch();
-  const { refetch: refetchUser } = useGetUser();
   const { showError } = useSnackbar();
 
   return useMutation({
@@ -74,7 +86,6 @@ export const useUpdateUser = () => {
       return token;
     },
     onSuccess: async (token) => {
-      const { data } = await refetchUser();
       scheduleLogout(token, dispatch);
       ShowSuccessSwal('Profile Updated', `Your profile was successfully updated!`);
     },

@@ -11,39 +11,28 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { store, persistor } from './store/store';
 import { HelmetProvider } from 'react-helmet-async';
 import './polyfills';
+import { Loader } from '@googlemaps/js-api-loader'; // <-- import here
 
 // Polyfill global for sockjs-client
 (window as any).global = window;
 
 const queryClient = new QueryClient();
 
-function loadGoogleMapsApi() {
-  return new Promise<void>((resolve, reject) => {
-    const existingScript = document.getElementById('google-maps');
-    if (!existingScript) {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${
-        import.meta.env.VITE_GOOGLE_MAPS_API_KEY
-      }&libraries=places`;
-      script.id = 'google-maps';
-      script.async = true;
-      script.defer = true;
-      script.onload = () => resolve();
-      script.onerror = () => reject('Failed to load Google Maps script');
-      document.head.appendChild(script);
-    } else {
-      resolve();
-    }
-  });
-}
-
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
 
 const root = createRoot(container);
 
-loadGoogleMapsApi()
+// Initialize Google Maps API
+const loader = new Loader({
+  apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+  libraries: ['places'],
+});
+
+loader
+  .load()
   .then(() => {
+    // Only render app once Google Maps API is ready
     root.render(
       <StrictMode>
         <Provider store={store}>

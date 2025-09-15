@@ -1,6 +1,7 @@
 package com.nelani.blog_land_backend.service.impl;
 
 import com.nelani.blog_land_backend.Util.Builders.UserBuilder;
+import com.nelani.blog_land_backend.Util.Sockets.UserSocket;
 import com.nelani.blog_land_backend.Util.Validation.FileValidation;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
 import com.nelani.blog_land_backend.Util.Validation.UserValidation;
@@ -25,14 +26,17 @@ public class UserServiceImpl implements UserService {
 
     private final ModerationValidator moderationValidator;
     private final UserRepository userRepository;
+    private final UserSocket userSocket;
     private final JwtUtil jwtUtil;
 
     private static final String UPLOAD_DIR = "ProfileIcons/";
     private static final String BackendBaseUrl = "https://blog-land.onrender.com/";
 
-    public UserServiceImpl(ModerationValidator moderationValidator, UserRepository userRepository, JwtUtil jwtUtil) {
+    public UserServiceImpl(ModerationValidator moderationValidator, UserRepository userRepository,
+            UserSocket userSocket, JwtUtil jwtUtil) {
         this.moderationValidator = moderationValidator;
         this.userRepository = userRepository;
+        this.userSocket = userSocket;
         this.jwtUtil = jwtUtil;
     }
 
@@ -111,7 +115,7 @@ public class UserServiceImpl implements UserService {
                 + " . Please log in using your " + user.getProvider() + " provider.");
 
         if (socials != null) {
-            user.getSocials().clear();   // Hibernate tracks changes
+            user.getSocials().clear(); // Hibernate tracks changes
             socials.entrySet().stream()
                     .filter(e -> e.getKey() != null && !e.getKey().isBlank()
                             && e.getValue() != null && !e.getValue().isBlank())
@@ -130,6 +134,9 @@ public class UserServiceImpl implements UserService {
         moderationValidator.userModeration(user);
 
         userRepository.save(user); // save the user
+
+        // Update the socket
+        userSocket.updateUser(user);
 
         return jwtUtil.generateJwtToken(user); // Generate new token with updated email
     }
