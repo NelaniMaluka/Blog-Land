@@ -1,6 +1,7 @@
 package com.nelani.blog_land_backend.service;
 
 import com.nelani.blog_land_backend.Util.JwtUtil;
+import com.nelani.blog_land_backend.Util.Sockets.UserSocket;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
 import com.nelani.blog_land_backend.dto.UserDto;
 import com.nelani.blog_land_backend.model.ExperienceLevel;
@@ -46,6 +47,9 @@ public class UserServiceImplTest {
         @Mock
         private JwtUtil jwtUtils;
 
+        @Mock
+        private UserSocket userSocket;
+
         @InjectMocks
         private UserServiceImpl userService;
 
@@ -53,6 +57,8 @@ public class UserServiceImplTest {
         void setUp() {
                 MockitoAnnotations.openMocks(this);
                 SecurityContextHolder.clearContext(); // Clear context before each test
+
+                doNothing().when(userSocket).updateUser(any(User.class));
         }
 
         @Test

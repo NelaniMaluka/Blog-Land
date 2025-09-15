@@ -1,6 +1,7 @@
 package com.nelani.blog_land_backend.service;
 
 import com.nelani.blog_land_backend.Util.JwtUtil;
+import com.nelani.blog_land_backend.Util.Sockets.PostSocket;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
 import com.nelani.blog_land_backend.dto.PostDto;
 import com.nelani.blog_land_backend.model.Category;
@@ -59,6 +60,9 @@ public class PostServiceImplTest {
         @Mock
         private EntityManager entityManager;
 
+        @Mock
+        private PostSocket postSocket;
+
         @InjectMocks
         private PostServiceImpl postService;
 
@@ -91,6 +95,11 @@ public class PostServiceImplTest {
                 // Mock repository to return this user
                 when(categoryRepository.findById(1L))
                                 .thenReturn(Optional.of(category));
+
+                // Make PostSocket do nothing
+                doNothing().when(postSocket).addNewPost(any());
+                doNothing().when(postSocket).updatePost(any());
+                doNothing().when(postSocket).deletePost(anyLong());
         }
 
         @Test
@@ -177,21 +186,20 @@ public class PostServiceImplTest {
                 postDto.setImgUrl("local-picture");
                 postDto.setCategoryId(1L);
 
-                when(jwtUtils.generateJwtToken(any(User.class))).thenReturn("fake-jwt-token");
-                doNothing().when(moderationValidator).userModeration(any(User.class));
+                doNothing().when(moderationValidator).postModeration(any(Post.class));
+                doNothing().when(postSocket).addNewPost(any(Post.class));
+                when(postRepository.save(any(Post.class))).thenAnswer(i -> i.getArguments()[0]);
 
                 // Act
                 postService.addPost(postDto);
 
                 // Assert
-                ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
                 ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
-                verify(userRepository, times(1)).save(userCaptor.capture());
-                verify(moderationValidator, times(1)).postModeration(postCaptor.capture());
+                verify(postRepository, times(1)).save(postCaptor.capture());
+                verify(moderationValidator, times(1)).postModeration(postCaptor.getValue());
+                verify(postSocket, times(1)).addNewPost(postCaptor.getValue());
 
-                User savedUser = userCaptor.getValue();
-                assertEquals(1, savedUser.getPosts().size());
-                Post savedPost = savedUser.getPosts().get(0);
+                Post savedPost = postCaptor.getValue();
                 assertEquals("Spring Boot Guide", savedPost.getTitle());
                 assertEquals("This is a guide to Spring Boot.", savedPost.getSummary());
                 assertEquals("This is a guide to Spring Boot content.", savedPost.getContent());
@@ -208,29 +216,29 @@ public class PostServiceImplTest {
                 postDto.setImgUrl("local-picture");
                 postDto.setCategoryId(1L);
 
-                // Get the user from SecurityContext (set up in @BeforeEach)
                 User authenticatedUser = (User) SecurityContextHolder.getContext()
-                                .getAuthentication()
-                                .getPrincipal();
+                        .getAuthentication()
+                        .getPrincipal();
 
-                // Add an existing post with the same title
                 Post existingPost = new Post();
                 existingPost.setId(1L);
                 existingPost.setTitle("Spring Boot Guide");
-                authenticatedUser.setPosts(new ArrayList<>(List.of(existingPost)));
 
-                when(jwtUtils.generateJwtToken(any(User.class))).thenReturn("fake-jwt-token");
+                // Mock repository to return the existing post
+                when(postRepository.findAllByUserId(authenticatedUser.getId()))
+                        .thenReturn(List.of(existingPost));
+
                 doNothing().when(moderationValidator).postModeration(any(Post.class));
 
                 // Act + Assert
                 IllegalArgumentException exception = assertThrows(
-                                IllegalArgumentException.class,
-                                () -> postService.addPost(postDto));
+                        IllegalArgumentException.class,
+                        () -> postService.addPost(postDto));
 
                 assertEquals("You cannot use the same title twice.", exception.getMessage());
 
-                // Ensure save is never called because it should fail
-                verify(userRepository, never()).save(any());
+                verify(postRepository, never()).save(any());
+                verify(postSocket, never()).addNewPost(any());
         }
 
         @Test

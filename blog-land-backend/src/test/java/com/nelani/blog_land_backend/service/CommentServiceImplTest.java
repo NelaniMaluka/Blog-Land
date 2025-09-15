@@ -1,6 +1,7 @@
 package com.nelani.blog_land_backend.service;
 
 import com.nelani.blog_land_backend.Util.JwtUtil;
+import com.nelani.blog_land_backend.Util.Sockets.CommentSocket;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
 import com.nelani.blog_land_backend.dto.CommentDto;
 import com.nelani.blog_land_backend.model.*;
@@ -54,6 +55,9 @@ public class CommentServiceImplTest {
         @Mock
         private EntityManager entityManager;
 
+        @Mock
+        private CommentSocket commentSocket;
+
         @InjectMocks
         private CommentServiceImpl commentService;
 
@@ -98,6 +102,14 @@ public class CommentServiceImplTest {
                 when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
                 when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
                 when(jwtUtils.generateJwtToken(any(User.class))).thenReturn("fake-jwt-token");
+
+                // **Mock all CommentSocket methods to do nothing**
+                doNothing().when(commentSocket).updateCommentCount(any(Post.class));
+                doNothing().when(commentSocket).deleteComment(any(Post.class), anyLong());
+                doNothing().when(commentSocket).removeUserComment(any(User.class), any(Comment.class), any(Post.class));
+                doNothing().when(commentSocket).updateComment(any(Post.class), any(Comment.class));
+                doNothing().when(commentSocket).addNewComments(any(Post.class), any(Comment.class));
+                doNothing().when(commentSocket).addUserComment(any(User.class), any(Comment.class), any(Post.class));
         }
 
         @Test
@@ -354,7 +366,6 @@ public class CommentServiceImplTest {
                                 .thenReturn(Optional.of(authenticatedUser));
                 doNothing().when(moderationValidator).userModeration(any(User.class));
                 doNothing().when(entityManager).flush();
-                doNothing().when(entityManager).clear();
 
                 // Act
                 commentService.deleteComment(commentId);
@@ -362,7 +373,6 @@ public class CommentServiceImplTest {
                 // Assert
                 verify(commentRepository).delete(existingComment);
                 verify(entityManager).flush();
-                verify(entityManager).clear();
         }
 
         @Test
@@ -371,11 +381,11 @@ public class CommentServiceImplTest {
                 Long commentId = 1L;
 
                 // Act + Assert
-                IllegalArgumentException exception = assertThrows(
-                                IllegalArgumentException.class,
+                RuntimeException exception = assertThrows(
+                                RuntimeException.class,
                                 () -> commentService.deleteComment(commentId));
 
-                assertEquals("Comment does not exist.", exception.getMessage());
+                assertEquals("Comment not found", exception.getMessage());
 
                 // Ensure save is never called because it should fail
                 verify(commentRepository, never()).delete(any());
