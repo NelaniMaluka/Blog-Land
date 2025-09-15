@@ -88,8 +88,6 @@ export default function RegisterDialog({ open, onClose, onSwitchToLogin }: Regis
           classes={{ paper: styles.dialogPaper }}
           TransitionComponent={Fade}
           transitionDuration={600}
-          disableScrollLock={true}
-          disableEnforceFocus
         >
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.header}>

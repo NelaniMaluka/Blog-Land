@@ -125,6 +125,7 @@ public class CommentServiceImpl implements CommentService {
         // Update the socket
         commentSocket.updateCommentCount(post.get());
         commentSocket.addNewComments(post.get(), newComment);
+        commentSocket.addUserComment(user, newComment, post.get());
     };
 
     @Override
@@ -189,5 +190,6 @@ public class CommentServiceImpl implements CommentService {
         // Update sockets
         commentSocket.updateCommentCount(comment.getPost());
         commentSocket.deleteComment(comment.getPost(), commentId);
+        commentSocket.removeUserComment(user, comment, comment.getPost());
     }
 }

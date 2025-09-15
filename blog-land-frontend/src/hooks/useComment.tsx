@@ -14,6 +14,8 @@ import { CommentResponse } from '../types/comment/response';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './useWebSocket';
 import { formatDate } from '../utils/formatUtils';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 export const useGetCommentsCountByPost = (postId: number) => {
   const queryClient = useQueryClient();
@@ -82,12 +84,38 @@ export const useGetUserCommentsWithPostId = (
   postId: number,
   options?: Omit<UseQueryOptions<UserCommentsResponse[], Error>, 'queryKey' | 'queryFn'>
 ) => {
-  return useQuery<UserCommentsResponse[], Error>({
+  const queryClient = useQueryClient();
+
+  const query = useQuery<UserCommentsResponse[], Error>({
     queryKey: ['userComments', postId],
     queryFn: () => fetchUserCommentsWithPostId(postId),
     enabled: !!postId,
     ...options,
   });
+
+  const token = useSelector((state: RootState) => state.auth.jwtToken) ?? undefined;
+  useWebSocket(
+    '/user/queue/comment/add/' + postId,
+    (message) => {
+      const raw = JSON.parse(message);
+      queryClient.setQueryData(['userComments', postId], (old: UserCommentsResponse[] = []) => {
+        return [raw, ...old];
+      });
+    },
+    token
+  );
+
+  useWebSocket(
+    '/user/queue/comment/remove/' + postId,
+    (message) => {
+      const deletedCommentId = JSON.parse(message);
+      queryClient.setQueryData(['userComments', postId], (old: UserCommentsResponse[] = []) => {
+        return old.filter((c) => c.id !== deletedCommentId);
+      });
+    },
+    token
+  );
+  return query;
 };
 
 export const useAddComment = () => {
