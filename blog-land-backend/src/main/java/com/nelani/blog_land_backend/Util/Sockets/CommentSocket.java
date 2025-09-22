@@ -1,13 +1,11 @@
 package com.nelani.blog_land_backend.Util.Sockets;
 
 import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
-import com.nelani.blog_land_backend.Util.Builders.UserBuilder;
 import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.CommentRepository;
 import com.nelani.blog_land_backend.response.CommentResponse;
-import com.nelani.blog_land_backend.response.UserResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -36,8 +34,7 @@ public class CommentSocket {
         // Send new comment to subscribers
         messagingTemplate.convertAndSend(
                 "/topic/comments/add/" + post.getId(),
-                commentResponse
-        );
+                commentResponse);
     }
 
     public void updateComment(Post post, Comment updatedComment) {
@@ -47,16 +44,14 @@ public class CommentSocket {
         // Send updated comment to subscribers
         messagingTemplate.convertAndSend(
                 "/topic/comments/update/" + post.getId(),
-                commentResponse
-        );
+                commentResponse);
     }
 
     public void deleteComment(Post post, Long deletedCommentId) {
         // Send deleted comment ID to subscribers
         messagingTemplate.convertAndSend(
                 "/topic/comments/remove/" + post.getId(),
-                 deletedCommentId
-        );
+                deletedCommentId);
     }
 
     public void addUserComment(User user, Comment comment, Post post) {
@@ -75,6 +70,6 @@ public class CommentSocket {
         messagingTemplate.convertAndSendToUser(
                 user.getId().toString(),
                 "/queue/comment/remove/" + post.getId(),
-               comment.getId());
+                comment.getId());
     }
 }

@@ -3,6 +3,7 @@ package com.nelani.blog_land_backend.repository;
 import com.nelani.blog_land_backend.model.Category;
 import com.nelani.blog_land_backend.model.Post;
 
+import com.nelani.blog_land_backend.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,6 +17,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   long count();
 
   long countByCategory(Category category);
+
+  long countByUser(User user);
+
+  @Query("SELECT COALESCE(SUM(p.viewCount), 0) FROM Post p WHERE p.user.id = :userId")
+  Long getTotalViewsByUserId(@Param("userId") Long userId);
 
   List<Post> findAllByUserId(Long userId);
 

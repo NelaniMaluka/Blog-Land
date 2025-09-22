@@ -1,6 +1,5 @@
 package com.nelani.blog_land_backend.service;
 
-import com.nelani.blog_land_backend.dto.CategoryWithPostsDTO;
 import com.nelani.blog_land_backend.dto.PostDto;
 import com.nelani.blog_land_backend.response.PostResponse;
 import org.springframework.data.domain.Page;
@@ -9,8 +8,6 @@ import java.util.List;
 
 public interface PostService {
     void incrementViews(Long postId);
-
-    List<CategoryWithPostsDTO> getTopCategoriesWithPosts();
 
     List<PostResponse> searchByKeyword(String query);
 

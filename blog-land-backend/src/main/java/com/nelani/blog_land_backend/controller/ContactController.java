@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.model.Contact;
+import com.nelani.blog_land_backend.dto.ContactDto;
 import com.nelani.blog_land_backend.service.ContactService;
 
 import org.springframework.http.HttpStatus;
@@ -21,8 +21,8 @@ public class ContactController {
     }
 
     @PostMapping
-    public ResponseEntity<?> getContactMessage(@RequestBody Contact contact) {
-            contactService.getInfo(contact);
+    public ResponseEntity<?> getContactMessage(@RequestBody ContactDto contactDto) {
+            contactService.getInfo(contactDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("Success, we received your message. Thank you for reaching out.");
     }
 

@@ -34,13 +34,13 @@ export interface AuthState {
 }
 
 export interface UserResponse {
-  email: string;
+  email?: string;
   firstname: string;
   lastname: string;
-  provider: Provider;
-  title: string;
-  summary: string;
-  joinedAt: string;
+  provider?: Provider;
+  title?: string;
+  summary?: string;
+  joinedAt?: string;
   profileIconUrl?: string | null;
   location?: string | null;
   experience?: ExperienceLevel | null;
@@ -52,4 +52,11 @@ export interface UserResponse {
     facebook?: string;
     instagram?: string;
   };
+}
+
+export interface UserSummaryAnalyticsResponse {
+  totalPosts: number;
+  totalComments: number;
+  totalViews: number;
+  totalLikes: number;
 }

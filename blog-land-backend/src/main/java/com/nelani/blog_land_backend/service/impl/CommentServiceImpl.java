@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.service.impl;
 
+import com.nelani.blog_land_backend.Util.Caches.CommentCacheHelper;
 import com.nelani.blog_land_backend.Util.Sockets.CommentSocket;
 import com.nelani.blog_land_backend.Util.Validation.*;
 import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
@@ -13,6 +14,7 @@ import com.nelani.blog_land_backend.response.CommentResponse;
 import com.nelani.blog_land_backend.service.CommentService;
 
 import jakarta.persistence.EntityManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,13 +29,17 @@ import java.util.Optional;
 @Service
 public class CommentServiceImpl implements CommentService {
 
+    private final CommentCacheHelper commentCacheHelper;
     private final EntityManager entityManager;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final ModerationValidator moderationValidator;
     private final CommentSocket commentSocket;
 
-    public CommentServiceImpl(EntityManager entityManager, CommentRepository commentRepository, PostRepository postRepository, ModerationValidator moderationValidator, CommentSocket commentSocket) {
+    public CommentServiceImpl(CommentCacheHelper commentCacheHelper, EntityManager entityManager,
+            CommentRepository commentRepository, PostRepository postRepository, ModerationValidator moderationValidator,
+            CommentSocket commentSocket) {
+        this.commentCacheHelper = commentCacheHelper;
         this.entityManager = entityManager;
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
@@ -43,6 +49,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    @Cacheable(value = "postCommentsCount", key = "#postId")
     public long getCountByPostId(Long postId) {
         // Validate fields
         FormValidation.assertRequiredField(postId, "Post Id");
@@ -56,6 +63,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    @Cacheable(value = "postComments", key = "#postId + '_' + #page + '_' + #size")
     public Page<CommentResponse> getByPostId(Long postId, int page, int size) {
         // Validate fields
         Long id = FormValidation.assertRequiredField(postId, "Post Id");
@@ -80,6 +88,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    @Cacheable(value = "userComments", key = "T(com.nelani.blog_land_backend.Util.Validation.UserValidation).getCurrentUserId() + '_' + #postId")
     public List<CommentResponse> getByUserId(long postId) {
         // Validate fields
         FormValidation.assertRequiredField(postId, "Post Id");
@@ -126,6 +135,8 @@ public class CommentServiceImpl implements CommentService {
         commentSocket.updateCommentCount(post.get());
         commentSocket.addNewComments(post.get(), newComment);
         commentSocket.addUserComment(user, newComment, post.get());
+
+        commentCacheHelper.evictAllForPost(user.getId(), postId); // Evict Caches
     };
 
     @Override
@@ -160,6 +171,9 @@ public class CommentServiceImpl implements CommentService {
 
         // Update the socket
         commentSocket.updateComment(post.get(), existingComment);
+
+        // Evict Caches
+        commentCacheHelper.evictPostCommentsPaginated(postId);
     }
 
     @Override
@@ -191,5 +205,8 @@ public class CommentServiceImpl implements CommentService {
         commentSocket.updateCommentCount(comment.getPost());
         commentSocket.deleteComment(comment.getPost(), commentId);
         commentSocket.removeUserComment(user, comment, comment.getPost());
+
+        commentCacheHelper.evictAllForPost(user.getId(), comment.getPost().getId()); // Evict Caches
     }
+
 }

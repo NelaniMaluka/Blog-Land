@@ -25,4 +25,15 @@ public class UserSocket {
                 "/queue/user/update",
                 userResponse);
     }
+
+    public void updatePublicUser(User user) {
+        // Map to DTO
+        UserResponse userResponse = UserBuilder.publicUserWithMinimalDetails(user);
+
+        // Send updated comment to subscribers
+        messagingTemplate.convertAndSend(
+                "/queue/user/public-update/"  + user.getNaniId(),
+                userResponse
+        );
+    }
 }

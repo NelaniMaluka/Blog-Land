@@ -15,15 +15,23 @@ import Comments from '../../comment/comments';
 
 import styles from './SinglePostLayout.module.css';
 import { PostResponse } from '../../../types/post/response';
+import { UserResponse } from '../../../types/user/response';
 
 interface SinglePostLayoutProps {
+  user?: UserResponse;
   post?: PostResponse;
   isLoading: boolean;
   isError?: boolean;
   isLatest?: boolean;
 }
 
-export const SinglePostLayout = ({ post, isLoading, isError, isLatest }: SinglePostLayoutProps) => {
+export const SinglePostLayout = ({
+  user,
+  post,
+  isLoading,
+  isError,
+  isLatest,
+}: SinglePostLayoutProps) => {
   // Hooks
   const { data: categoriesData } = useGetCategories();
   const { data: randomPostsData } = useGetRandomPosts();
@@ -69,18 +77,22 @@ export const SinglePostLayout = ({ post, isLoading, isError, isLatest }: SingleP
               </div>
               <h2 className={styles.title}>{post?.title}</h2>
               <p>{post?.summary}</p>
-              {post?.user && (
+              {user && (
                 <div className={styles.info}>
                   <div className={styles.userInfo}>
-                    <FallbackAvatars user={post!.user} />
+                    <FallbackAvatars user={user} />
                     <div>
-                      <p>{post?.user.firstname + ' ' + post?.user.lastname}</p>
+                      <p>{user?.firstname + ' ' + user?.lastname}</p>
                       <p className={styles.date}>{post?.createdAt}</p>
                     </div>
                   </div>
                   <div className={styles.featCont}>
-                    <LikeButton postId={post.id} />
-                    <ShareFeature post={post} />
+                    {post && (
+                      <>
+                        <LikeButton postId={post.id} />
+                        <ShareFeature post={post} />
+                      </>
+                    )}
                   </div>
                 </div>
               )}
@@ -89,7 +101,7 @@ export const SinglePostLayout = ({ post, isLoading, isError, isLatest }: SingleP
                 className={styles.content}
               />
               {/* Comments Section */}
-              {!isLatest && <Comments postId={post?.id} />}
+              {!isLatest && post?.id && <Comments postId={post?.id} />}
             </section>
 
             {/* Recommended posts */}

@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.service;
 
+import com.nelani.blog_land_backend.Util.Caches.CommentCacheHelper;
 import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.Util.Sockets.CommentSocket;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
@@ -58,6 +59,9 @@ public class CommentServiceImplTest {
         @Mock
         private CommentSocket commentSocket;
 
+        @Mock
+        private CommentCacheHelper commentCacheHelper;
+
         @InjectMocks
         private CommentServiceImpl commentService;
 
@@ -72,6 +76,7 @@ public class CommentServiceImplTest {
                 existingUser.setLastname("Maluka");
                 existingUser.setProvider(Provider.LOCAL);
                 existingUser.setId(100L);
+                existingUser.setNaniId("nelani123");
 
                 Post existingPost = new Post();
                 existingPost.setId(1L);
@@ -102,6 +107,10 @@ public class CommentServiceImplTest {
                 when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
                 when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
                 when(jwtUtils.generateJwtToken(any(User.class))).thenReturn("fake-jwt-token");
+
+                if (commentCacheHelper != null) {
+                        commentCacheHelper.evictAllForPost(existingPost.getId(), existingUser.getId());
+                }
 
                 // **Mock all CommentSocket methods to do nothing**
                 doNothing().when(commentSocket).updateCommentCount(any(Post.class));

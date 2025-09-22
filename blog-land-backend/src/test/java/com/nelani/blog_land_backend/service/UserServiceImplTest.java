@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.service;
 
+import com.nelani.blog_land_backend.Util.Caches.UserCacheHelper;
 import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.Util.Sockets.UserSocket;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
@@ -50,6 +51,9 @@ public class UserServiceImplTest {
         @Mock
         private UserSocket userSocket;
 
+        @Mock
+        private UserCacheHelper userCacheHelper;
+
         @InjectMocks
         private UserServiceImpl userService;
 
@@ -59,6 +63,9 @@ public class UserServiceImplTest {
                 SecurityContextHolder.clearContext(); // Clear context before each test
 
                 doNothing().when(userSocket).updateUser(any(User.class));
+                doNothing().when(userSocket).updatePublicUser(any(User.class));
+
+                Mockito.doNothing().when(userCacheHelper).evictAllForUser(anyLong(), anyString());
         }
 
         @Test
@@ -69,6 +76,7 @@ public class UserServiceImplTest {
                 existingUser.setFirstname("Nelani");
                 existingUser.setLastname("Maluka");
                 existingUser.setProvider(Provider.LOCAL);
+                existingUser.setNaniId("nelani123");
 
                 when(userRepository.findByEmail("nelani@example.com"))
                                 .thenReturn(Optional.of(existingUser));
@@ -246,6 +254,7 @@ public class UserServiceImplTest {
                 User existingUser = new User();
                 existingUser.setEmail("nelani@example.com");
                 existingUser.setProvider(Provider.GOOGLE);
+                existingUser.setNaniId("nelani123");
 
                 when(userRepository.findByEmail("nelani@example.com"))
                                 .thenReturn(Optional.of(existingUser));
@@ -286,6 +295,7 @@ public class UserServiceImplTest {
                 User existingUser = new User();
                 existingUser.setEmail("nelani@example.com");
                 existingUser.setProvider(Provider.LOCAL);
+                existingUser.setNaniId("nelani123");
 
                 when(userRepository.findByEmail("nelani@example.com"))
                                 .thenReturn(Optional.of(existingUser));
@@ -331,6 +341,7 @@ public class UserServiceImplTest {
                 User existingUser = new User();
                 existingUser.setEmail("nelani@example.com");
                 existingUser.setProvider(Provider.LOCAL);
+                existingUser.setNaniId("nelani123");
 
                 when(userRepository.findByEmail("nelani@example.com"))
                                 .thenReturn(Optional.of(existingUser));
@@ -372,6 +383,7 @@ public class UserServiceImplTest {
                 User existingUser = new User();
                 existingUser.setEmail("nelani@example.com");
                 existingUser.setProvider(Provider.LOCAL);
+                existingUser.setNaniId("nelani123");
 
                 when(userRepository.findByEmail("nelani@example.com"))
                                 .thenReturn(Optional.of(existingUser));
@@ -417,6 +429,7 @@ public class UserServiceImplTest {
                 User existingUser = new User();
                 existingUser.setEmail("nelani@example.com");
                 existingUser.setProvider(Provider.LOCAL);
+                existingUser.setNaniId("nelani123");
 
                 when(userRepository.findByEmail("nelani@example.com"))
                                 .thenReturn(Optional.of(existingUser));

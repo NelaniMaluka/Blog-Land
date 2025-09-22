@@ -16,13 +16,12 @@ import data from '@emoji-mart/data';
 import { useEffect } from 'react';
 import { useGetUserCommentsWithPostId } from '../../hooks/useComment';
 import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import CommentLayout from './commentLayout';
 
 import styles from './comments.module.css';
 
 interface CommentsProps {
-  postId?: number;
+  postId: number;
 }
 
 interface EmojiClickData {
@@ -38,7 +37,6 @@ interface EmojiClickData {
 const Comments = ({ postId }: CommentsProps) => {
   const { showLogin } = useDialog();
   const [isComment, setIsComment] = useState('');
-  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -172,113 +170,21 @@ const Comments = ({ postId }: CommentsProps) => {
       {/* Comments List */}
       {comments && comments.length > 0 ? (
         comments.map((comment) => {
-          const match = userComments?.find((userComment) => userComment.id === comment.id);
+          const isOwner = !!userComments?.find((uc) => uc.id === comment.id);
 
           return (
-            <div className={styles.comment} key={comment.id}>
-              {/* User info */}
-              <div className={styles.col1}>
-                <FallbackAvatars user={comment.user} />
-              </div>
-              <div className={styles.col2}>
-                <div className={styles.text}>
-                  <div className={styles.subtext}>
-                    <p className={styles.username}>
-                      {comment.user.firstname + ' ' + comment.user.lastname}
-                    </p>
-                    <p className={styles.date}>{comment.createdAt}</p>
-                  </div>
-
-                  {/* Comment details */}
-                  <div className={styles.commentText}>
-                    {/* Update comment form  */}
-                    {editingCommentId === comment.id ? (
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          handleUpdateComment(comment.id);
-                          setEditingCommentId(null);
-                        }}
-                      >
-                        <input
-                          value={editContent}
-                          onChange={(e) => setEditContent(e.target.value)}
-                          className={styles.editInput}
-                          aria-label="Edit your comment"
-                        />
-                        <div>
-                          <button type="submit">Save</button>
-                          <button
-                            className={styles.cancel}
-                            type="button"
-                            onClick={() => setEditingCommentId(null)}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </form>
-                    ) : (
-                      <p>{comment.content}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* if user authenticated and post belongs to them show menu */}
-                {match && isAuthenticated && (
-                  <>
-                    <IconButton
-                      sx={{ height: 'max-content', width: 'max-content' }}
-                      onClick={(e) => handleClick(e, comment.id)}
-                    >
-                      <img src="/icons/menu-v.png" alt="menu" />
-                    </IconButton>
-
-                    <Menu
-                      anchorEl={anchorEl}
-                      open={open && menuCommentId === comment.id}
-                      onClose={handleCloseMenu}
-                      PaperProps={{ elevation: 4, className: styles.menuPaper }}
-                      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                      anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                      disableScrollLock
-                    >
-                      <MenuItem
-                        key="update"
-                        onClick={() => {
-                          setEditingCommentId(comment.id);
-                          setEditContent(comment.content);
-                          handleCloseMenu();
-                        }}
-                        className={styles.menuItem}
-                      >
-                        <img
-                          className={styles.menuIcon}
-                          src="/icons/update.png"
-                          alt="update icon"
-                        />
-                        Update
-                      </MenuItem>
-
-                      <MenuItem
-                        key="delete"
-                        onClick={() => {
-                          handleDeleteComment(comment.id);
-                          handleCloseMenu();
-                        }}
-                        className={styles.menuItem}
-                      >
-                        <img
-                          className={styles.menuIcon}
-                          src="/icons/delete.png"
-                          alt="delete icon"
-                        />
-                        Delete
-                      </MenuItem>
-                    </Menu>
-                  </>
-                )}
-              </div>
-            </div>
+            <CommentLayout
+              key={comment.id}
+              postId={postId}
+              comment={comment}
+              isOwner={!!userComments?.find((uc) => uc.id === comment.id)}
+              isAuthenticated={isAuthenticated}
+              onMenuClick={(e: any) => handleClick(e, comment.id)}
+              onDelete={() => handleDeleteComment(comment.id)}
+              menuOpen={open && menuCommentId === comment.id}
+              anchorEl={anchorEl}
+              onCloseMenu={handleCloseMenu}
+            />
           );
         })
       ) : (

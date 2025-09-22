@@ -2,6 +2,7 @@ package com.nelani.blog_land_backend.controller;
 
 import com.nelani.blog_land_backend.dto.UserDto;
 import com.nelani.blog_land_backend.response.UserResponse;
+import com.nelani.blog_land_backend.response.UserSummaryAnalyticsResponse;
 import com.nelani.blog_land_backend.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,8 +41,20 @@ public class UserController {
     }
 
     @GetMapping("/get-user")
-    public ResponseEntity<?> getUseDetails() {
+    public ResponseEntity<?> getUserDetails() {
         UserResponse userResponse = userService.getUserDetails();
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @GetMapping("/get/public-user-details/{nanoId}")
+    public ResponseEntity<?> getPublicUserDetails(@PathVariable String nanoId) {
+        UserResponse userResponse = userService.getPublicUserDetails(nanoId);
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @GetMapping("/get-user-summary-analytics")
+    public ResponseEntity<?> getUseSummaryAnalytics() {
+        UserSummaryAnalyticsResponse userResponse = userService.getUserSummaryAnalytics();
         return ResponseEntity.ok(userResponse);
     }
 

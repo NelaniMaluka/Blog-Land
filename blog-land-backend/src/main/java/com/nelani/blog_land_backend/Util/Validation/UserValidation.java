@@ -20,6 +20,11 @@ public class UserValidation {
         return Optional.of((User) auth.getPrincipal());
     }
 
+    public static Long getCurrentUserId() {
+        User user = UserValidation.getOrThrowUnauthorized();
+        return user.getId();
+    }
+
     public static User getOrThrowUnauthorized() {
         return UserValidation.getAuthenticatedUser()
                 .orElseThrow(() -> new BadCredentialsException("No authenticated user found."));

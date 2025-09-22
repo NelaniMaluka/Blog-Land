@@ -7,15 +7,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PostResponse {
+public class PostResponse implements Serializable {
     private Long id;
     private String title;
     private String content;
@@ -28,11 +28,8 @@ public class PostResponse {
     private Long views;
     private Long likes;
     private String references;
-    private String author;
     private String source;
     private int score;
-    private UserResponse user;
-    private int commentCount;
-    private List<CommentResponse> comments;
+    private String userId;
     private boolean isDraft;
 }

@@ -3,7 +3,7 @@ import { UserResponse } from '../user/response';
 export interface CommentResponse {
   id: number;
   content: string;
-  user: UserResponse;
+  userId: string;
   createdAt: string;
 }
 

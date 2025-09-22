@@ -1,8 +1,6 @@
-import { useGetCategories } from '../hooks/useCategory';
 import { useGetUser } from '../hooks/useUser';
 import {
   useGetAllPost,
-  useGetTopPosts,
   useGetTrendingPosts,
   useGetLatestPosts,
   useGetAllUserPost,
@@ -14,7 +12,6 @@ export function GlobalPreloadQueries() {
   const isAuthenticated = store.getState().auth.isAuthenticated;
 
   useGetAllPost({ page: 0, size: 10, order: Order.LATEST });
-  useGetTopPosts();
   useGetLatestPosts({ page: 1, size: 20 });
   useGetTrendingPosts({ page: 0, size: 12 });
 

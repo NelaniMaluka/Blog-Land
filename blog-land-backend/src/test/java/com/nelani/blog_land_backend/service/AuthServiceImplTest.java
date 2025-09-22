@@ -2,6 +2,7 @@ package com.nelani.blog_land_backend.service;
 
 import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
+import com.nelani.blog_land_backend.dto.UserDto;
 import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
@@ -47,7 +48,7 @@ public class AuthServiceImplTest {
         @Test
         void registerUser_ShouldSaveValidUser() {
                 // Arrange
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("Maluka");
                 user.setEmail("nelani@example.com");
@@ -63,8 +64,9 @@ public class AuthServiceImplTest {
 
                 // Assert
                 ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+
                 verify(userRepository, times(1)).save(userCaptor.capture());
-                verify(moderationValidator, times(1)).userModeration(user);
+                verify(moderationValidator, times(1)).userModeration(any(User.class));
 
                 User savedUser = userCaptor.getValue();
                 assertEquals("Nelani", savedUser.getFirstname());
@@ -76,7 +78,7 @@ public class AuthServiceImplTest {
         @Test
         void registerUser_ShouldThrowException_WhenFirstnameIsEmpty() {
                 // Arrange
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("   "); // invalid
                 user.setLastname("Maluka");
                 user.setEmail("nelani@example.com");
@@ -96,7 +98,7 @@ public class AuthServiceImplTest {
         @Test
         void registerUser_ShouldThrowException_WhenLastnameIsEmpty() {
                 // Arrange
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("    "); // invalid
                 user.setEmail("nelani@example.com");
@@ -116,7 +118,7 @@ public class AuthServiceImplTest {
         @Test
         void registerUser_ShouldThrowException_WhenEmailIsInvalid() {
                 // Arrange
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("Maluka");
                 user.setEmail("invalid-email"); // invalid
@@ -137,7 +139,7 @@ public class AuthServiceImplTest {
         @Test
         void registerUser_ShouldThrowException_WhenPasswordIsInvalid() {
                 // Arrange
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("Maluka");
                 user.setEmail("nelani@example.com");
@@ -158,7 +160,7 @@ public class AuthServiceImplTest {
         @Test
         void registerUser_ShouldThrowException_WhenUserFailModeration() {
                 // Arrange
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("fuck");
                 user.setLastname("Maluka");
                 user.setEmail("nelani@example.com");
@@ -183,7 +185,7 @@ public class AuthServiceImplTest {
         @Test
         void registerUser_ShouldThrowException_WhenUserAlreadyExists() {
                 // Arrange
-                User user = new User();
+                UserDto user = new UserDto();
                 user.setFirstname("Nelani");
                 user.setLastname("Maluka");
                 user.setEmail("nelani@example.com");

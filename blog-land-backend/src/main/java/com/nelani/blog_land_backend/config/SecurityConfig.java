@@ -38,6 +38,7 @@ public class SecurityConfig {
                                 .csrf(csrf -> csrf.disable())
                                 .cors(cors -> {
                                 })
+                        .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers(
                                                                 "/api/auth/**",
@@ -53,6 +54,7 @@ public class SecurityConfig {
                                                                 "/api/post/api/search/**",
                                                                 "/ProfileIcons/**",
                                                                 "/api/like/get/**",
+                                                                "/api/user/get/**",
                                                         "/ws/**" )
                                                 .permitAll()
                                                 .anyRequest().authenticated())

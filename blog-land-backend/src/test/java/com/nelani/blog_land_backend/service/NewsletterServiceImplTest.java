@@ -10,6 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,11 +32,11 @@ public class NewsletterServiceImplTest {
     @Test
     void addEmail_ShouldSaveValidNewsltter() {
         // Arrange
-        Newsletter newsletter = new Newsletter();
-        newsletter.setEmail("nelani@example.com");
+        Map<String, String> payload = new HashMap<>();
+        payload.put("email", "nelani@example.com");
 
         // Act
-        newsletterService.addEmail(newsletter);
+        newsletterService.addEmail(payload);
 
         // Assert
         ArgumentCaptor<Newsletter> newsletterCaptor = ArgumentCaptor.forClass(Newsletter.class);
@@ -46,13 +49,13 @@ public class NewsletterServiceImplTest {
     @Test
     void addEmail_ShouldThrowException_WhenEmailIsInvalid() {
         // Arrange
-        Newsletter newsletter = new Newsletter();
-        newsletter.setEmail("invalid-email");
+        Map<String, String> payload = new HashMap<>();
+        payload.put("email", "invalid-email");
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> newsletterService.addEmail(newsletter));
+                () -> newsletterService.addEmail(payload));
 
         assertTrue(exception.getMessage().toLowerCase().contains("email"));
 

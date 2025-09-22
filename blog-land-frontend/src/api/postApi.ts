@@ -31,11 +31,6 @@ export const getAllPosts = async (payload: { page: number; size: number; order: 
   return response;
 };
 
-export const getTopPosts = async () => {
-  const response = await apiClient.get('/post/get/top-post', {});
-  return response;
-};
-
 export const getLatestPosts = async (payload: { page: number; size: number }) => {
   const response = await apiClient.get('/post/get/latest-post', {
     params: { ...payload },

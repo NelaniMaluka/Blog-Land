@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Table(name = "users", schema = "auth")
@@ -25,6 +22,10 @@ public class User {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
+
+        @Builder.Default
+        @Column(nullable = false, unique = true, updatable = false)
+        private String naniId = "nani_" + UUID.randomUUID().toString().substring(0, 8);
 
         @Size(min = 6, message = "Password must be at least 6 characters")
         @Column(nullable = true)
@@ -88,7 +89,7 @@ public class User {
         @Builder.Default
         @BatchSize(size = 10)
         @ElementCollection(fetch = FetchType.EAGER)
-        @CollectionTable(name = "author_socials", joinColumns = @JoinColumn(name = "author_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+        @CollectionTable(name = "author_socials", schema = "auth", joinColumns = @JoinColumn(name = "author_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
                         "author_id", "platform" }))
         @Column(name = "url")
         @MapKeyColumn(name = "platform")

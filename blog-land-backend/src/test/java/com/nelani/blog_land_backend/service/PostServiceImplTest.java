@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.service;
 
+import com.nelani.blog_land_backend.Util.Caches.PostCacheHelper;
 import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.Util.Sockets.PostSocket;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
@@ -19,10 +20,7 @@ import jakarta.validation.ValidationException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -63,6 +61,9 @@ public class PostServiceImplTest {
         @Mock
         private PostSocket postSocket;
 
+        @Mock
+        private PostCacheHelper postCacheHelper;
+
         @InjectMocks
         private PostServiceImpl postService;
 
@@ -77,6 +78,7 @@ public class PostServiceImplTest {
                 existingUser.setLastname("Maluka");
                 existingUser.setProvider(Provider.LOCAL);
                 existingUser.setId(100L);
+                existingUser.setNaniId("nelani123");
 
                 // Mock repository to return this user
                 when(userRepository.findByEmail("nelani@example.com"))
@@ -91,6 +93,8 @@ public class PostServiceImplTest {
                 Category category = new Category();
                 category.setId(1L);
                 category.setName("Tech");
+
+                Mockito.doNothing().when(postCacheHelper).evictAllUserPosts(anyLong(), anyLong(), anyLong());
 
                 // Mock repository to return this user
                 when(categoryRepository.findById(1L))
@@ -685,13 +689,18 @@ public class PostServiceImplTest {
                                 .getAuthentication()
                                 .getPrincipal();
 
+                Category existingCategory = new Category();
+                existingCategory.setId(1L);
+
                 Post existingPost = new Post();
                 existingPost.setId(1L);
                 existingPost.setTitle("Spring Boot Guide");
                 existingPost.setUser(authenticatedUser);
+                existingPost.setCategory(existingCategory);
                 authenticatedUser.getPosts().add(existingPost);
 
                 when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
+                when(categoryRepository.findById(1L)).thenReturn(Optional.of(existingCategory));
                 doNothing().when(entityManager).flush();
                 doNothing().when(entityManager).clear();
 

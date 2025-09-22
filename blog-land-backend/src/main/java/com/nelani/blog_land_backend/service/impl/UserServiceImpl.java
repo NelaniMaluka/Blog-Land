@@ -1,6 +1,7 @@
 package com.nelani.blog_land_backend.service.impl;
 
 import com.nelani.blog_land_backend.Util.Builders.UserBuilder;
+import com.nelani.blog_land_backend.Util.Caches.UserCacheHelper;
 import com.nelani.blog_land_backend.Util.Sockets.UserSocket;
 import com.nelani.blog_land_backend.Util.Validation.FileValidation;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
@@ -8,36 +9,51 @@ import com.nelani.blog_land_backend.Util.Validation.UserValidation;
 import com.nelani.blog_land_backend.dto.UserDto;
 import com.nelani.blog_land_backend.model.ExperienceLevel;
 import com.nelani.blog_land_backend.model.Provider;
+import com.nelani.blog_land_backend.repository.CommentRepository;
+import com.nelani.blog_land_backend.repository.LikeRepository;
+import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.Util.Validation.FormValidation;
 import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
+import com.nelani.blog_land_backend.response.UserSummaryAnalyticsResponse;
 import com.nelani.blog_land_backend.service.UserService;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final ModerationValidator moderationValidator;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+    private final LikeRepository likeRepository;
     private final UserSocket userSocket;
     private final JwtUtil jwtUtil;
+    private final UserCacheHelper userCacheHelper;
 
     private static final String UPLOAD_DIR = "ProfileIcons/";
     private static final String BackendBaseUrl = "https://blog-land.onrender.com/";
 
     public UserServiceImpl(ModerationValidator moderationValidator, UserRepository userRepository,
-            UserSocket userSocket, JwtUtil jwtUtil) {
+            PostRepository postRepository, CommentRepository commentRepository, LikeRepository likeRepository,
+            UserSocket userSocket, JwtUtil jwtUtil, UserCacheHelper userCacheHelper) {
         this.moderationValidator = moderationValidator;
         this.userRepository = userRepository;
+        this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
+        this.likeRepository = likeRepository;
         this.userSocket = userSocket;
         this.jwtUtil = jwtUtil;
+        this.userCacheHelper = userCacheHelper;
     }
 
     @Override
@@ -54,6 +70,8 @@ public class UserServiceImpl implements UserService {
         // Update URL
         user.setProfileIconUrl("");
         userRepository.saveAndFlush(user);
+
+        userCacheHelper.evictAllForUser(user.getId(), user.getNaniId()); // Evict the user data
 
         return fileName;
     }
@@ -76,15 +94,31 @@ public class UserServiceImpl implements UserService {
         user.setProfileIconUrl(fileUrl);
         userRepository.saveAndFlush(user);
 
+        userCacheHelper.evictAllForUser(user.getId(), user.getNaniId()); // Evict the user data
+
         return "Successfully uploaded icon: " + user.getProfileIconUrl();
     }
 
     @Override
     @Transactional
+    @Cacheable(value = "user", key = "T(com.nelani.blog_land_backend.Util.Validation.UserValidation).getCurrentUserId()")
     public UserResponse getUserDetails() {
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
         return UserBuilder.buildLoggedInUser(user); // send formatted user data
+    }
+
+    @Override
+    @Transactional
+    @Cacheable(value = "publicUser", key = "#nanoId", unless = "#result == null")
+    public UserResponse getPublicUserDetails(String nanoId) {
+        FormValidation.assertRequiredField(nanoId, "User Id");
+
+        // Get user data user
+        Optional<User> user = userRepository.findByNaniId(nanoId);
+        UserValidation.assertUserExists(user, "User does not exist.");
+
+        return UserBuilder.publicUserWithMinimalDetails(user.get()); // send formatted user data
     }
 
     @Override
@@ -137,6 +171,9 @@ public class UserServiceImpl implements UserService {
 
         // Update the socket
         userSocket.updateUser(user);
+        userSocket.updatePublicUser(user);
+
+        userCacheHelper.evictAllForUser(user.getId(), user.getNaniId()); // Evict the user data
 
         return jwtUtil.generateJwtToken(user); // Generate new token with updated email
     }
@@ -147,6 +184,27 @@ public class UserServiceImpl implements UserService {
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
         userRepository.delete(user); // Deletes user
+
+        userCacheHelper.evictAllForUser(user.getId(), user.getNaniId()); // Evict the user data
     }
+
+    @Override
+    @Transactional
+    public UserSummaryAnalyticsResponse getUserSummaryAnalytics() {
+        // Get current authenticated user
+        User user = UserValidation.getOrThrowUnauthorized();
+
+        long postCount = postRepository.countByUser(user);
+        long viewCount = postRepository.getTotalViewsByUserId(user.getId());
+        long commentCount = commentRepository.countCommentsOnUserPosts(user.getId());
+        long likeCount = likeRepository.countLikesOnUserPosts(user.getId());
+
+        return UserSummaryAnalyticsResponse.builder()
+                .totalPosts(postCount)
+                .totalViews(viewCount)
+                .totalComments(commentCount)
+                .totalLikes(likeCount)
+                .build();
+    };
 
 }

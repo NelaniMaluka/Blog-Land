@@ -2,14 +2,13 @@ package com.nelani.blog_land_backend.controller;
 
 import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
 import com.nelani.blog_land_backend.Util.Validation.PostValidation;
-import com.nelani.blog_land_backend.dto.CategoryWithPostsDTO;
 import com.nelani.blog_land_backend.dto.PostDto;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.repository.PostRepository;
-import com.nelani.blog_land_backend.response.CategoryPostGroupResponse;
 import com.nelani.blog_land_backend.response.PostResponse;
 import com.nelani.blog_land_backend.service.PostService;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -59,14 +58,6 @@ public class PostsController {
                 return ResponseEntity.ok(response);
         }
 
-        @GetMapping("/get/top-post")
-        public ResponseEntity<?> getTopPost() {
-                List<CategoryWithPostsDTO> posts = postService.getTopCategoriesWithPosts(); // Gets random post
-                List<CategoryPostGroupResponse> response = PostBuilder.generateUserPostWithUserInfo(posts);
-
-                return ResponseEntity.ok(response);
-        }
-
         @GetMapping("/get/latest-post")
         public ResponseEntity<?> getLatestPost(@RequestParam int page, @RequestParam int size) {
                 List<PostResponse> postResponses = postService.getLatestPost(page, size);
@@ -74,6 +65,7 @@ public class PostsController {
         }
 
         @GetMapping("/get/popular-post")
+        @Cacheable(value = "trendingPosts", key = "#page + '_' + #size")
         public ResponseEntity<?> getTrendingPost(@RequestParam int page, @RequestParam int size) {
                 Pageable pageable = PageRequest.of(page, size);
                 Page<Post> popularPosts = postRepository.findTrendingPosts(pageable);
@@ -82,7 +74,9 @@ public class PostsController {
                 return ResponseEntity.ok(responsePage);
         }
 
+
         @GetMapping("/get/post/{id}")
+        @Cacheable(value = "post", key = "#id")
         public ResponseEntity<?> getPost(@PathVariable Long id) {
                 // Checks if the post exists
                 Optional<Post> post = postRepository.findById(id);
@@ -93,6 +87,7 @@ public class PostsController {
         }
 
         @GetMapping("/get/posts")
+        @Cacheable(value = "allPosts", key = "#page + '_' + #size + '_' + #order")
         public ResponseEntity<?> getAllPosts(@RequestParam int page, @RequestParam int size,
                         @RequestParam String order) {
                 String setOrder = (order == null || !order.equals("oldest")) ? "latest" : "oldest";

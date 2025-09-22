@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.service;
 
+import com.nelani.blog_land_backend.dto.ContactDto;
 import com.nelani.blog_land_backend.model.Contact;
 import com.nelani.blog_land_backend.repository.ContactRepository;
 import com.nelani.blog_land_backend.service.impl.ContactServiceImpl;
@@ -29,7 +30,7 @@ class ContactServiceImplTest {
     @Test
     void getInfo_ShouldSaveValidContact() {
         // Arrange
-        Contact contact = new Contact();
+        ContactDto contact = new ContactDto();
         contact.setFullName("Nelani Maluka");
         contact.setEmail("nelani@example.com");
         contact.setMessage("This is a test message.");
@@ -50,7 +51,7 @@ class ContactServiceImplTest {
     @Test
     void getInfo_ShouldThrowException_WhenFullNameIsEmpty() {
         // Arrange
-        Contact contact = new Contact();
+        ContactDto contact = new ContactDto();
         contact.setFullName("   "); // invalid
         contact.setEmail("nelani@example.com");
         contact.setMessage("Message");
@@ -70,7 +71,7 @@ class ContactServiceImplTest {
     @Test
     void getInfo_ShouldThrowException_WhenEmailIsInvalid() {
         // Arrange
-        Contact contact = new Contact();
+        ContactDto contact = new ContactDto();
         contact.setFullName("Nelani Maluka");
         contact.setEmail("invalid-email"); // not a valid email
         contact.setMessage("Message");

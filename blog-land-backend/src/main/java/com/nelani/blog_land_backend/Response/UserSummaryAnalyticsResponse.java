@@ -7,16 +7,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CommentResponse implements Serializable {
-    private Long id;
-    private String content;
-    private LocalDateTime createdAt;
-    private String userId;
+public class UserSummaryAnalyticsResponse implements Serializable {
+    long totalPosts;
+    long totalComments;
+    long totalViews;
+    long totalLikes;
 }

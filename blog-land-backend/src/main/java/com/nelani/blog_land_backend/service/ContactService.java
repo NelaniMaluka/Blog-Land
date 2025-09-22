@@ -1,7 +1,7 @@
 package com.nelani.blog_land_backend.service;
 
-import com.nelani.blog_land_backend.model.Contact;
+import com.nelani.blog_land_backend.dto.ContactDto;
 
 public interface ContactService {
-    void getInfo(Contact contact);
+    void getInfo(ContactDto contactDto);
 }

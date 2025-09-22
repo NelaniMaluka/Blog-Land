@@ -4,6 +4,7 @@ import com.nelani.blog_land_backend.Util.Validation.FormValidation;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
 import com.nelani.blog_land_backend.Util.Validation.UserValidation;
 import com.nelani.blog_land_backend.Util.JwtUtil;
+import com.nelani.blog_land_backend.dto.UserDto;
 import com.nelani.blog_land_backend.model.ExperienceLevel;
 import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.User;
@@ -33,11 +34,12 @@ public class AuthServiceImpl implements AuthService {
                 this.jwtUtils = jwtUtils;
         }
 
-        public String registerUser(User user) {
+        @Override
+        public String registerUser(UserDto user) {
                 // Validate fields
                 String email = FormValidation.assertValidatedEmail(user.getEmail());
-                FormValidation.assertRequiredField(user.getFirstname(), "Firstname");
-                FormValidation.assertRequiredField(user.getLastname(), "Lastname");
+                String firstname = FormValidation.assertRequiredField(user.getFirstname(), "Firstname");
+                String lastname = FormValidation.assertRequiredField(user.getLastname(), "Lastname");
                 String password = FormValidation.assertValidatedPassword(user.getPassword());
 
                 // Checks if a user exists with the provided email
@@ -45,16 +47,21 @@ public class AuthServiceImpl implements AuthService {
                 UserValidation.assertUserDoesNotExist(optionalUser, "User already exists with the provided email.");
 
                 // Encodes the password and sets the provider to local
-                user.setPassword(passwordEncoder.encode(password));
-                user.setProvider(Provider.LOCAL);
-                user.setExperience(ExperienceLevel.NEW_BLOGGER);
+                User newUser = User.builder()
+                                .firstname(firstname)
+                                .lastname(lastname)
+                                .email(email)
+                                .password(passwordEncoder.encode(password))
+                                .provider(Provider.LOCAL)
+                                .experience(ExperienceLevel.NEW_BLOGGER)
+                                .build();
 
                 // Moderate content
-                moderationValidator.userModeration(user);
+                moderationValidator.userModeration(newUser);
 
-                userRepo.save(user); // Saves the user
+                userRepo.save(newUser); // Saves the user
 
-                return jwtUtils.generateJwtToken(user); // return jwt token
+                return jwtUtils.generateJwtToken(newUser); // return jwt token
         }
 
         @Override

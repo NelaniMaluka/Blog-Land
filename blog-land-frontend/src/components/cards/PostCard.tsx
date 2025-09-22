@@ -5,6 +5,7 @@ import { ROUTES } from '../../constants/routes';
 import { formatDigit } from '../../utils/formatUtils';
 import FallbackAvatars from '../common/Avatar';
 import { PostResponse } from '../../types/post/response';
+import { useGetPublicUser } from '../../hooks/useUser';
 
 interface PostCardProps {
   post: PostResponse;
@@ -12,6 +13,8 @@ interface PostCardProps {
 }
 
 export const PostCard: React.FC<PostCardProps> = ({ post, categoryName }) => {
+  const { data: user } = useGetPublicUser(post.userId);
+
   return (
     <article key={post.id} className={styles.post}>
       {/* image */}
@@ -36,10 +39,10 @@ export const PostCard: React.FC<PostCardProps> = ({ post, categoryName }) => {
       <div className={styles.info}>
         <div className={styles.userInfo}>
           <div>
-            <FallbackAvatars user={post.user} />
+            <FallbackAvatars user={user ?? null} />
           </div>
           <div>
-            <span>{post.user.firstname + ' ' + post.user.lastname}</span>
+            <span>{user?.firstname + ' ' + user?.lastname}</span>
             <span className={styles.date}>{post.createdAt}</span>
           </div>
         </div>

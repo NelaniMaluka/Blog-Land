@@ -5,7 +5,6 @@ import {
   getRandomPosts,
   getPost,
   getAllPosts,
-  getTopPosts,
   getLatestPosts,
   getTrendingPosts,
   getPostsByCategory,
@@ -111,15 +110,6 @@ export const fetchAllPosts = async (payload: {
   }
 };
 
-export const fetchTopPosts = async (): Promise<PostWithCategoryResponse[]> => {
-  try {
-    const response = await getTopPosts();
-    return response?.data;
-  } catch (error) {
-    throw new Error(getAxiosErrorMessage(error, 'Failed to get top posts'));
-  }
-};
-
 export const fetchLatestPosts = async (payload: {
   page: number;
   size: number;
@@ -193,10 +183,7 @@ export const fetchPostByCategory = async (payload: {
   }
 };
 
-export const fetchAllUserPosts = async (payload: {
-  page: number;
-  size: number;
-}): Promise<PostResponse[]> => {
+export const fetchAllUserPosts = async (payload: { page: number; size: number }): Promise<any> => {
   const validPayload = validateOrThrow(paginationSchema, payload);
 
   try {

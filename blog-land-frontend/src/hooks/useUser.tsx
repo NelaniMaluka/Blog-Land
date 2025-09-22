@@ -2,11 +2,13 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   fetchUser,
+  fetchPublicUser,
   updateUser,
   deleteUser,
   submitLogoutUser,
   updateUserProfileImg,
   removeUserProfileImg,
+  fetchUserSummaryAnalytics,
 } from '../services/userService';
 import { setUser, logout, setToken } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -50,6 +52,23 @@ export function useGetUser() {
 
   return query;
 }
+
+export const useGetPublicUser = (nanoId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ['publicUser', nanoId],
+    queryFn: () => fetchPublicUser(nanoId!),
+    enabled: !!nanoId,
+  });
+
+  useWebSocket(`/queue/user/public-update/${nanoId}`, (message: string) => {
+    const updatedUser: UserResponse = JSON.parse(message);
+    queryClient.setQueryData(['publicUser', nanoId], updatedUser);
+  });
+
+  return query;
+};
 
 export const useUpdateProfileImage = () => {
   const { showError } = useSnackbar();
@@ -126,5 +145,12 @@ export const useLogoutUser = () => {
       const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
       showError(msg);
     },
+  });
+};
+
+export const useGetUserSumAnalytics = () => {
+  return useQuery({
+    queryKey: ['userSumAnalytics'],
+    queryFn: () => fetchUserSummaryAnalytics(),
   });
 };

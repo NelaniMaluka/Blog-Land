@@ -9,6 +9,8 @@ import com.nelani.blog_land_backend.service.NewsletterService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Service
 public class NewsletterServiceImpl implements NewsletterService {
 
@@ -20,9 +22,13 @@ public class NewsletterServiceImpl implements NewsletterService {
 
     @Override
     @Transactional
-    public void addEmail(Newsletter newsletter) {
+    public void addEmail(Map<String, String> payload) {
         // Validate fields
-        String email = FormValidation.assertValidatedEmail(newsletter.getEmail());
+        String email = FormValidation.assertValidatedEmail(payload.get("email"));
+
+        Newsletter newsletter = Newsletter.builder()
+                .email(email)
+                .build();
 
         // Check if the email is already subscribed
         NewsletterValidation.assertEmailIsSubsribed(newsletterRepository, email);

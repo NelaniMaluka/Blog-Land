@@ -21,7 +21,7 @@ export interface PostResponse {
   references?: string | null;
   author: string;
   source?: string | null;
-  user: UserResponse;
+  userId: string;
   commentCount: number;
   comments?: CommentResponse[];
   isDraft: boolean;

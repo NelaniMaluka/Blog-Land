@@ -5,8 +5,10 @@ import {
   logoutUser,
   updateProfileIcon,
   removeProfileIcon,
+  getUserSummaryAnalytics,
+  getPublicUserDetails,
 } from '../api/userApi';
-import { UserResponse } from '../types/user/response';
+import { UserResponse, UserSummaryAnalyticsResponse } from '../types/user/response';
 import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
 import { UpdateUserRequest } from '../types/user/request';
 import { updateUserSchema, fileSchema } from '../schemas/userSchema';
@@ -14,6 +16,15 @@ import { updateUserSchema, fileSchema } from '../schemas/userSchema';
 export const fetchUser = async (): Promise<UserResponse> => {
   try {
     const response = await getUserDetails();
+    return response?.data;
+  } catch (error) {
+    throw new Error(getAxiosErrorMessage(error, 'Failed to get user details'));
+  }
+};
+
+export const fetchPublicUser = async (nanoId: string): Promise<UserResponse> => {
+  try {
+    const response = await getPublicUserDetails(nanoId);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to get user details'));
@@ -73,5 +84,14 @@ export const submitLogoutUser = async (): Promise<{ message: string }> => {
   } catch (error) {
     console.log(error);
     throw new Error(getAxiosErrorMessage(error, 'Failed to logout user'));
+  }
+};
+
+export const fetchUserSummaryAnalytics = async (): Promise<UserSummaryAnalyticsResponse> => {
+  try {
+    const response = await getUserSummaryAnalytics();
+    return response?.data;
+  } catch (error) {
+    throw new Error(getAxiosErrorMessage(error, 'Failed to get user analytics'));
   }
 };

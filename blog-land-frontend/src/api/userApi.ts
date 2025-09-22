@@ -23,6 +23,11 @@ export const getUserDetails = async () => {
   return response;
 };
 
+export const getPublicUserDetails = async (nanoId: string) => {
+  const response = await apiClient.get(`/user/get/public-user-details/${nanoId}`, {});
+  return response;
+};
+
 export const updateUserDetails = async (payload: UpdateUserRequest) => {
   const response = await apiClient.put('/user/update-user', payload);
   return response;
@@ -35,5 +40,10 @@ export const deleteUserDetails = async () => {
 
 export const logoutUser = async () => {
   const response = await apiClient.post('/user/log-out', {});
+  return response;
+};
+
+export const getUserSummaryAnalytics = async () => {
+  const response = await apiClient.get('/user/get-user-summary-analytics', {});
   return response;
 };

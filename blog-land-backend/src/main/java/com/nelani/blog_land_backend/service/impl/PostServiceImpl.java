@@ -1,19 +1,19 @@
 package com.nelani.blog_land_backend.service.impl;
 
+import com.nelani.blog_land_backend.Util.Caches.PostCacheHelper;
 import com.nelani.blog_land_backend.Util.Sockets.PostSocket;
 import com.nelani.blog_land_backend.Util.Validation.*;
 import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
-import com.nelani.blog_land_backend.dto.CategoryWithPostsDTO;
 import com.nelani.blog_land_backend.dto.PostDto;
 import com.nelani.blog_land_backend.dto.TechCrunchPostDto;
 import com.nelani.blog_land_backend.model.*;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
-import com.nelani.blog_land_backend.repository.CustomPostRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.response.PostResponse;
 import com.nelani.blog_land_backend.service.PostService;
 
 import jakarta.persistence.EntityManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,29 +30,20 @@ import java.util.stream.Collectors;
 @Service
 public class PostServiceImpl implements PostService {
 
+    private final PostCacheHelper postCacheHelper;
     private final EntityManager entityManager;
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
-    private final CustomPostRepository customPostRepository;
     private final ModerationValidator moderationValidator;
     private final PostSocket postSocket;
 
-    public PostServiceImpl(EntityManager entityManager, CategoryRepository categoryRepository,
-            PostRepository postRepository, CustomPostRepository customPostRepository,
-            ModerationValidator moderationValidator, PostSocket postSocket) {
+    public PostServiceImpl(PostCacheHelper postCacheHelper, EntityManager entityManager, CategoryRepository categoryRepository, PostRepository postRepository, ModerationValidator moderationValidator, PostSocket postSocket) {
+        this.postCacheHelper = postCacheHelper;
         this.entityManager = entityManager;
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
-        this.customPostRepository = customPostRepository;
         this.moderationValidator = moderationValidator;
         this.postSocket = postSocket;
-    }
-
-    @Override
-    @Transactional
-    public List<CategoryWithPostsDTO> getTopCategoriesWithPosts() {
-        // Gets the top 6 categories with minimum 5 posts
-        return customPostRepository.findTopCategoriesWithPosts();
     }
 
     @Override
@@ -89,12 +80,15 @@ public class PostServiceImpl implements PostService {
         post.setViewCount(post.getViewCount() + 1);
         postRepository.save(post); // Save the post with the updated views
 
+        postCacheHelper.evictAllUserPosts(post.getUser().getId(), postId, post.getCategory().getId()); // Evict all data
+
         // Update the socket
         postSocket.updatePost(post);
     }
 
     @Override
     @Transactional
+    @Cacheable(value = "categoryPosts", key = "#categoryId + '_' + #page + '_' + #size + '_' + #order")
     public Page<PostResponse> getByCategoryId(Long categoryId, int page, int size, String order) {
         // Validate Fields
         Long category_id = FormValidation.assertRequiredField(categoryId, "Category Id");
@@ -117,6 +111,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "latestPosts", key = "#page + '-' + #size")
     public List<PostResponse> getLatestPost(int page, int size) {
         // Techcrunch api
         String apiUrl = "https://techcrunch.com/wp-json/wp/v2/posts?per_page=" + size + "&page=" + page + "&_embed";
@@ -149,18 +144,17 @@ public class PostServiceImpl implements PostService {
                     .title(title)
                     .content(content)
                     .summary(summary)
-                    .author(author)
                     .source("TechCrunch")
                     .createdAt(createdAt)
                     .readTime(PostBuilder.calculateReadTime(content))
                     .postImgUrl(image)
                     .build();
         }).toList();
-
     }
 
     @Override
     @Transactional
+    @Cacheable(value = "userPosts", key = "T(com.nelani.blog_land_backend.Util.Validation.UserValidation).getCurrentUserId() + '_' + #page + '_' + #size")
     public Page<PostResponse> getByUserId(int page, int size) {
         // Get current authenticated user
         User user = UserValidation.getOrThrowUnauthorized();
@@ -221,6 +215,8 @@ public class PostServiceImpl implements PostService {
 
         postRepository.save(newPost); // Save the new post
 
+        postCacheHelper.evictAllUserPosts(user.getId(), newPost.getId(), categoryId); // Evict cache data
+
         // Update the socket
         postSocket.addNewPost(newPost);
     };
@@ -271,6 +267,8 @@ public class PostServiceImpl implements PostService {
 
         postRepository.save(updatedPost); // Save updated post
 
+        postCacheHelper.evictAllUserPosts(user.getId(), updatedPost.getId(), categoryId); // Evict cache data
+
         // Update the socket
         postSocket.updatePost(updatedPost);
     }
@@ -297,6 +295,8 @@ public class PostServiceImpl implements PostService {
         postOwner.getPosts().remove(existingPost); // triggers orphanRemoval
         entityManager.flush(); // should cascade delete comments and likes
         entityManager.clear(); // refresh context
+
+        postCacheHelper.evictAllUserPosts(user.getId(), existingPost.getId(), existingPost.getCategory().getId()); // Evict cache data
 
         // Update the socket
         postSocket.deletePost(postId);

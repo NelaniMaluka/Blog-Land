@@ -4,6 +4,7 @@ import com.nelani.blog_land_backend.dto.CategoryDto;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
 
 import com.nelani.blog_land_backend.repository.PostRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ public class CategoryController {
     }
 
     @GetMapping
+    @Cacheable(value = "categories")
     public ResponseEntity<?> getCategories() {
             List<CategoryDto> categoryDtos = categoryRepository.findAll()
                     .stream()

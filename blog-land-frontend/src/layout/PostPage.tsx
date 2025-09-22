@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { SinglePostLayout } from '../components/layouts/singlePostLayout/SinglePostLayout';
 import { useGetPost } from '../hooks/usePost';
 import { Helmet } from 'react-helmet-async';
+import { useGetPublicUser } from '../hooks/useUser';
 
 export const PostPage = () => {
   const { idAndSlug } = useParams<{ idAndSlug: string }>();
@@ -10,6 +11,7 @@ export const PostPage = () => {
   const slug = slugParts.join('-');
 
   const { data: post, isLoading, isError } = useGetPost({ id });
+  const { data: user } = useGetPublicUser(post?.userId);
 
   const canonicalUrl = window.location.href;
   const title = post?.title || 'Blog Post – Blog Land';
@@ -39,8 +41,8 @@ export const PostPage = () => {
         image: [imageUrl],
         author: { '@type': 'Person', name: post.author || 'Blog Land' },
         editor:
-          post.user?.firstname + ' ' + post.user?.lastname
-            ? { '@type': 'Person', name: post.user.firstname + ' ' + post.user.lastname }
+          user?.firstname + ' ' + user?.lastname
+            ? { '@type': 'Person', name: user?.firstname + ' ' + user?.lastname }
             : undefined,
         publisher: {
           '@type': 'Organization',
@@ -104,7 +106,7 @@ export const PostPage = () => {
         )}
       </Helmet>
 
-      <SinglePostLayout post={post} isLoading={isLoading} isError={isError} />
+      <SinglePostLayout user={user} post={post} isLoading={isLoading} isError={isError} />
     </>
   );
 };

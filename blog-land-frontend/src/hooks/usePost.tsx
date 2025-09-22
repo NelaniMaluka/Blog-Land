@@ -5,7 +5,6 @@ import {
   fetchRandomPosts,
   fetchPost,
   fetchAllPosts,
-  fetchTopPosts,
   fetchLatestPosts,
   fetchTrendingPosts,
   fetchPostByCategory,
@@ -100,13 +99,6 @@ export const useGetAllPost = (payload: { page: number; size: number; order: Orde
   return useQuery({
     queryKey: ['allPosts', payload],
     queryFn: () => fetchAllPosts(payload),
-  });
-};
-
-export const useGetTopPosts = () => {
-  return useQuery({
-    queryKey: ['topPosts'],
-    queryFn: () => fetchTopPosts(),
   });
 };
 
