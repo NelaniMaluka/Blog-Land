@@ -144,11 +144,19 @@ public class PostServiceImplTest {
 
         @Test
         void incrementViews_ShouldIncreaseViewCount_WhenPostExists() {
+                User user = new User();
+                user.setId(1L);
+
+                Category category = new Category();
+                category.setId(1L);
+
                 // Arrange
                 Long postId = 1L;
                 Post post = new Post();
                 post.setId(postId);
                 post.setViewCount(5L);
+                post.setUser(user);
+                post.setCategory(category);
 
                 when(postRepository.findById(postId)).thenReturn(Optional.of(post));
                 when(postRepository.save(any(Post.class))).thenAnswer(invocation -> invocation.getArgument(0));
