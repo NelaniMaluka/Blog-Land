@@ -1,13 +1,10 @@
 package com.nelani.blog_land_backend.schedule;
 
-import com.nelani.blog_land_backend.response.PostResponse;
 import com.nelani.blog_land_backend.service.PostService;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class CacheEvictionScheduler {
@@ -30,7 +27,7 @@ public class CacheEvictionScheduler {
 
             // repopulate for first 5 pages
             for (int page = 0; page < 5; page++) {
-                List<PostResponse> posts = postService.getLatestPost(page, 20); // triggers caching
+                postService.getLatestPost(page, 20); // triggers caching
                 System.out.println("Repopulated cache for page " + page);
             }
         }

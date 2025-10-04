@@ -3,6 +3,7 @@ package com.nelani.blog_land_backend.controller;
 import com.nelani.blog_land_backend.dto.ContactDto;
 import com.nelani.blog_land_backend.service.ContactService;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,9 +22,10 @@ public class ContactController {
     }
 
     @PostMapping
-    public ResponseEntity<?> getContactMessage(@RequestBody ContactDto contactDto) {
-            contactService.getInfo(contactDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Success, we received your message. Thank you for reaching out.");
+    public ResponseEntity<?> getContactMessage(@RequestBody @Valid ContactDto contactDto) {
+        contactService.getInfo(contactDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Success, we received your message. Thank you for reaching out.");
     }
 
 }

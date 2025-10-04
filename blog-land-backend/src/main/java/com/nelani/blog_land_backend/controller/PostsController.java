@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/post")
@@ -25,10 +24,12 @@ public class PostsController {
 
         private final PostRepository postRepository;
         private final PostService postService;
+        private final PostValidation postValidation;
 
-        public PostsController(PostRepository postRepository, PostService postService) {
+        public PostsController(PostRepository postRepository, PostService postService, PostValidation postValidation) {
                 this.postRepository = postRepository;
                 this.postService = postService;
+                this.postValidation = postValidation;
         }
 
         @GetMapping("/api/search")
@@ -52,8 +53,8 @@ public class PostsController {
 
                 // Formats the random posts and returns them
                 List<PostResponse> response = posts.stream()
-                        .map(PostBuilder::generatePost)
-                        .toList();
+                                .map(PostBuilder::generatePost)
+                                .toList();
 
                 return ResponseEntity.ok(response);
         }
@@ -74,15 +75,13 @@ public class PostsController {
                 return ResponseEntity.ok(responsePage);
         }
 
-
-        @GetMapping("/get/post/{id}")
-        @Cacheable(value = "post", key = "#id")
-        public ResponseEntity<?> getPost(@PathVariable Long id) {
+        @GetMapping("/get/post/{postId}")
+        @Cacheable(value = "post", key = "#postId")
+        public ResponseEntity<?> getPost(@PathVariable Long postId) {
                 // Checks if the post exists
-                Optional<Post> post = postRepository.findById(id);
-                PostValidation.assertPostExists(post);
+                Post post = postValidation.assertPostExist(postId);
 
-                PostResponse response = PostBuilder.generateUserPostWithUserInfo(post.get());
+                PostResponse response = PostBuilder.generateUserPostWithUserInfo(post);
                 return ResponseEntity.ok(response);
         }
 

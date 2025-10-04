@@ -2,8 +2,8 @@ package com.nelani.blog_land_backend.config;
 
 import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.repository.UserRepository;
-import com.nelani.blog_land_backend.service.CustomSuccessHandler;
-import com.nelani.blog_land_backend.service.UnifiedAuthenticationFilter;
+import com.nelani.blog_land_backend.security.CustomSuccessHandler;
+import com.nelani.blog_land_backend.security.UnifiedAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +38,7 @@ public class SecurityConfig {
                                 .csrf(csrf -> csrf.disable())
                                 .cors(cors -> {
                                 })
-                        .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
+                                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers(
                                                                 "/api/auth/**",
@@ -55,7 +55,7 @@ public class SecurityConfig {
                                                                 "/ProfileIcons/**",
                                                                 "/api/like/get/**",
                                                                 "/api/user/get/**",
-                                                        "/ws/**" )
+                                                                "/ws/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2.successHandler(customSuccessHandler))

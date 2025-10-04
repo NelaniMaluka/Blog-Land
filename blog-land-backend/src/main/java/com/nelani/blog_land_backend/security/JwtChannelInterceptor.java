@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.service;
+package com.nelani.blog_land_backend.security;
 
 import com.nelani.blog_land_backend.Util.JwtUtil;
 import org.springframework.messaging.Message;

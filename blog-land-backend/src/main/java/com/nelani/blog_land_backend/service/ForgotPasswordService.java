@@ -1,9 +1,10 @@
 package com.nelani.blog_land_backend.service;
 
-import java.util.Map;
+import com.nelani.blog_land_backend.dto.EmailDto;
+import com.nelani.blog_land_backend.dto.ForgotPasswordDto;
 
 public interface ForgotPasswordService {
-    void requestPasswordReset(Map<String, String> payload);
+    void requestPasswordReset(EmailDto emailDto);
 
-    void changePassword(Map<String, String> payload);
+    void changePassword(ForgotPasswordDto forgotPasswordDto);
 }

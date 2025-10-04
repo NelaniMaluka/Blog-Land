@@ -1,12 +1,10 @@
 package com.nelani.blog_land_backend.service;
 
-import com.nelani.blog_land_backend.dto.UserDto;
-
-import java.util.Map;
+import com.nelani.blog_land_backend.dto.LoginUserDto;
+import com.nelani.blog_land_backend.dto.RegisterUserDto;
 
 public interface AuthService {
-    String loginUser(Map<String, String> payload);
-
-    String registerUser(UserDto user);
+    String loginUser(LoginUserDto user);
+    String registerUser(RegisterUserDto user);
 
 }

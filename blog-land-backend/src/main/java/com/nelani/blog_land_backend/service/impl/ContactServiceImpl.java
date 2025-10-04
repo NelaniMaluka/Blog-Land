@@ -1,6 +1,5 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.Validation.FormValidation;
 import com.nelani.blog_land_backend.dto.ContactDto;
 import com.nelani.blog_land_backend.model.Contact;
 import com.nelani.blog_land_backend.repository.ContactRepository;
@@ -21,15 +20,10 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional
     public void getInfo(ContactDto contactDto) {
-        // Validate fields
-        String fullName = FormValidation.assertRequiredField(contactDto.getFullName(), "Full Name");
-        String email = FormValidation.assertValidatedEmail(contactDto.getEmail());
-        String message = FormValidation.assertRequiredField(contactDto.getMessage(), "Message");
-
         Contact contact = Contact.builder()
-                .fullName(fullName)
-                .email(email)
-                .message(message)
+                .fullName(contactDto.getFullName())
+                .email(contactDto.getEmail())
+                .message(contactDto.getMessage())
                 .build();
 
         contactRepository.save(contact); // Save the contact message

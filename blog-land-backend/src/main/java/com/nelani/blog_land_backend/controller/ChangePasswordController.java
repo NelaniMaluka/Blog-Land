@@ -3,6 +3,7 @@ package com.nelani.blog_land_backend.controller;
 import com.nelani.blog_land_backend.dto.PasswordDto;
 import com.nelani.blog_land_backend.service.ChangePasswordService;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ public class ChangePasswordController {
     }
 
     @PostMapping("/change")
-    public ResponseEntity<?> changePassword(@RequestBody PasswordDto passwordDto) {
+    public ResponseEntity<?> changePassword(@RequestBody @Valid PasswordDto passwordDto) {
             changePasswordService.changePasswordWithOldPassword(passwordDto);
             return ResponseEntity.ok("Success, Your password was changed successfully! You're all set.");
     }

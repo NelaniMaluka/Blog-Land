@@ -1,7 +1,7 @@
 package com.nelani.blog_land_backend.service;
 
-import java.util.Map;
+import com.nelani.blog_land_backend.dto.EmailDto;
 
 public interface NewsletterService {
-    void addEmail(Map<String, String> payload);
+    void addEmail(EmailDto emailDto);
 }

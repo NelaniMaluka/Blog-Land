@@ -1,7 +1,7 @@
 package com.nelani.blog_land_backend.service.impl;
 
 import com.nelani.blog_land_backend.Util.Caches.LikeCacheHelper;
-import com.nelani.blog_land_backend.Util.Sockets.LikesSocket;
+import com.nelani.blog_land_backend.sockets.LikesSocket;
 import com.nelani.blog_land_backend.Util.Validation.LikeValidation;
 import com.nelani.blog_land_backend.Util.Validation.PostValidation;
 import com.nelani.blog_land_backend.Util.Validation.UserValidation;
@@ -9,7 +9,6 @@ import com.nelani.blog_land_backend.model.Like;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.LikeRepository;
-import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.response.LikeResponse;
 import com.nelani.blog_land_backend.service.LikeService;
 import org.springframework.cache.annotation.Cacheable;
@@ -18,22 +17,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LikeServiceImpl implements LikeService {
 
-    private final PostRepository postRepository;
     private final LikeRepository likeRepository;
     private final LikesSocket likesSocket;
     private final LikeCacheHelper likeCacheHelper;
+    private final PostValidation postValidation;
+    private final LikeValidation likeValidation;
 
-    public LikeServiceImpl(PostRepository postRepository, LikeRepository likeRepository, LikesSocket likesSocket,
-            LikeCacheHelper likeCacheHelper) {
-        this.postRepository = postRepository;
+    public LikeServiceImpl(LikeRepository likeRepository, LikesSocket likesSocket, LikeCacheHelper likeCacheHelper,
+            PostValidation postValidation, LikeValidation likeValidation) {
         this.likeRepository = likeRepository;
         this.likesSocket = likesSocket;
         this.likeCacheHelper = likeCacheHelper;
+        this.postValidation = postValidation;
+        this.likeValidation = likeValidation;
     }
 
     @Override
@@ -41,8 +41,7 @@ public class LikeServiceImpl implements LikeService {
     @Cacheable(value = "postLikesCount", key = "#postId")
     public long getPostLikesCount(long postId) {
         // Checks if the post exists
-        Optional<Post> post = postRepository.findById(postId);
-        Post existingPost = PostValidation.assertPostExist(post);
+        Post existingPost = postValidation.assertPostExist(postId);
 
         return likeRepository.countByPost(existingPost);
     }
@@ -52,7 +51,7 @@ public class LikeServiceImpl implements LikeService {
     @Cacheable(value = "userLikes", key = "T(com.nelani.blog_land_backend.Util.Validation.UserValidation).getCurrentUserId()")
     public List<LikeResponse> getUserLikes() {
         // Get current authenticated user
-        User user = UserValidation.getOrThrowUnauthorized();
+        User user = UserValidation.getAuthenticatedUser();
 
         // get user likes
         java.util.List<Like> userLikes = likeRepository.findAllByUser(user);
@@ -71,14 +70,13 @@ public class LikeServiceImpl implements LikeService {
     @Transactional
     public String addLike(long postId) {
         // Checks if the post exists
-        Optional<Post> post = postRepository.findById(postId);
-        Post existingPost = PostValidation.assertPostExist(post);
+        Post existingPost = postValidation.assertPostExist(postId);
 
         // Get current authenticated user
-        User user = UserValidation.getOrThrowUnauthorized();
+        User user = UserValidation.getAuthenticatedUser();
 
         // Check if the like already exists
-        LikeValidation.assertLikeDoesNotExists(likeRepository, user, existingPost);
+        likeValidation.assertLikeDoesNotExists(user, existingPost);
 
         Like like = Like.builder()
                 .post(existingPost)
@@ -89,7 +87,7 @@ public class LikeServiceImpl implements LikeService {
         likeRepository.save(like);
 
         // update socket
-        likesSocket.updatePostLikes(likeRepository, post.get());
+        likesSocket.updatePostLikes(likeRepository, existingPost);
 
         likeCacheHelper.evictAllForPost(user.getId(), postId); // Evict Likes
 
@@ -100,25 +98,23 @@ public class LikeServiceImpl implements LikeService {
     @Transactional
     public String removeLike(long likeId) {
         // Check if like exists
-        Optional<Like> like = likeRepository.findById(likeId);
-        LikeValidation.assertLikeExists(like);
+        Like like = likeValidation.assertLikeExists(likeId);
 
         // Checks if the post exists
-        Optional<Post> post = postRepository.findById(like.get().getPost().getId());
-        PostValidation.assertPostExists(post);
+        Post post = postValidation.assertPostExist(like.getPost().getId());
 
         // Get current authenticated user
-        User user = UserValidation.getOrThrowUnauthorized();
+        User user = UserValidation.getAuthenticatedUser();
 
         // Check if the like belongs to the user
-        LikeValidation.assertLikeBelongsToUser(like.get(), user);
+        likeValidation.assertLikeBelongsToUser(like, user);
 
-        likeRepository.delete(like.get());
+        likeRepository.delete(like);
 
         // update socket
-        likesSocket.updatePostLikes(likeRepository, post.get());
+        likesSocket.updatePostLikes(likeRepository, post);
 
-        likeCacheHelper.evictAllForPost(user.getId(), post.get().getId()); // Evict Likes
+        likeCacheHelper.evictAllForPost(user.getId(), post.getId()); // Evict Likes
 
         return "Like Successfully removed";
     }

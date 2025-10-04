@@ -1,13 +1,15 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.dto.UserDto;
+import com.nelani.blog_land_backend.dto.UpdateUserDto;
 import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.response.UserSummaryAnalyticsResponse;
 import com.nelani.blog_land_backend.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,14 +29,13 @@ public class UserController {
     }
 
     @PostMapping("/upload-profile-image")
-    @Transactional
-    public ResponseEntity<?> uploadProfileImage(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadProfileImage(
+            @RequestParam("file") @NotNull(message = "File must be provided") MultipartFile file) {
         String response = userService.saveUserProfileImage(file);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/remove-profile-image")
-    @Transactional
     public ResponseEntity<?> removeProfileImage() {
         String response = userService.removeUserProfileImage();
         return ResponseEntity.ok(response);
@@ -47,7 +48,9 @@ public class UserController {
     }
 
     @GetMapping("/get/public-user-details/{nanoId}")
-    public ResponseEntity<?> getPublicUserDetails(@PathVariable String nanoId) {
+    public ResponseEntity<?> getPublicUserDetails(
+            @PathVariable @NotBlank(message = "User ID cannot be blank") String nanoId) {
+
         UserResponse userResponse = userService.getPublicUserDetails(nanoId);
         return ResponseEntity.ok(userResponse);
     }
@@ -59,7 +62,7 @@ public class UserController {
     }
 
     @PutMapping("/update-user")
-    public ResponseEntity<?> updateUseDetails(@RequestBody UserDto user) {
+    public ResponseEntity<?> updateUseDetails(@RequestBody @Valid UpdateUserDto user) {
         String newToken = userService.updateUserDetails(user);
         return ResponseEntity.ok(newToken);
     }
@@ -79,7 +82,7 @@ public class UserController {
 
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwtToken = authHeader.substring(7);
+            authHeader.substring(7);
 
         } else {
             throw new RuntimeException("No Authorization header provided or token is missing.");

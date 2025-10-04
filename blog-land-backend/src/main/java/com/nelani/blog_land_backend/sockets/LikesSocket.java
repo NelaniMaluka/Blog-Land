@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.Util.Sockets;
+package com.nelani.blog_land_backend.sockets;
 
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.repository.LikeRepository;

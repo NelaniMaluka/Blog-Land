@@ -12,7 +12,7 @@ public class TechCrunchPostDto {
     private String date;
 
     @JsonProperty("_embedded")
-    private Embedded embedded;  // note camelCase
+    private Embedded embedded;
 
     @Data public static class Title { private String rendered; }
     @Data public static class Content { private String rendered; }
@@ -23,7 +23,7 @@ public class TechCrunchPostDto {
         private Author[] author;
 
         @JsonProperty("wp:featuredmedia")
-        private FeaturedMedia[] featuredmedia; // <-- add this
+        private FeaturedMedia[] featuredmedia;
     }
 
     @Data public static class Author { private String name; }
@@ -31,6 +31,6 @@ public class TechCrunchPostDto {
     @Data
     public static class FeaturedMedia {
         @JsonProperty("source_url")
-        private String sourceUrl; // <-- this is the image URL
+        private String sourceUrl;
     }
 }

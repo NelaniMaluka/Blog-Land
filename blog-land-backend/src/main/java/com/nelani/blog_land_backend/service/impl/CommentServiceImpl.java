@@ -1,7 +1,7 @@
 package com.nelani.blog_land_backend.service.impl;
 
 import com.nelani.blog_land_backend.Util.Caches.CommentCacheHelper;
-import com.nelani.blog_land_backend.Util.Sockets.CommentSocket;
+import com.nelani.blog_land_backend.sockets.CommentSocket;
 import com.nelani.blog_land_backend.Util.Validation.*;
 import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
 import com.nelani.blog_land_backend.dto.CommentDto;
@@ -9,7 +9,6 @@ import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.CommentRepository;
-import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.response.CommentResponse;
 import com.nelani.blog_land_backend.service.CommentService;
 
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Comparator;
-import java.util.Optional;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -32,49 +30,41 @@ public class CommentServiceImpl implements CommentService {
     private final CommentCacheHelper commentCacheHelper;
     private final EntityManager entityManager;
     private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
     private final ModerationValidator moderationValidator;
     private final CommentSocket commentSocket;
+    private final PostValidation postValidation;
+    private final CommentValidation commentValidation;
 
-    public CommentServiceImpl(CommentCacheHelper commentCacheHelper, EntityManager entityManager,
-            CommentRepository commentRepository, PostRepository postRepository, ModerationValidator moderationValidator,
-            CommentSocket commentSocket) {
+    public CommentServiceImpl(CommentCacheHelper commentCacheHelper, EntityManager entityManager, CommentRepository commentRepository, ModerationValidator moderationValidator, CommentSocket commentSocket, PostValidation postValidation, CommentValidation commentValidation) {
         this.commentCacheHelper = commentCacheHelper;
         this.entityManager = entityManager;
         this.commentRepository = commentRepository;
-        this.postRepository = postRepository;
         this.moderationValidator = moderationValidator;
         this.commentSocket = commentSocket;
+        this.postValidation = postValidation;
+        this.commentValidation = commentValidation;
     }
 
     @Override
     @Transactional
     @Cacheable(value = "postCommentsCount", key = "#postId")
     public long getCountByPostId(Long postId) {
-        // Validate fields
-        FormValidation.assertRequiredField(postId, "Post Id");
-
         // Check if the post exists
-        Optional<Post> post = postRepository.findById(postId);
-        PostValidation.assertPostExists(post);
+        Post post = postValidation.assertPostExist(postId);
 
-        return commentRepository.countByPost(post.get());
+        return commentRepository.countByPost(post);
     }
 
     @Override
     @Transactional
     @Cacheable(value = "postComments", key = "#postId + '_' + #page + '_' + #size")
     public Page<CommentResponse> getByPostId(Long postId, int page, int size) {
-        // Validate fields
-        Long id = FormValidation.assertRequiredField(postId, "Post Id");
-
         // Validate post existence
-        Optional<Post> optionalPost = postRepository.findById(id);
-        PostValidation.assertPostExists(optionalPost);
+        postValidation.assertPostExist(postId);
 
         // Fetch paginated comment by post
         Pageable pageable = PageRequest.of(page, size);
-        Page<Comment> commentPage = commentRepository.findByPostId(id, pageable);
+        Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
 
         // Sort comments before mapping
         List<CommentResponse> sorted = commentPage.getContent().stream()
@@ -90,11 +80,8 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Cacheable(value = "userComments", key = "T(com.nelani.blog_land_backend.Util.Validation.UserValidation).getCurrentUserId() + '_' + #postId")
     public List<CommentResponse> getByUserId(long postId) {
-        // Validate fields
-        FormValidation.assertRequiredField(postId, "Post Id");
-
         // Get current authenticated user
-        User user = UserValidation.getOrThrowUnauthorized();
+        User user = UserValidation.getAuthenticatedUser();
 
         // Fetch comments by user and post
         List<Comment> comments = commentRepository.findByUserIdAndPostId(user.getId(), postId);
@@ -108,20 +95,15 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void addComment(CommentDto commentDto) {
-        // Validate fields
-        Long postId = FormValidation.assertRequiredField(commentDto.getPostId(), "Post Id");
-        String content = FormValidation.assertRequiredField(commentDto.getContent(), "Content");
-
         // Get current authenticated user
-        User user = UserValidation.getOrThrowUnauthorized();
+        User user = UserValidation.getAuthenticatedUser();
 
         // Checks if the post exists
-        Optional<Post> post = postRepository.findById(postId);
-        Post existingPost = PostValidation.assertPostExist(post);
+        Post existingPost = postValidation.assertPostExist(commentDto.getPostId());
 
         // Build new post
         Comment newComment = Comment.builder()
-                .content(content)
+                .content(commentDto.getContent())
                 .user(user)
                 .post(existingPost)
                 .build();
@@ -132,37 +114,30 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.save(newComment); // Save the new comment
 
         // Update the socket
-        commentSocket.updateCommentCount(post.get());
-        commentSocket.addNewComments(post.get(), newComment);
-        commentSocket.addUserComment(user, newComment, post.get());
+        commentSocket.updateCommentCount(existingPost);
+        commentSocket.addNewComments(existingPost, newComment);
+        commentSocket.addUserComment(user, newComment, existingPost);
 
-        commentCacheHelper.evictAllForPost(user.getId(), postId); // Evict Caches
-    };
+        commentCacheHelper.evictAllForPost(user.getId(), commentDto.getPostId()); // Evict Caches
+    }
 
     @Override
     @Transactional
     public void updateComment(CommentDto commentDto) {
-        // Validate fields
-        Long commentId = FormValidation.assertRequiredField(commentDto.getId(), "Comment Id");
-        String content = FormValidation.assertRequiredField(commentDto.getContent(), "Content");
-        Long postId = FormValidation.assertRequiredField(commentDto.getPostId(), "Post Id");
-
         // Get current authenticated user
-        User user = UserValidation.getOrThrowUnauthorized();
+        User user = UserValidation.getAuthenticatedUser();
 
         // Checks if the post exists
-        Optional<Post> post = postRepository.findById(postId);
-        PostValidation.assertPostExists(post);
+        Post post = postValidation.assertPostExist(commentDto.getPostId());
 
         // Checks if the Comment exists
-        Optional<Comment> comment = commentRepository.findById(commentId);
-        Comment existingComment = CommentValidation.assertCommentExist(comment);
+        Comment existingComment = commentValidation.assertCommentExist(commentDto.getId());
 
         // Checks if the comment belongs to the user
-        CommentValidation.assertCommentBelongsToUser(existingComment, user);
+        commentValidation.assertCommentBelongsToUser(existingComment, user);
 
         // Update existing comment
-        existingComment.setContent(content);
+        existingComment.setContent(commentDto.getContent());
 
         // Moderate content
         moderationValidator.commentModeration(existingComment);
@@ -170,27 +145,24 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.save(existingComment); // Save comment
 
         // Update the socket
-        commentSocket.updateComment(post.get(), existingComment);
+        commentSocket.updateComment(post, existingComment);
 
         // Evict Caches
-        commentCacheHelper.evictPostCommentsPaginated(postId);
+        commentCacheHelper.evictPostCommentsPaginated(commentDto.getPostId());
     }
 
     @Override
     @Transactional
-    public void deleteComment(Long id) {
-        // Validate fields
-        Long commentId = FormValidation.assertRequiredField(id, "Comment Id");
-
+    public void deleteComment(Long commentId) {
         // Get current authenticated user
-        User user = UserValidation.getOrThrowUnauthorized();
+        User user = UserValidation.getAuthenticatedUser();
 
         // Get the comment
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
         // Check ownership
-        CommentValidation.assertCommentBelongsToUser(comment, user);
+        commentValidation.assertCommentBelongsToUser(comment, user);
 
         // Remove from user collection (triggers orphanRemoval if configured)
         comment.getUser().getComments().remove(comment);

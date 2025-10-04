@@ -37,25 +37,32 @@ public class PostCacheHelper {
         }
     }
 
-    /** Evict all paginated category posts */
-    public void evictCategoryPosts(Long categoryId) {
-        Cache cache = cacheManager.getCache("categoryPosts");
-        if (cache != null && cache.getNativeCache() instanceof java.util.concurrent.ConcurrentMap<?, ?> map) {
-            String prefix = categoryId + "_";
-            map.keySet().stream()
-                    .filter(key -> key.toString().startsWith(prefix))
-                    .forEach(map::remove);
-        }
-    }
-
     /** Evict all paginated user posts */
     public void evictUserPosts(Long userId) {
         Cache cache = cacheManager.getCache("userPosts");
-        if (cache != null && cache.getNativeCache() instanceof java.util.concurrent.ConcurrentMap<?, ?> map) {
+        if (cache != null) {
             String prefix = userId + "_";
-            map.keySet().stream()
-                    .filter(key -> key.toString().startsWith(prefix))
-                    .forEach(map::remove);
+            // Extract keys from the cache using Caffeine API
+            Object nativeCache = cache.getNativeCache();
+            if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache<?, ?> caffeineCache) {
+                caffeineCache.asMap().keySet().stream()
+                        .filter(key -> key.toString().startsWith(prefix))
+                        .forEach(cache::evict); // Spring-safe eviction
+            }
+        }
+    }
+
+    /** Evict all paginated category posts */
+    public void evictCategoryPosts(Long categoryId) {
+        Cache cache = cacheManager.getCache("categoryPosts");
+        if (cache != null) {
+            String prefix = categoryId + "_";
+            Object nativeCache = cache.getNativeCache();
+            if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache<?, ?> caffeineCache) {
+                caffeineCache.asMap().keySet().stream()
+                        .filter(key -> key.toString().startsWith(prefix))
+                        .forEach(cache::evict);
+            }
         }
     }
 

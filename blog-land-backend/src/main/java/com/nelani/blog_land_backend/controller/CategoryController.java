@@ -1,9 +1,10 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.dto.CategoryDto;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
 
 import com.nelani.blog_land_backend.repository.PostRepository;
+import com.nelani.blog_land_backend.response.CategoryResponse;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,14 +29,14 @@ public class CategoryController {
     @GetMapping
     @Cacheable(value = "categories")
     public ResponseEntity<?> getCategories() {
-            List<CategoryDto> categoryDtos = categoryRepository.findAll()
-                    .stream()
-                    .map(category -> {
-                        int postCount = postRepository.countByCategoryId(category.getId());
-                        return new CategoryDto(category, postCount);
-                    })
-                    .collect(Collectors.toList());
+        List<CategoryResponse> categoryDtos = categoryRepository.findAll()
+                .stream()
+                .map(category -> {
+                    int postCount = postRepository.countByCategoryId(category.getId());
+                    return new CategoryResponse(category.getId(), category.getName(), postCount);
+                })
+                .collect(Collectors.toList());
 
-            return ResponseEntity.ok(categoryDtos);
+        return ResponseEntity.ok(categoryDtos);
     }
 }

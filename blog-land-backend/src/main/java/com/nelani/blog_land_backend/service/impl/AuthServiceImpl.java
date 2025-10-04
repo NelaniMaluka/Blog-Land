@@ -1,10 +1,10 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.Validation.FormValidation;
 import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
 import com.nelani.blog_land_backend.Util.Validation.UserValidation;
 import com.nelani.blog_land_backend.Util.JwtUtil;
-import com.nelani.blog_land_backend.dto.UserDto;
+import com.nelani.blog_land_backend.dto.LoginUserDto;
+import com.nelani.blog_land_backend.dto.RegisterUserDto;
 import com.nelani.blog_land_backend.model.ExperienceLevel;
 import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.User;
@@ -15,43 +15,35 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Optional;
-
 @Service
 public class AuthServiceImpl implements AuthService {
 
         private final ModerationValidator moderationValidator;
         private final UserRepository userRepo;
         private final PasswordEncoder passwordEncoder;
+        private final UserValidation userValidation;
         private final JwtUtil jwtUtils;
 
         public AuthServiceImpl(ModerationValidator moderationValidator, UserRepository userRepo,
-                        PasswordEncoder passwordEncoder, JwtUtil jwtUtils) {
+                        PasswordEncoder passwordEncoder, UserValidation userValidation, JwtUtil jwtUtils) {
                 this.moderationValidator = moderationValidator;
                 this.userRepo = userRepo;
                 this.passwordEncoder = passwordEncoder;
+                this.userValidation = userValidation;
                 this.jwtUtils = jwtUtils;
         }
 
         @Override
-        public String registerUser(UserDto user) {
-                // Validate fields
-                String email = FormValidation.assertValidatedEmail(user.getEmail());
-                String firstname = FormValidation.assertRequiredField(user.getFirstname(), "Firstname");
-                String lastname = FormValidation.assertRequiredField(user.getLastname(), "Lastname");
-                String password = FormValidation.assertValidatedPassword(user.getPassword());
-
+        public String registerUser(RegisterUserDto user) {
                 // Checks if a user exists with the provided email
-                Optional<User> optionalUser = userRepo.findByEmail(email);
-                UserValidation.assertUserDoesNotExist(optionalUser, "User already exists with the provided email.");
+                userValidation.assertUserDoesNotExist(user.getEmail());
 
                 // Encodes the password and sets the provider to local
                 User newUser = User.builder()
-                                .firstname(firstname)
-                                .lastname(lastname)
-                                .email(email)
-                                .password(passwordEncoder.encode(password))
+                                .firstname(user.getFirstname())
+                                .lastname(user.getLastname())
+                                .email(user.getEmail())
+                                .password(passwordEncoder.encode(user.getPassword()))
                                 .provider(Provider.LOCAL)
                                 .experience(ExperienceLevel.NEW_BLOGGER)
                                 .build();
@@ -65,22 +57,17 @@ public class AuthServiceImpl implements AuthService {
         }
 
         @Override
-        public String loginUser(Map<String, String> payload) {
+        public String loginUser(LoginUserDto loginUserDto) {
                 SecurityContextHolder.clearContext();
 
-                // Validate fields
-                String email = FormValidation.assertValidatedEmail(payload.get("email"));
-                String password = FormValidation.assertValidatedPassword(payload.get("password"));
-
                 // Checks if a user doesn't exist with the provided email
-                Optional<User> user = userRepo.findByEmail(email);
-                User existingUser = UserValidation.assertUserExist(user, "No user found with the provided email.");
+                User existingUser = userValidation.assertUserExists(null, loginUserDto.getEmail());
 
                 // Checks if the user is local
-                UserValidation.assertUserIsLocal(existingUser, "OAuth login required for this account.");
+                userValidation.assertUserIsLocal(existingUser, "OAuth login required for this account.");
 
                 // Checks if the passwords match
-                UserValidation.assertUserPasswordsMatch(existingUser, passwordEncoder, password, "Incorrect password.");
+                userValidation.assertEncodedPasswordsMatch(loginUserDto.getPassword(), existingUser.getPassword());
 
                 return jwtUtils.generateJwtToken(existingUser); // returns jwt token
         }

@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.service;
+package com.nelani.blog_land_backend.notifications;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

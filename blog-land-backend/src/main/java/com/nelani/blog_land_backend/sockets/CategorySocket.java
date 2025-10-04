@@ -1,8 +1,8 @@
-package com.nelani.blog_land_backend.Util.Sockets;
+package com.nelani.blog_land_backend.sockets;
 
-import com.nelani.blog_land_backend.dto.CategoryDto;
 import com.nelani.blog_land_backend.repository.CategoryRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
+import com.nelani.blog_land_backend.response.CategoryResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -21,11 +21,11 @@ public class CategorySocket {
     }
 
     public void updateCategories(CategoryRepository categoryRepository) {
-        List<CategoryDto> categories = categoryRepository.findAll()
+        List<CategoryResponse> categories = categoryRepository.findAll()
                 .stream()
                 .map(category -> {
                     int postCount = postRepository.countByCategoryId(category.getId());
-                    return new CategoryDto(category, postCount);
+                    return new CategoryResponse(category.getId(),category.getName(), postCount);
                 })
                 .collect(Collectors.toList());
 

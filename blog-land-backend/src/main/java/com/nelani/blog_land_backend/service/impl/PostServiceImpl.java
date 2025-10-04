@@ -1,13 +1,12 @@
 package com.nelani.blog_land_backend.service.impl;
 
 import com.nelani.blog_land_backend.Util.Caches.PostCacheHelper;
-import com.nelani.blog_land_backend.Util.Sockets.PostSocket;
+import com.nelani.blog_land_backend.sockets.PostSocket;
 import com.nelani.blog_land_backend.Util.Validation.*;
 import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
 import com.nelani.blog_land_backend.dto.PostDto;
 import com.nelani.blog_land_backend.dto.TechCrunchPostDto;
 import com.nelani.blog_land_backend.model.*;
-import com.nelani.blog_land_backend.repository.CategoryRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.response.PostResponse;
 import com.nelani.blog_land_backend.service.PostService;
@@ -32,18 +31,22 @@ public class PostServiceImpl implements PostService {
 
     private final PostCacheHelper postCacheHelper;
     private final EntityManager entityManager;
-    private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
     private final ModerationValidator moderationValidator;
     private final PostSocket postSocket;
+    private final CategoryValidation categoryValidation;
+    private final PostValidation postValidation;
 
-    public PostServiceImpl(PostCacheHelper postCacheHelper, EntityManager entityManager, CategoryRepository categoryRepository, PostRepository postRepository, ModerationValidator moderationValidator, PostSocket postSocket) {
+    public PostServiceImpl(PostCacheHelper postCacheHelper, EntityManager entityManager, PostRepository postRepository,
+            ModerationValidator moderationValidator, PostSocket postSocket, CategoryValidation categoryValidation,
+            PostValidation postValidation) {
         this.postCacheHelper = postCacheHelper;
         this.entityManager = entityManager;
-        this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
         this.moderationValidator = moderationValidator;
         this.postSocket = postSocket;
+        this.categoryValidation = categoryValidation;
+        this.postValidation = postValidation;
     }
 
     @Override
@@ -90,20 +93,17 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Cacheable(value = "categoryPosts", key = "#categoryId + '_' + #page + '_' + #size + '_' + #order")
     public Page<PostResponse> getByCategoryId(Long categoryId, int page, int size, String order) {
-        // Validate Fields
-        Long category_id = FormValidation.assertRequiredField(categoryId, "Category Id");
         String setOrder = (order == null || !order.equals("oldest")) ? "latest" : "oldest";
 
         // Checks if the category exists
-        Optional<Category> optionalCategory = categoryRepository.findById(category_id);
-        CategoryValidation.assertCategoryExists(optionalCategory);
+        categoryValidation.assertCategoryExists(categoryId);
 
         // Determine sort direction
         Sort.Direction direction = setOrder.equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "createdAt"));
 
         // Fetch only posts in the given category
-        Page<Post> postPage = postRepository.findByCategoryId(category_id, pageable);
+        Page<Post> postPage = postRepository.findByCategoryId(categoryId, pageable);
 
         // Convert to PostResponse while retaining pagination metadata
         return postPage.map(PostBuilder::generatePost);
@@ -157,7 +157,7 @@ public class PostServiceImpl implements PostService {
     @Cacheable(value = "userPosts", key = "T(com.nelani.blog_land_backend.Util.Validation.UserValidation).getCurrentUserId() + '_' + #page + '_' + #size")
     public Page<PostResponse> getByUserId(int page, int size) {
         // Get current authenticated user
-        User user = UserValidation.getOrThrowUnauthorized();
+        User user = UserValidation.getAuthenticatedUser();
 
         // Fetch paginated posts by category
         Pageable pageable = PageRequest.of(page, size);
@@ -175,47 +175,36 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void addPost(PostDto postDto) {
-        // Validate Fields
-        String title = FormValidation.assertRequiredField(postDto.getTitle(), "Title");
-        String content = FormValidation.assertRequiredField(postDto.getContent(), "Content");
-        Long categoryId = FormValidation.assertRequiredField(postDto.getCategoryId(), "Category Id");
-        String summary = FormValidation.assertRequiredField(postDto.getSummary(), "Summary");
-        String imgUrl = FormValidation.assertRequiredField(postDto.getImgUrl(), "Img Url");
-        boolean isDraft = postDto.isDraft();
-        LocalDateTime scheduledAt = postDto.getScheduledAt();
-        String references = postDto.getReferences();
-
         // Get current authenticated user
-        User user = UserValidation.getOrThrowUnauthorized();
+        User user = UserValidation.getAuthenticatedUser();
 
         // Checks if the category exists
-        Optional<Category> category = categoryRepository.findById(categoryId);
-        CategoryValidation.assertCategoryExists(category);
+        Category category = categoryValidation.assertCategoryExists(postDto.getCategoryId());
 
         // Checks if the user has a post with the same title
         List<Post> userPosts = postRepository.findAllByUserId(user.getId());
-        PostValidation.assertUserHasPostWithSameTitle(userPosts, title);
+        postValidation.assertUserHasPostWithSameTitle(userPosts, postDto.getTitle());
 
         // Build new post
         Post newPost = Post.builder()
-                .title(title)
+                .title(postDto.getTitle())
                 .user(user)
-                .category(category.get())
-                .imgUrl(imgUrl)
-                .references(references)
-                .summary(summary)
-                .isDraft(isDraft)
-                .scheduledAt(scheduledAt)
+                .category(category)
+                .imgUrl(postDto.getImgUrl())
+                .references(postDto.getReferences())
+                .summary(postDto.getSummary())
+                .isDraft(postDto.isDraft())
+                .scheduledAt(postDto.getScheduledAt())
                 .viewCount(0L)
                 .build();
-        newPost.setContent(content);
+        newPost.setContent(postDto.getContent());
 
         // Moderate content
         moderationValidator.postModeration(newPost);
 
         postRepository.save(newPost); // Save the new post
 
-        postCacheHelper.evictAllUserPosts(user.getId(), newPost.getId(), categoryId); // Evict cache data
+        postCacheHelper.evictAllUserPosts(user.getId(), newPost.getId(), postDto.getCategoryId()); // Evict cache data
 
         // Update the socket
         postSocket.addNewPost(newPost);
@@ -224,50 +213,37 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void updatePost(PostDto postDto) {
-        // Validate fields
-        Long postId = FormValidation.assertRequiredField(postDto.getId(), "Post Id");
-        String title = FormValidation.assertRequiredField(postDto.getTitle(), "Title");
-        String content = FormValidation.assertRequiredField(postDto.getContent(), "Content");
-        Long categoryId = FormValidation.assertRequiredField(postDto.getCategoryId(), "Category Id");
-        String summary = FormValidation.assertRequiredField(postDto.getSummary(), "Summary");
-        String imgUrl = FormValidation.assertRequiredField(postDto.getImgUrl(), "Img Url");
-        boolean isDraft = postDto.isDraft();
-        LocalDateTime scheduledAt = postDto.getScheduledAt();
-        String references = postDto.getReferences();
-        LocalDateTime updatedAt = LocalDateTime.now();
-
         // Get current authenticated user
-        User user = UserValidation.getOrThrowUnauthorized();
+        User user = UserValidation.getAuthenticatedUser();
 
         // Checks if the category exists
-        Optional<Category> category = categoryRepository.findById(categoryId);
-        CategoryValidation.assertCategoryExists(category);
+        Category category = categoryValidation.assertCategoryExists(postDto.getCategoryId());
 
         // Checks if the post exists
-        Optional<Post> post = postRepository.findById(postId);
-        PostValidation.assertPostExists(post);
+        Post post = postValidation.assertPostExist(postDto.getId());
 
         // Checks if the post belongs to the user
-        PostValidation.assertPostBelongsToUser(post.get(), user);
+        postValidation.assertPostBelongsToUser(post, user);
 
         // Update existing post
-        Post updatedPost = post.get();
-        updatedPost.setCategory(category.get());
-        updatedPost.setTitle(title);
-        updatedPost.setContent(content);
-        updatedPost.setImgUrl(imgUrl);
-        updatedPost.setReferences(references);
-        updatedPost.setSummary(summary);
-        updatedPost.setUpdatedAt(updatedAt);
-        updatedPost.setDraft(isDraft);
-        updatedPost.setScheduledAt(scheduledAt);
+        Post updatedPost = post;
+        updatedPost.setCategory(category);
+        updatedPost.setTitle(postDto.getTitle());
+        updatedPost.setContent(postDto.getContent());
+        updatedPost.setImgUrl(postDto.getImgUrl());
+        updatedPost.setReferences(postDto.getReferences());
+        updatedPost.setSummary(postDto.getSummary());
+        updatedPost.setUpdatedAt(postDto.getUpdatedAt());
+        updatedPost.setDraft(postDto.isDraft());
+        updatedPost.setScheduledAt(postDto.getScheduledAt());
 
         // Moderate content
         moderationValidator.postModeration(updatedPost);
 
         postRepository.save(updatedPost); // Save updated post
 
-        postCacheHelper.evictAllUserPosts(user.getId(), updatedPost.getId(), categoryId); // Evict cache data
+        postCacheHelper.evictAllUserPosts(user.getId(), updatedPost.getId(), postDto.getCategoryId()); // Evict cache
+                                                                                                       // data
 
         // Update the socket
         postSocket.updatePost(updatedPost);
@@ -275,28 +251,25 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deletePost(Long id) {
-        // Validate fields
-        Long postId = FormValidation.assertRequiredField(id, "Post Id");
-
+    public void deletePost(Long postId) {
         // Get current authenticated user
-        User user = UserValidation.getOrThrowUnauthorized();
+        User user = UserValidation.getAuthenticatedUser();
 
         // Checks if the post exists
-        Optional<Post> post = postRepository.findById(postId);
-        PostValidation.assertPostExists(post);
+        Post existingPost = postValidation.assertPostExist(postId);
 
         // Checks if the post belongs to the user
-        PostValidation.assertPostBelongsToUser(post.get(), user);
+        postValidation.assertPostBelongsToUser(existingPost, user);
 
-        Post existingPost = post.get();
         User postOwner = existingPost.getUser();
 
         postOwner.getPosts().remove(existingPost); // triggers orphanRemoval
         entityManager.flush(); // should cascade delete comments and likes
         entityManager.clear(); // refresh context
 
-        postCacheHelper.evictAllUserPosts(user.getId(), existingPost.getId(), existingPost.getCategory().getId()); // Evict cache data
+        postCacheHelper.evictAllUserPosts(user.getId(), existingPost.getId(), existingPost.getCategory().getId()); // Evict
+                                                                                                                   // cache
+                                                                                                                   // data
 
         // Update the socket
         postSocket.deletePost(postId);
