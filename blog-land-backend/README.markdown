@@ -38,15 +38,16 @@ Built with a clean layered architecture (Controller → Service → Repository) 
 
 - **Core**: Java 17, Spring Boot 3.5  
 - **Security**: Spring Security, JWT, OAuth2  
-- **Database**: H2 (dev), MySQL (planned)
+- **Database**: H2 (dev), MySQL (planned)  
 - **Build Tools**: Maven, Lombok, MapStruct  
 - **DevOps**: Docker, Render (deployment), Dependabot (dependency updates)  
-- **Testing**: JUnit + Spring Boot Starter Test  
+- **Testing**: JUnit 5, AssertJ, Mockito, Spring Boot Starter Test  
 
 ---
 
 ## Folder Structure
 
+```
 src/main/java/com/nelani/blogland  
 ├── config/          # App configuration (security, DB, etc.)  
 ├── controller/      # REST controllers (User, Post, Auth, Category, etc.)  
@@ -56,11 +57,60 @@ src/main/java/com/nelani/blogland
 ├── repository/     # Spring Data repositories  
 ├── response/       # Standard API response wrappers  
 ├── service/        # Service interfaces  
-    ├── serviceImpl/    # Service implementations  
+│   └── impl/       # Service implementations  
 ├── seeder/         # Initial + scheduled seeders  
 └── utils/  
     ├── validation/ # Entity validation logic  
     └── builder/   # Response builders  
+```
+
+---
+
+## 🧪 Unit & Integration Tests
+
+All major layers — Repository, Service, and Controller — are covered by automated tests using JUnit 5, Mockito, and Spring Boot Test.
+
+### Test Coverage
+| Layer              | Framework                                    | Description                                                  |
+|--------------------|----------------------------------------------|-------------------------------------------------------------|
+| Repository Tests   | `@DataJpaTest`                               | Tests CRUD operations, custom queries, and pagination using H2 in-memory DB |
+| Service Tests      | `@ExtendWith(MockitoExtension.class)`        | Mocks repository interactions and validates business logic   |
+| Controller Tests   | `@WebMvcTest`                                | Validates HTTP endpoints, request validation, and response handling |
+| Validation Tests   | JUnit + Jakarta Validation                   | Verifies custom validators under `utils/validation`          |
+| Integration Tests  | `@SpringBootTest`                            | Tests multiple layers together for end-to-end behavior       |
+
+### Example Tests
+```java
+@DataJpaTest
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+class PostRepositoryTest {
+
+    @Autowired
+    private PostRepository postRepository;
+
+    @Test
+    void shouldFindPostsByKeyword() {
+        // Arrange
+        postRepository.save(new Post("Title", "summary", "imgUrl"));
+        Pageable pageable = PageRequest.of(0, 5);
+
+        // Act
+        var result = postRepository.searchByKeyword("Title", pageable);
+
+        // Assert
+        Assertions.assertThat(result.getContent()).hasSize(1);
+        Assertions.assertThat(result.getContent().get(0).getTitle()).isEqualTo("Title");
+    }
+}
+```
+
+### Running Tests
+Run all tests locally:
+```bash
+mvn test
+```
+
+During Docker builds (and deployment to Render), the same command is automatically executed. The deployment only proceeds if all tests pass successfully.
 
 ---
 
@@ -91,18 +141,10 @@ docker build -t blogland-backend .
 docker run -p 8080:8080 blogland-backend
 ```
 
-### Testing
-All services have unit tests.  
-Tests are run automatically during the Docker build and must pass before deployment.
-
-Run locally with:
-```bash
-mvn test
-```
-
 ### Deployment
 - Hosted on Render  
-- Docker build runs unit tests before deploying  
+- Docker image build runs tests before deployment  
+- CI/CD ensures only passing builds are deployed  
 
 ---
 
@@ -129,6 +171,6 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 ## Notes
 - Automated dependency updates powered by Dependabot.  
-- Built to be production-quality (Docker + Render + tests).  
-- Scalable with Redis + MySQL (planned).  
-- Modern features: OAuth2, AI moderation, centralized validation.
+- Dockerized build with full test validation.  
+- Scalable architecture ready for MySQL + Redis.  
+- Full test coverage for all core modules.
