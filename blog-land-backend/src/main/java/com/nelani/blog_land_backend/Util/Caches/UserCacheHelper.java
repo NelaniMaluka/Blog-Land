@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.Util.Caches;
+package com.nelani.blog_land_backend.util.caches;
 
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;

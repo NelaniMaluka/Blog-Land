@@ -1,7 +1,7 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
-import com.nelani.blog_land_backend.Util.Validation.PostValidation;
+import com.nelani.blog_land_backend.util.builders.PostBuilder;
+import com.nelani.blog_land_backend.util.validation.PostValidation;
 import com.nelani.blog_land_backend.dto.PostDto;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.repository.PostRepository;

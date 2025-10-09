@@ -1,6 +1,5 @@
 package com.nelani.blog_land_backend.security;
 
-import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import jakarta.servlet.FilterChain;

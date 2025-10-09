@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.Util.Builders;
+package com.nelani.blog_land_backend.util.builders;
 
 import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.model.Post;

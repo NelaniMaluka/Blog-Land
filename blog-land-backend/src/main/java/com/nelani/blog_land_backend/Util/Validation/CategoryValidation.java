@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.Util.Validation;
+package com.nelani.blog_land_backend.util.validation;
 
 import com.nelani.blog_land_backend.model.Category;
 import com.nelani.blog_land_backend.repository.CategoryRepository;

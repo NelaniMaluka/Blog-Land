@@ -1,8 +1,8 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
-import com.nelani.blog_land_backend.Util.Validation.UserValidation;
-import com.nelani.blog_land_backend.Util.JwtUtil;
+import com.nelani.blog_land_backend.util.validation.ModerationValidator;
+import com.nelani.blog_land_backend.util.validation.UserValidation;
+import com.nelani.blog_land_backend.security.JwtUtil;
 import com.nelani.blog_land_backend.dto.LoginUserDto;
 import com.nelani.blog_land_backend.dto.RegisterUserDto;
 import com.nelani.blog_land_backend.model.ExperienceLevel;
@@ -36,14 +36,14 @@ public class AuthServiceImpl implements AuthService {
         @Override
         public String registerUser(RegisterUserDto user) {
                 // Checks if a user exists with the provided email
-                userValidation.assertUserDoesNotExist(user.getEmail());
+                userValidation.assertUserDoesNotExist(user.email());
 
                 // Encodes the password and sets the provider to local
                 User newUser = User.builder()
-                                .firstname(user.getFirstname())
-                                .lastname(user.getLastname())
-                                .email(user.getEmail())
-                                .password(passwordEncoder.encode(user.getPassword()))
+                                .firstname(user.firstname())
+                                .lastname(user.lastname())
+                                .email(user.email())
+                                .password(passwordEncoder.encode(user.password()))
                                 .provider(Provider.LOCAL)
                                 .experience(ExperienceLevel.NEW_BLOGGER)
                                 .build();
@@ -61,13 +61,13 @@ public class AuthServiceImpl implements AuthService {
                 SecurityContextHolder.clearContext();
 
                 // Checks if a user doesn't exist with the provided email
-                User existingUser = userValidation.assertUserExists(null, loginUserDto.getEmail());
+                User existingUser = userValidation.assertUserExists(null, loginUserDto.email());
 
                 // Checks if the user is local
                 userValidation.assertUserIsLocal(existingUser, "OAuth login required for this account.");
 
                 // Checks if the passwords match
-                userValidation.assertEncodedPasswordsMatch(loginUserDto.getPassword(), existingUser.getPassword());
+                userValidation.assertEncodedPasswordsMatch(loginUserDto.password(), existingUser.getPassword());
 
                 return jwtUtils.generateJwtToken(existingUser); // returns jwt token
         }

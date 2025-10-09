@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.Validation.UserValidation;
+import com.nelani.blog_land_backend.util.validation.UserValidation;
 import com.nelani.blog_land_backend.dto.PasswordDto;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
@@ -26,7 +26,7 @@ public class ChangePasswordServiceImpl implements ChangePasswordService {
     @Override
     public void changePasswordWithOldPassword(PasswordDto passwordDto) {
         // Checks if repeat password and new password match
-        userValidation.assertPasswordsMatch(passwordDto.getNewPassword(), passwordDto.getRepeatPassword());
+        userValidation.assertPasswordsMatch(passwordDto.newPassword(), passwordDto.repeatPassword());
 
         // Get current authenticated user
         User user = UserValidation.getAuthenticatedUser();
@@ -35,13 +35,13 @@ public class ChangePasswordServiceImpl implements ChangePasswordService {
         userValidation.assertUserIsLocal(user, "OAuth user's can not change their password.");
 
         // Checks if provided old password and users password match
-        userValidation.assertEncodedPasswordsMatch(user.getPassword(), passwordDto.getOldPassword());
+        userValidation.assertEncodedPasswordsMatch(user.getPassword(), passwordDto.oldPassword());
 
         // Checks if user password and new password don't match
-        userValidation.assertNewAndOldPasswordsDoNotMatch(user, passwordDto.getNewPassword());
+        userValidation.assertNewAndOldPasswordsDoNotMatch(user, passwordDto.newPassword());
 
         // Update current password and encodes it
-        user.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
+        user.setPassword(passwordEncoder.encode(passwordDto.newPassword()));
 
         userRepository.save(user); // Save the user with the new password
     }

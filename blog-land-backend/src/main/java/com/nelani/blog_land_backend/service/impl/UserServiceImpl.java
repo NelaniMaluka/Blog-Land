@@ -1,17 +1,17 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.Builders.UserBuilder;
-import com.nelani.blog_land_backend.Util.Caches.UserCacheHelper;
+import com.nelani.blog_land_backend.util.builders.UserBuilder;
+import com.nelani.blog_land_backend.util.caches.UserCacheHelper;
 import com.nelani.blog_land_backend.dto.UpdateUserDto;
 import com.nelani.blog_land_backend.sockets.UserSocket;
-import com.nelani.blog_land_backend.Util.Validation.FileValidation;
-import com.nelani.blog_land_backend.Util.Validation.ModerationValidator;
-import com.nelani.blog_land_backend.Util.Validation.UserValidation;
+import com.nelani.blog_land_backend.util.validation.FileValidation;
+import com.nelani.blog_land_backend.util.validation.ModerationValidator;
+import com.nelani.blog_land_backend.util.validation.UserValidation;
 import com.nelani.blog_land_backend.repository.CommentRepository;
 import com.nelani.blog_land_backend.repository.LikeRepository;
 import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.response.UserResponse;
-import com.nelani.blog_land_backend.Util.JwtUtil;
+import com.nelani.blog_land_backend.security.JwtUtil;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.response.UserSummaryAnalyticsResponse;
@@ -35,10 +35,12 @@ public class UserServiceImpl implements UserService {
     private final UserCacheHelper userCacheHelper;
     private final UserValidation userValidation;
 
-    private static final String UPLOAD_DIR = "ProfileIcons/";
+    private static final String UPLOAD_DIR = "userProfileIcons/";
     private static final String BackendBaseUrl = "https://blog-land.onrender.com/";
 
-    public UserServiceImpl(ModerationValidator moderationValidator, UserRepository userRepository, PostRepository postRepository, CommentRepository commentRepository, LikeRepository likeRepository, UserSocket userSocket, JwtUtil jwtUtil, UserCacheHelper userCacheHelper, UserValidation userValidation) {
+    public UserServiceImpl(ModerationValidator moderationValidator, UserRepository userRepository,
+            PostRepository postRepository, CommentRepository commentRepository, LikeRepository likeRepository,
+            UserSocket userSocket, JwtUtil jwtUtil, UserCacheHelper userCacheHelper, UserValidation userValidation) {
         this.moderationValidator = moderationValidator;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
@@ -95,7 +97,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @Cacheable(value = "user", key = "T(com.nelani.blog_land_backend.Util.Validation.UserValidation).getCurrentUserId()")
+    @Cacheable(value = "user", key = "T(com.nelani.blog_land_backend.util.validation.UserValidation).getCurrentUserId()")
     public UserResponse getUserDetails() {
         // Get current authenticated user
         User user = UserValidation.getAuthenticatedUser();
@@ -119,26 +121,26 @@ public class UserServiceImpl implements UserService {
         User user = UserValidation.getAuthenticatedUser();
 
         // Checks if the emails match
-        userValidation.assertUserEmailsMatch(user, updateUser.getEmail());
+        userValidation.assertUserEmailsMatch(user, updateUser.email());
 
         // Validates user provider
-        userValidation.assertUserProvider(user, updateUser.getProvider());
+        userValidation.assertUserProvider(user, updateUser.provider());
 
-        if (updateUser.getSocials() != null) {
+        if (updateUser.socials() != null) {
             user.getSocials().clear(); // Hibernate tracks changes
-            updateUser.getSocials().entrySet().stream()
+            updateUser.socials().entrySet().stream()
                     .filter(e -> e.getKey() != null && !e.getKey().isBlank()
                             && e.getValue() != null && !e.getValue().isBlank())
                     .forEach(e -> user.getSocials().put(e.getKey(), e.getValue()));
         }
 
-        user.setFirstname(updateUser.getFirstname());
-        user.setLastname(updateUser.getLastname());
-        user.setLocation(updateUser.getLocation());
-        user.setExperience(updateUser.getExperience());
-        user.setSocials(updateUser.getSocials());
-        user.setSummary(updateUser.getSummary());
-        user.setTitle(updateUser.getTitle());
+        user.setFirstname(updateUser.firstname());
+        user.setLastname(updateUser.lastname());
+        user.setLocation(updateUser.location());
+        user.setExperience(updateUser.experience());
+        user.setSocials(updateUser.socials());
+        user.setSummary(updateUser.summary());
+        user.setTitle(updateUser.title());
 
         // Moderate content
         moderationValidator.userModeration(user);

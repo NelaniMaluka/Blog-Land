@@ -13,7 +13,6 @@ COPY src ./src
 # Package the application (skip tests since they already ran)
 RUN mvn package -DskipTests
 
-
 # ===== Runtime Stage: Lightweight JRE =====
 FROM eclipse-temurin:17-jre-alpine
 

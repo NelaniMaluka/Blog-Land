@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.Util.Validation;
+package com.nelani.blog_land_backend.util.validation;
 
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.Util;
+package com.nelani.blog_land_backend.security;
 
 import com.nelani.blog_land_backend.model.User;
 import io.jsonwebtoken.*;
@@ -12,10 +12,9 @@ public class JwtUtil {
     // Securely generated secret key
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
-    // Token validity (e.g. 1 day = 86400000 ms)
-    private final int jwtExpirationMs = 86400000;
-
     public String generateJwtToken(User user) {
+        // Token validity (e.g. 1 day = 86400000 ms)
+        int jwtExpirationMs = 86400000;
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())

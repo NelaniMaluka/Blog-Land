@@ -1,12 +1,12 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.Validation.PasswordTokenValidation;
-import com.nelani.blog_land_backend.Util.Validation.UserValidation;
+import com.nelani.blog_land_backend.util.validation.PasswordResetValidation;
+import com.nelani.blog_land_backend.util.validation.UserValidation;
 import com.nelani.blog_land_backend.dto.EmailDto;
 import com.nelani.blog_land_backend.dto.ForgotPasswordDto;
-import com.nelani.blog_land_backend.model.PasswordResetToken;
+import com.nelani.blog_land_backend.model.PasswordReset;
 import com.nelani.blog_land_backend.model.User;
-import com.nelani.blog_land_backend.repository.PasswordResetTokenRepository;
+import com.nelani.blog_land_backend.repository.PasswordResetRepository;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.notifications.EmailService;
 import com.nelani.blog_land_backend.service.ForgotPasswordService;
@@ -30,32 +30,32 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final UserRepository userRepository;
-    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final PasswordResetRepository passwordResetRepository;
     private final UserValidation userValidation;
-    private final PasswordTokenValidation passwordTokenValidation;
+    private final PasswordResetValidation passwordResetValidation;
 
-    public ForgotPasswordServiceImpl(PasswordEncoder passwordEncoder, EmailService emailService, UserRepository userRepository, PasswordResetTokenRepository passwordResetTokenRepository, UserValidation userValidation, PasswordTokenValidation passwordTokenValidation) {
+    public ForgotPasswordServiceImpl(PasswordEncoder passwordEncoder, EmailService emailService,
+            UserRepository userRepository, PasswordResetRepository passwordResetRepository,
+            UserValidation userValidation, PasswordResetValidation passwordResetValidation) {
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.userRepository = userRepository;
-        this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.passwordResetRepository = passwordResetRepository;
         this.userValidation = userValidation;
-        this.passwordTokenValidation = passwordTokenValidation;
+        this.passwordResetValidation = passwordResetValidation;
     }
 
     @Override
     @Transactional
-    public void requestPasswordReset(EmailDto emailDto){
+    public void requestPasswordReset(EmailDto emailDto) {
         // Check if the user exists
-        User user = userValidation.assertUserExists(null, emailDto.getEmail());
+        User user = userValidation.assertUserExists(null, emailDto.email());
 
         // Checks if user is Local
-        userValidation.assertUserIsLocal(user,"OAuth user's can not change their password.");
-
-        // Checks if there is an active token
+        userValidation.assertUserIsLocal(user, "OAuth user's can not change their password.");
 
         // Checks if there is an active reset token
-        passwordTokenValidation.assertTokenIsActive(user);
+        passwordResetValidation.assertTokenIsActive(user);
 
         // Generate request token
         SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
@@ -69,7 +69,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
         // Generate password reset object
         LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(15);
-        PasswordResetToken resetToken = PasswordResetToken.builder()
+        PasswordReset resetToken = PasswordReset.builder()
                 .token(hashedToken)
                 .user(user)
                 .expiryDate(expiryDate)
@@ -77,42 +77,42 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        passwordResetTokenRepository.save(resetToken); // save the password reset object
+        passwordResetRepository.save(resetToken); // save the password reset object
 
         emailService.sendPasswordResetEmail(user.getEmail(), token); // Generate redirect email
     };
 
     @Override
     @Transactional
-    public void changePassword(ForgotPasswordDto passwordDto){
+    public void changePassword(ForgotPasswordDto passwordDto) {
         // Checks if repeat password and new password match
-        userValidation.assertPasswordsMatch(passwordDto.getNewPassword(), passwordDto.getRepeatPassword());
+        userValidation.assertPasswordsMatch(passwordDto.newPassword(), passwordDto.repeatPassword());
 
         // Checks it the token is valid
-        String hashedToken = DigestUtils.sha256Hex(passwordDto.getToken());
-        Optional<PasswordResetToken> tokenEntity = passwordResetTokenRepository.findByToken(hashedToken);
-        passwordTokenValidation.assertTokenExists(tokenEntity.get());
+        String hashedToken = DigestUtils.sha256Hex(passwordDto.token());
+        Optional<PasswordReset> tokenEntity = passwordResetRepository.findByToken(hashedToken);
+        passwordResetValidation.assertTokenExists(tokenEntity.get());
 
         // Checks if the token hasn't expired
-        passwordTokenValidation.assertTokenNotExpired(tokenEntity.get());
+        passwordResetValidation.assertTokenNotExpired(tokenEntity.get());
 
         // Checks if the token hasn't been used
-        passwordTokenValidation.assertTokenIsUsed(tokenEntity.get());
+        passwordResetValidation.assertTokenIsUsed(tokenEntity.get());
 
         // Get the user from the token
         User user = tokenEntity.get().getUser();
 
         // Checks if user password and new password don't match
-        userValidation.assertNewAndOldPasswordsDoNotMatch(user, passwordDto.getNewPassword());
+        userValidation.assertNewAndOldPasswordsDoNotMatch(user, passwordDto.newPassword());
 
         // Update the users password
-        user.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
+        user.setPassword(passwordEncoder.encode(passwordDto.newPassword()));
 
         userRepository.save(user); // Save the user with the new password
 
         // Update the forgot password entity
-        PasswordResetToken passwordResetToken = tokenEntity.get();
-        passwordResetToken.setUsed(true);
-        passwordResetTokenRepository.save(passwordResetToken);
+        PasswordReset passwordReset = tokenEntity.get();
+        passwordReset.setUsed(true);
+        passwordResetRepository.save(passwordReset);
     };
 }

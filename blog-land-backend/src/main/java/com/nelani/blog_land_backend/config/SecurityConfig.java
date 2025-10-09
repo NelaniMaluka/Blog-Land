@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.config;
 
-import com.nelani.blog_land_backend.Util.JwtUtil;
+import com.nelani.blog_land_backend.security.JwtUtil;
 import com.nelani.blog_land_backend.repository.UserRepository;
 import com.nelani.blog_land_backend.security.CustomSuccessHandler;
 import com.nelani.blog_land_backend.security.UnifiedAuthenticationFilter;
@@ -55,7 +55,10 @@ public class SecurityConfig {
                                                                 "/ProfileIcons/**",
                                                                 "/api/like/get/**",
                                                                 "/api/user/get/**",
-                                                                "/ws/**")
+                                                                "/ws/**",
+                                                                "/swagger-ui/**",
+                                                                "/v3/api-docs/**",
+                                                                "/actuator/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2.successHandler(customSuccessHandler))

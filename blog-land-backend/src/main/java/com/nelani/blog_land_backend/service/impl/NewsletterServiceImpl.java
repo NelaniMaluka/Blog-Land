@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.Validation.NewsletterValidation;
+import com.nelani.blog_land_backend.util.validation.NewsletterValidation;
 import com.nelani.blog_land_backend.dto.EmailDto;
 import com.nelani.blog_land_backend.model.Newsletter;
 import com.nelani.blog_land_backend.repository.NewsletterRepository;
@@ -24,11 +24,11 @@ public class NewsletterServiceImpl implements NewsletterService {
     @Transactional
     public void addEmail(EmailDto emailDto) {
         Newsletter newsletter = Newsletter.builder()
-                .email(emailDto.getEmail())
+                .email(emailDto.email())
                 .build();
 
         // Check if the email is already subscribed
-        newsletterValidation.assertEmailIsSubscribed(emailDto.getEmail());
+        newsletterValidation.assertEmailIsSubscribed(emailDto.email());
 
         newsletterRepository.save(newsletter); // Save the newsletter email
     }

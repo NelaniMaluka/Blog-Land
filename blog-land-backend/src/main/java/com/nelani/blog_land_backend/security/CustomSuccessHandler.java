@@ -1,6 +1,5 @@
 package com.nelani.blog_land_backend.security;
 
-import com.nelani.blog_land_backend.Util.JwtUtil;
 import com.nelani.blog_land_backend.model.Provider;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.repository.UserRepository;
@@ -19,7 +18,7 @@ import java.io.IOException;
 @Component
 public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
-    private UserRepository userRepo;
+    private final UserRepository userRepo;
     private final JwtUtil jwtUtil;
 
     public CustomSuccessHandler(UserRepository userRepo, @Lazy JwtUtil jwtUtil) {
@@ -29,7 +28,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException {
+            Authentication authentication) throws IOException {
 
         DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
         String email = oauthUser.getAttribute("email");
@@ -47,7 +46,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
         String token = jwtUtil.generateJwtToken(user);
 
-        // 👇 redirect to frontend with token in URL
+        // redirect to frontend with token in URL
         String redirectUrl = "https://blog-land.web.app?token=" + token;
         response.sendRedirect(redirectUrl);
     }

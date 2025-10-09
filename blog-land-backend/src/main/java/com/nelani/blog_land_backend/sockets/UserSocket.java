@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.sockets;
 
-import com.nelani.blog_land_backend.Util.Builders.UserBuilder;
+import com.nelani.blog_land_backend.util.builders.UserBuilder;
 import com.nelani.blog_land_backend.model.User;
 import com.nelani.blog_land_backend.response.UserResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

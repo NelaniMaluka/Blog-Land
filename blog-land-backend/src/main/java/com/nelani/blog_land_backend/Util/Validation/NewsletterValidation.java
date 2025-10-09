@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.Util.Validation;
+package com.nelani.blog_land_backend.util.validation;
 
 import com.nelani.blog_land_backend.repository.NewsletterRepository;
 import org.springframework.stereotype.Component;

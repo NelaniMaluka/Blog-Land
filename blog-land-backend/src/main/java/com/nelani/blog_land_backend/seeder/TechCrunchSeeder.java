@@ -201,7 +201,7 @@ public class TechCrunchSeeder {
 
         Map<Category, Long> categoryPostCounts = new HashMap<>();
         for (Category category : allCategories) {
-            Long count = postRepository.countByCategory(category);
+            Long count = (long) postRepository.countByCategoryId(category.getId());
             categoryPostCounts.put(category, count);
         }
 

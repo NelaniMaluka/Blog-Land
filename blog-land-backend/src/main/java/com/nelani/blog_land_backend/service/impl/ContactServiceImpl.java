@@ -21,9 +21,9 @@ public class ContactServiceImpl implements ContactService {
     @Transactional
     public void getInfo(ContactDto contactDto) {
         Contact contact = Contact.builder()
-                .fullName(contactDto.getFullName())
-                .email(contactDto.getEmail())
-                .message(contactDto.getMessage())
+                .fullName(contactDto.fullName())
+                .email(contactDto.email())
+                .message(contactDto.message())
                 .build();
 
         contactRepository.save(contact); // Save the contact message

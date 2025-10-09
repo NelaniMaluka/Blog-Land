@@ -1,9 +1,9 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.Caches.CommentCacheHelper;
+import com.nelani.blog_land_backend.util.caches.CommentCacheHelper;
 import com.nelani.blog_land_backend.sockets.CommentSocket;
-import com.nelani.blog_land_backend.Util.Validation.*;
-import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
+import com.nelani.blog_land_backend.util.validation.*;
+import com.nelani.blog_land_backend.util.builders.PostBuilder;
 import com.nelani.blog_land_backend.dto.CommentDto;
 import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.model.Post;
@@ -35,7 +35,9 @@ public class CommentServiceImpl implements CommentService {
     private final PostValidation postValidation;
     private final CommentValidation commentValidation;
 
-    public CommentServiceImpl(CommentCacheHelper commentCacheHelper, EntityManager entityManager, CommentRepository commentRepository, ModerationValidator moderationValidator, CommentSocket commentSocket, PostValidation postValidation, CommentValidation commentValidation) {
+    public CommentServiceImpl(CommentCacheHelper commentCacheHelper, EntityManager entityManager,
+            CommentRepository commentRepository, ModerationValidator moderationValidator, CommentSocket commentSocket,
+            PostValidation postValidation, CommentValidation commentValidation) {
         this.commentCacheHelper = commentCacheHelper;
         this.entityManager = entityManager;
         this.commentRepository = commentRepository;
@@ -78,7 +80,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    @Cacheable(value = "userComments", key = "T(com.nelani.blog_land_backend.Util.Validation.UserValidation).getCurrentUserId() + '_' + #postId")
+    @Cacheable(value = "userComments", key = "T(com.nelani.blog_land_backend.util.validation.UserValidation).getCurrentUserId() + '_' + #postId")
     public List<CommentResponse> getByUserId(long postId) {
         // Get current authenticated user
         User user = UserValidation.getAuthenticatedUser();
@@ -99,11 +101,11 @@ public class CommentServiceImpl implements CommentService {
         User user = UserValidation.getAuthenticatedUser();
 
         // Checks if the post exists
-        Post existingPost = postValidation.assertPostExist(commentDto.getPostId());
+        Post existingPost = postValidation.assertPostExist(commentDto.postId());
 
         // Build new post
         Comment newComment = Comment.builder()
-                .content(commentDto.getContent())
+                .content(commentDto.content())
                 .user(user)
                 .post(existingPost)
                 .build();
@@ -118,7 +120,7 @@ public class CommentServiceImpl implements CommentService {
         commentSocket.addNewComments(existingPost, newComment);
         commentSocket.addUserComment(user, newComment, existingPost);
 
-        commentCacheHelper.evictAllForPost(user.getId(), commentDto.getPostId()); // Evict Caches
+        commentCacheHelper.evictAllForPost(user.getId(), commentDto.postId()); // Evict Caches
     }
 
     @Override
@@ -128,16 +130,16 @@ public class CommentServiceImpl implements CommentService {
         User user = UserValidation.getAuthenticatedUser();
 
         // Checks if the post exists
-        Post post = postValidation.assertPostExist(commentDto.getPostId());
+        Post post = postValidation.assertPostExist(commentDto.postId());
 
         // Checks if the Comment exists
-        Comment existingComment = commentValidation.assertCommentExist(commentDto.getId());
+        Comment existingComment = commentValidation.assertCommentExist(commentDto.id());
 
         // Checks if the comment belongs to the user
         commentValidation.assertCommentBelongsToUser(existingComment, user);
 
         // Update existing comment
-        existingComment.setContent(commentDto.getContent());
+        existingComment.setContent(commentDto.content());
 
         // Moderate content
         moderationValidator.commentModeration(existingComment);
@@ -148,7 +150,7 @@ public class CommentServiceImpl implements CommentService {
         commentSocket.updateComment(post, existingComment);
 
         // Evict Caches
-        commentCacheHelper.evictPostCommentsPaginated(commentDto.getPostId());
+        commentCacheHelper.evictPostCommentsPaginated(commentDto.postId());
     }
 
     @Override

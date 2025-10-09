@@ -18,7 +18,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     // Get all likes by a user
     List<Like> findAllByUser(User user);
 
-    // Optional: check if a user liked a specific post
+    // Check if a user liked a specific post
     Optional<Like> findByUserAndPost(User user, Post post);
 
     @Query("SELECT COUNT(l) FROM Like l WHERE l.post.user.id = :userId")

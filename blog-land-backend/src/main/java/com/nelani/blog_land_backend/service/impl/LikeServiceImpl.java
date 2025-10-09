@@ -1,10 +1,10 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.Util.Caches.LikeCacheHelper;
+import com.nelani.blog_land_backend.util.caches.LikeCacheHelper;
 import com.nelani.blog_land_backend.sockets.LikesSocket;
-import com.nelani.blog_land_backend.Util.Validation.LikeValidation;
-import com.nelani.blog_land_backend.Util.Validation.PostValidation;
-import com.nelani.blog_land_backend.Util.Validation.UserValidation;
+import com.nelani.blog_land_backend.util.validation.LikeValidation;
+import com.nelani.blog_land_backend.util.validation.PostValidation;
+import com.nelani.blog_land_backend.util.validation.UserValidation;
 import com.nelani.blog_land_backend.model.Like;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.model.User;
@@ -48,7 +48,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     @Transactional
-    @Cacheable(value = "userLikes", key = "T(com.nelani.blog_land_backend.Util.Validation.UserValidation).getCurrentUserId()")
+    @Cacheable(value = "userLikes", key = "T(com.nelani.blog_land_backend.util.validation.UserValidation).getCurrentUserId()")
     public List<LikeResponse> getUserLikes() {
         // Get current authenticated user
         User user = UserValidation.getAuthenticatedUser();

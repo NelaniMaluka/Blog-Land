@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.sockets;
 
-import com.nelani.blog_land_backend.Util.Builders.PostBuilder;
+import com.nelani.blog_land_backend.util.builders.PostBuilder;
 import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.model.User;
@@ -9,7 +9,7 @@ import com.nelani.blog_land_backend.response.CommentResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-import static com.nelani.blog_land_backend.Util.Builders.PostBuilder.mapCommentIds;
+import static com.nelani.blog_land_backend.util.builders.PostBuilder.mapCommentIds;
 
 @Component
 public class CommentSocket {

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
-@Table(name = "users", schema = "auth")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -89,13 +89,13 @@ public class User {
         @Builder.Default
         @BatchSize(size = 10)
         @ElementCollection(fetch = FetchType.EAGER)
-        @CollectionTable(name = "author_socials", schema = "auth", joinColumns = @JoinColumn(name = "author_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+        @CollectionTable(name = "author_socials", joinColumns = @JoinColumn(name = "author_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
                         "author_id", "platform" }))
         @Column(name = "url")
         @MapKeyColumn(name = "platform")
         private Map<@Size(max = 50, message = "Platform name must not exceed 50 characters") String,
 
-                         @Size(max = 500, message = "URL must not exceed 500 characters") String> socials = new HashMap<>();
+                        @Size(max = 500, message = "URL must not exceed 500 characters") String> socials = new HashMap<>();
 
         @Override
         public String toString() {
