@@ -1,8 +1,10 @@
-package com.nelani.blog_land_backend.util.caches;
+package com.nelani.blog_land_backend.cache;
 
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class PostCacheHelper {
@@ -14,7 +16,7 @@ public class PostCacheHelper {
     }
 
     /** Evict the post */
-    public void evictPost(Long postId) {
+    public void evictPost(UUID postId) {
         Cache cache = cacheManager.getCache("post");
         if (cache != null) {
             cache.evict(postId);
@@ -38,7 +40,7 @@ public class PostCacheHelper {
     }
 
     /** Evict all paginated user posts */
-    public void evictUserPosts(Long userId) {
+    public void evictUserPosts(UUID userId) {
         Cache cache = cacheManager.getCache("userPosts");
         if (cache != null) {
             String prefix = userId + "_";
@@ -53,7 +55,7 @@ public class PostCacheHelper {
     }
 
     /** Evict all paginated category posts */
-    public void evictCategoryPosts(Long categoryId) {
+    public void evictCategoryPosts(UUID categoryId) {
         Cache cache = cacheManager.getCache("categoryPosts");
         if (cache != null) {
             String prefix = categoryId + "_";
@@ -67,7 +69,7 @@ public class PostCacheHelper {
     }
 
     /** Evict all caches related to a user */
-    public void evictAllUserPosts(Long userId, Long postId, Long categoryId) {
+    public void evictAllUserPosts(UUID userId, UUID postId, UUID categoryId) {
         evictPost(postId);
         evictTrendingPosts();
         evictAllPosts();

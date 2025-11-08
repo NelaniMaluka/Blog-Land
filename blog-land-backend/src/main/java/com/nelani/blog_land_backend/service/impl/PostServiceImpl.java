@@ -1,26 +1,24 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.util.caches.PostCacheHelper;
+import com.nelani.blog_land_backend.cache.PostCacheHelper;
 import com.nelani.blog_land_backend.sockets.PostSocket;
-import com.nelani.blog_land_backend.util.validation.*;
-import com.nelani.blog_land_backend.util.builders.PostBuilder;
-import com.nelani.blog_land_backend.dto.PostDto;
+import com.nelani.blog_land_backend.mapper.PostBuilder;
 import com.nelani.blog_land_backend.dto.TechCrunchPostDto;
 import com.nelani.blog_land_backend.model.*;
 import com.nelani.blog_land_backend.repository.PostRepository;
 import com.nelani.blog_land_backend.response.PostResponse;
 import com.nelani.blog_land_backend.service.PostService;
 
-import jakarta.persistence.EntityManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -30,23 +28,13 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
 
     private final PostCacheHelper postCacheHelper;
-    private final EntityManager entityManager;
     private final PostRepository postRepository;
-    private final ModerationValidator moderationValidator;
     private final PostSocket postSocket;
-    private final CategoryValidation categoryValidation;
-    private final PostValidation postValidation;
 
-    public PostServiceImpl(PostCacheHelper postCacheHelper, EntityManager entityManager, PostRepository postRepository,
-            ModerationValidator moderationValidator, PostSocket postSocket, CategoryValidation categoryValidation,
-            PostValidation postValidation) {
+    public PostServiceImpl(PostCacheHelper postCacheHelper, PostRepository postRepository, PostSocket postSocket) {
         this.postCacheHelper = postCacheHelper;
-        this.entityManager = entityManager;
         this.postRepository = postRepository;
-        this.moderationValidator = moderationValidator;
         this.postSocket = postSocket;
-        this.categoryValidation = categoryValidation;
-        this.postValidation = postValidation;
     }
 
     @Override
@@ -67,17 +55,17 @@ public class PostServiceImpl implements PostService {
                             .score(score)
                             .build();
                 })
-                .sorted(Comparator.comparingInt(PostResponse::getScore).reversed())
+                .sorted(Comparator.comparingInt(PostResponse::score).reversed())
                 .limit(5)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public void incrementViews(Long postId) {
+    public void incrementViews(UUID postId) {
         // Checks if the post exists
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
 
         // Adds a view to the post
         post.setViewCount(post.getViewCount() + 1);
@@ -87,26 +75,6 @@ public class PostServiceImpl implements PostService {
 
         // Update the socket
         postSocket.updatePost(post);
-    }
-
-    @Override
-    @Transactional
-    @Cacheable(value = "categoryPosts", key = "#categoryId + '_' + #page + '_' + #size + '_' + #order")
-    public Page<PostResponse> getByCategoryId(Long categoryId, int page, int size, String order) {
-        String setOrder = (order == null || !order.equals("oldest")) ? "latest" : "oldest";
-
-        // Checks if the category exists
-        categoryValidation.assertCategoryExists(categoryId);
-
-        // Determine sort direction
-        Sort.Direction direction = setOrder.equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "createdAt"));
-
-        // Fetch only posts in the given category
-        Page<Post> postPage = postRepository.findByCategoryId(categoryId, pageable);
-
-        // Convert to PostResponse while retaining pagination metadata
-        return postPage.map(PostBuilder::generatePost);
     }
 
     @Override
@@ -150,128 +118,6 @@ public class PostServiceImpl implements PostService {
                     .postImgUrl(image)
                     .build();
         }).toList();
-    }
-
-    @Override
-    @Transactional
-    @Cacheable(value = "userPosts", key = "T(com.nelani.blog_land_backend.util.validation.UserValidation).getCurrentUserId() + '_' + #page + '_' + #size")
-    public Page<PostResponse> getByUserId(int page, int size) {
-        // Get current authenticated user
-        User user = UserValidation.getAuthenticatedUser();
-
-        // Fetch paginated posts by category
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> postPage = postRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
-
-        // Checks if the user has posts
-        if (postPage.isEmpty()) {
-            return Page.empty(pageable);
-        }
-
-        // Convert to PostResponse while retaining pagination metadata
-        return postPage.map(PostBuilder::generatePost);
-    }
-
-    @Override
-    @Transactional
-    public void addPost(PostDto postDto) {
-        // Get current authenticated user
-        User user = UserValidation.getAuthenticatedUser();
-
-        // Checks if the category exists
-        Category category = categoryValidation.assertCategoryExists(postDto.categoryId());
-
-        // Checks if the user has a post with the same title
-        List<Post> userPosts = postRepository.findAllByUserId(user.getId());
-        postValidation.assertUserHasPostWithSameTitle(userPosts, postDto.title());
-
-        // Build new post
-        Post newPost = Post.builder()
-                .title(postDto.title())
-                .user(user)
-                .category(category)
-                .imgUrl(postDto.imgUrl())
-                .references(postDto.references())
-                .summary(postDto.summary())
-                .isDraft(postDto.draft())
-                .scheduledAt(postDto.scheduledAt())
-                .viewCount(0L)
-                .build();
-        newPost.setContent(postDto.content());
-
-        // Moderate content
-        moderationValidator.postModeration(newPost);
-
-        postRepository.save(newPost); // Save the new post
-
-        postCacheHelper.evictAllUserPosts(user.getId(), newPost.getId(), postDto.categoryId()); // Evict cache data
-
-        // Update the socket
-        postSocket.addNewPost(newPost);
-    };
-
-    @Override
-    @Transactional
-    public void updatePost(PostDto postDto) {
-        // Get current authenticated user
-        User user = UserValidation.getAuthenticatedUser();
-
-        // Checks if the category exists
-        Category category = categoryValidation.assertCategoryExists(postDto.categoryId());
-
-        // Checks if the post exists
-        Post post = postValidation.assertPostExist(postDto.id());
-
-        // Checks if the post belongs to the user
-        postValidation.assertPostBelongsToUser(post, user);
-
-        // Update existing post
-        post.setCategory(category);
-        post.setTitle(postDto.title());
-        post.setContent(postDto.content());
-        post.setImgUrl(postDto.imgUrl());
-        post.setReferences(postDto.references());
-        post.setSummary(postDto.summary());
-        post.setUpdatedAt(postDto.updatedAt());
-        post.setDraft(postDto.draft());
-        post.setScheduledAt(postDto.scheduledAt());
-
-        // Moderate content
-        moderationValidator.postModeration(post);
-
-        postRepository.save(post); // Save updated post
-
-        postCacheHelper.evictAllUserPosts(user.getId(), post.getId(), postDto.categoryId()); // Evict cache
-                                                                                             // data
-
-        // Update the socket
-        postSocket.updatePost(post);
-    }
-
-    @Override
-    @Transactional
-    public void deletePost(Long postId) {
-        // Get current authenticated user
-        User user = UserValidation.getAuthenticatedUser();
-
-        // Checks if the post exists
-        Post existingPost = postValidation.assertPostExist(postId);
-
-        // Checks if the post belongs to the user
-        postValidation.assertPostBelongsToUser(existingPost, user);
-
-        User postOwner = existingPost.getUser();
-
-        postOwner.getPosts().remove(existingPost); // triggers orphanRemoval
-        entityManager.flush(); // should cascade delete comments and likes
-        entityManager.clear(); // refresh context
-
-        postCacheHelper.evictAllUserPosts(user.getId(), existingPost.getId(), existingPost.getCategory().getId()); // Evict
-                                                                                                                   // cache
-                                                                                                                   // data
-
-        // Update the socket
-        postSocket.deletePost(postId);
     }
 
     private int calculateRelevanceScore(Post post, String keyword) {

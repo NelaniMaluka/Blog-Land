@@ -1,7 +1,5 @@
 package com.nelani.blog_land_backend.service.impl;
 
-import com.nelani.blog_land_backend.util.validation.NewsletterValidation;
-import com.nelani.blog_land_backend.dto.EmailDto;
 import com.nelani.blog_land_backend.model.Newsletter;
 import com.nelani.blog_land_backend.repository.NewsletterRepository;
 import com.nelani.blog_land_backend.service.NewsletterService;
@@ -13,22 +11,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class NewsletterServiceImpl implements NewsletterService {
 
     private final NewsletterRepository newsletterRepository;
-    private final NewsletterValidation newsletterValidation;
 
-    public NewsletterServiceImpl(NewsletterRepository newsletterRepository, NewsletterValidation newsletterValidation) {
+    public NewsletterServiceImpl(NewsletterRepository newsletterRepository) {
         this.newsletterRepository = newsletterRepository;
-        this.newsletterValidation = newsletterValidation;
     }
 
     @Override
     @Transactional
-    public void addEmail(EmailDto emailDto) {
+    public void addEmail(String email) {
         Newsletter newsletter = Newsletter.builder()
-                .email(emailDto.email())
+                .email(email)
                 .build();
 
         // Check if the email is already subscribed
-        newsletterValidation.assertEmailIsSubscribed(emailDto.email());
+        if (newsletterRepository.findByEmail(email).isPresent()) {
+            return;
+        }
 
         newsletterRepository.save(newsletter); // Save the newsletter email
     }

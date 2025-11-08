@@ -1,4 +1,4 @@
-package com.nelani.blog_land_backend.util.caches;
+package com.nelani.blog_land_backend.cache;
 
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -14,15 +14,15 @@ public class UserCacheHelper {
     }
 
     /** Evict the user data */
-    public void evictUser(Long userId) {
+    public void evictUser(String email) {
         Cache cache = cacheManager.getCache("user");
         if (cache != null) {
-            cache.evict(userId);
+            cache.evict(email);
         }
     }
 
     /** Evict the public user data */
-    public void evictUser(String nanoId) {
+    public void evictPublicUser(String nanoId) {
         Cache cache = cacheManager.getCache("publicUser");
         if (cache != null) {
             cache.evict(nanoId);
@@ -30,8 +30,8 @@ public class UserCacheHelper {
     }
 
     /** Evict all caches related to a user */
-    public void evictAllForUser(Long userId, String nanoId) {
-        evictUser(userId);
-        evictUser(nanoId);
+    public void evictAllForUser(String email, String nanoId) {
+        evictUser(email);
+        evictPublicUser(nanoId);
     }
 }

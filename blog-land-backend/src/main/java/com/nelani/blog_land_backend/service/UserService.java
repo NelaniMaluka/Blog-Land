@@ -1,22 +1,21 @@
 package com.nelani.blog_land_backend.service;
 
 import com.nelani.blog_land_backend.dto.UpdateUserDto;
+import com.nelani.blog_land_backend.response.LoginResponse;
 import com.nelani.blog_land_backend.response.UserResponse;
-import com.nelani.blog_land_backend.response.UserSummaryAnalyticsResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
-    String removeUserProfileImage();
+    void removeUserProfileImage();
 
-    String saveUserProfileImage(MultipartFile file);
+    void saveUserProfileImage(MultipartFile file);
 
     UserResponse getUserDetails();
 
     UserResponse getPublicUserDetails(String userNanoId);
 
-    String updateUserDetails(UpdateUserDto user);
+    LoginResponse updateUserDetails(UpdateUserDto user);
 
     void deleteUserDetails();
 
-    UserSummaryAnalyticsResponse getUserSummaryAnalytics();
 }

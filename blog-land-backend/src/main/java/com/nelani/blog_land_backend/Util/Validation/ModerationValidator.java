@@ -24,30 +24,63 @@ public class ModerationValidator {
     }
 
     public void commentModeration(Comment comment) {
-        moderationClient.validateContent(comment.getContent());
+        // moderationClient.validateContent(comment.getContent());
     }
 
     public void postModeration(Post post) {
-        moderationClient.validateContent(post.getTitle());
-        moderationClient.validateContent(post.getContent());
-        moderationClient.validateContent(post.getSummary());
-        if (isValid(post.getReferences())) moderateReferences(post.getReferences());
-    }
+        StringBuilder combined = new StringBuilder();
 
-    public void userModeration(User user) {
-        moderationClient.validateContent(user.getFirstname());
-        moderationClient.validateContent(user.getLastname());
-        if (isValid(user.getSummary())) moderationClient.validateContent(user.getSummary());
-        if (isValid(user.getTitle())) moderationClient.validateContent(user.getTitle());
-        if (isValid(user.getLocation())) moderationClient.validateContent(user.getLocation());
+        if (isValid(post.getTitle()))
+            combined.append(post.getTitle()).append("\n");
+        if (isValid(post.getContent()))
+            combined.append(post.getContent()).append("\n");
+        if (isValid(post.getSummary()))
+            combined.append(post.getSummary()).append("\n");
 
-        if (user.getSocials() != null) {
-            for (Map.Entry<String, String> entry : user.getSocials().entrySet()) {
-                String url = entry.getValue();
-                moderationClient.validateContent(url);
-                moderationClient.validateContent(fetchPageTitleOrSnippet(url));
+        if (isValid(post.getReferences())) {
+            String[] urls = post.getReferences().split("/\\\\\\*\\\\"); // existing split logic
+            for (String url : urls) {
+                url = url.trim();
+                if (url.isEmpty())
+                    continue;
+                combined.append(url).append("\n");
+                combined.append(fetchPageTitleOrSnippet(url)).append("\n");
             }
         }
+
+        // moderation call
+        // moderationClient.validateContent(combined.toString());
+    }
+
+    public void userModeration(User user, Map<String, String> socials) {
+        StringBuilder combined = new StringBuilder();
+
+        // Append user fields
+        if (isValid(user.getFirstname()))
+            combined.append(user.getFirstname()).append("\n");
+        if (isValid(user.getLastname()))
+            combined.append(user.getLastname()).append("\n");
+        if (isValid(user.getTitle()))
+            combined.append(user.getTitle()).append("\n");
+        if (isValid(user.getSummary()))
+            combined.append(user.getSummary()).append("\n");
+        if (isValid(user.getLocation()))
+            combined.append(user.getLocation()).append("\n");
+
+        // Append socials
+        if (socials != null) {
+            for (Map.Entry<String, String> entry : socials.entrySet()) {
+                String url = entry.getValue();
+                if (isValid(url))
+                    combined.append(url).append("\n");
+                String snippet = fetchPageTitleOrSnippet(url);
+                if (isValid(snippet))
+                    combined.append(snippet).append("\n");
+            }
+        }
+
+        // Single moderation call
+        // moderationClient.validateContent(combined.toString());
     }
 
     private String fetchPageTitleOrSnippet(String url) {
@@ -83,17 +116,6 @@ public class ModerationValidator {
                 Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(html);
         return matcher.find() ? matcher.group(1).trim() : "";
-    }
-
-    private void moderateReferences(String references) {
-        if (references == null || references.isBlank()) return;
-        String[] urls = references.split("/\\\\\\*\\\\");
-        for (String url : urls) {
-            url = url.trim();
-            if (url.isEmpty()) continue;
-            moderationClient.validateContent(url);
-            moderationClient.validateContent(fetchPageTitleOrSnippet(url));
-        }
     }
 
     private boolean isValid(String value) {

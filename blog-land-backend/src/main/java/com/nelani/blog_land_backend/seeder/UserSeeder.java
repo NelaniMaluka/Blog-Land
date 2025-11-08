@@ -1,31 +1,43 @@
 package com.nelani.blog_land_backend.seeder;
 
-import com.nelani.blog_land_backend.model.ExperienceLevel;
-import com.nelani.blog_land_backend.model.Provider;
-import com.nelani.blog_land_backend.model.Role;
-import com.nelani.blog_land_backend.model.User;
+import com.nelani.blog_land_backend.model.*;
 import com.nelani.blog_land_backend.repository.UserRepository;
-
+import com.nelani.blog_land_backend.repository.UserSocialRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 @Component
 public class UserSeeder {
 
-        public void seed(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        private final UserRepository userRepository;
+        private final UserSocialRepository userSocialRepository;
+        private final PasswordEncoder passwordEncoder;
+
+        public UserSeeder(UserRepository userRepository,
+                        UserSocialRepository userSocialRepository,
+                        PasswordEncoder passwordEncoder) {
+                this.userRepository = userRepository;
+                this.userSocialRepository = userSocialRepository;
+                this.passwordEncoder = passwordEncoder;
+        }
+
+        public void seed() {
+                if (userRepository.count() > 0) {
+                        System.out.println("⚠️ Skipping seeding — users already exist.");
+                        return;
+                }
+
                 List<String> firstNames = List.of("Ava", "Liam", "Zoe", "Ethan", "Maya", "Noah", "Ivy", "Leo", "Aria",
-                                "Kai",
-                                "Nia", "Jude", "Isla", "Owen", "Luna", "Micah", "Freya", "Ezra", "Skye", "Milo");
+                                "Kai", "Nia", "Jude", "Isla", "Owen", "Luna", "Micah", "Freya", "Ezra", "Skye", "Milo");
+
                 List<String> lastNames = List.of("Smith", "Brown", "Taylor", "Morris", "Jones", "Nguyen", "Khan",
                                 "Garcia",
-                                "Ali", "Williams",
-                                "Adams", "Chen", "Patel", "Singh", "Carter", "Baker", "Thomas", "Lee", "Martin",
-                                "Hill");
+                                "Ali", "Williams", "Adams", "Chen", "Patel", "Singh", "Carter", "Baker", "Thomas",
+                                "Lee", "Martin", "Hill");
+
                 List<String> locations = List.of(
                                 "Cape Town, South Africa",
                                 "Pretoria, South Africa",
@@ -46,12 +58,8 @@ public class UserSeeder {
                                 "Toronto, Canada",
                                 "Seoul, South Korea",
                                 "Sydney, Australia",
-                                "Nairobi, Kenya",
-                                "Bangkok, Thailand",
-                                "Moscow, Russia",
-                                "Dubai, United Arab Emirates",
-                                "Barcelona, Spain",
-                                "Istanbul, Turkey");
+                                "Nairobi, Kenya");
+
                 List<ExperienceLevel> experienceLevels = List.of(
                                 ExperienceLevel.NEW_BLOGGER,
                                 ExperienceLevel.CASUAL_POSTER,
@@ -83,26 +91,12 @@ public class UserSeeder {
                                 "AI Curious",
                                 "Cybersecurity Advocate");
 
-                if (userRepository.count() > 0) {
-                        System.out.println("⚠️ Skipping seeding — users already exist.");
-                        return;
-                }
-
                 Random random = new Random();
 
                 for (int i = 0; i < 20; i++) {
                         String firstname = firstNames.get(i);
                         String lastname = lastNames.get(i);
                         String email = firstname.toLowerCase() + "." + lastname.toLowerCase() + "@blogland.dev";
-                        String location = locations.get(i % locations.size());
-                        ExperienceLevel experience = experienceLevels.get(i % experienceLevels.size());
-                        String summary = summaries.get(random.nextInt(summaries.size()));
-                        String title = titles.get(random.nextInt(titles.size()));
-
-                        Map<String, String> socials = new HashMap<>();
-                        socials.put("twitter", "@" + firstname.toLowerCase() + "_blogger");
-                        socials.put("github", "github.com/" + firstname.toLowerCase() + lastname.toLowerCase());
-                        socials.put("linkedin", "linkedin.com/in/" + firstname.toLowerCase() + lastname.toLowerCase());
 
                         if (userRepository.findByEmail(email).isEmpty()) {
                                 User user = User.builder()
@@ -110,20 +104,39 @@ public class UserSeeder {
                                                 .lastname(lastname)
                                                 .email(email)
                                                 .password(passwordEncoder.encode("password@123"))
-                                                .location(location)
+                                                .location(locations.get(i % locations.size()))
                                                 .provider(Provider.LOCAL)
-                                                .role(Role.USER)
                                                 .profileIconUrl(null)
-                                                .experience(experience)
-                                                .socials(socials)
-                                                .summary(summary)
-                                                .title(title)
+                                                .experience(experienceLevels.get(i % experienceLevels.size()))
+                                                .summary(summaries.get(random.nextInt(summaries.size())))
+                                                .title(titles.get(random.nextInt(titles.size())))
                                                 .build();
 
                                 userRepository.save(user);
+
+                                // ✅ Create UserSocial entries
+                                userSocialRepository.save(UserSocial.builder()
+                                                .user(user)
+                                                .platform("twitter")
+                                                .url("https://twitter.com/" + firstname.toLowerCase() + "_blogger")
+                                                .build());
+
+                                userSocialRepository.save(UserSocial.builder()
+                                                .user(user)
+                                                .platform("github")
+                                                .url("https://github.com/" + firstname.toLowerCase()
+                                                                + lastname.toLowerCase())
+                                                .build());
+
+                                userSocialRepository.save(UserSocial.builder()
+                                                .user(user)
+                                                .platform("linkedin")
+                                                .url("https://linkedin.com/in/" + firstname.toLowerCase()
+                                                                + lastname.toLowerCase())
+                                                .build());
                         }
                 }
 
-                System.out.println("✅ User seeding complete.");
+                System.out.println("✅ User + Social seeding complete.");
         }
 }

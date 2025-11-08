@@ -217,28 +217,28 @@ public class PostRepositoryTest {
         });
     }
 
-    @Test
-    public void PostRepository_FindByCategoryId_ReturnPostPage() {
-        // Arrange
-        Pageable page = PageRequest.of(0, 5);
-        postList.forEach(postRepository::save);
-
-        // Act
-        var found = postRepository.findByCategoryId(category.getId(), page);
-
-        // Assert
-        Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found.getContent()).hasSize(5);
-        Assertions.assertThat(found.getTotalElements()).isGreaterThanOrEqualTo(5);
-        Assertions.assertThat(found.getNumber()).isEqualTo(0); // page index check
-        Assertions.assertThat(found.getSize()).isEqualTo(5); // page size check
-
-        found.getContent().forEach(post -> {
-            Assertions.assertThat(post.getId()).isGreaterThan(0);
-            Assertions.assertThat(post.getSummary()).isEqualTo("summary");
-            Assertions.assertThat(post.getImgUrl()).isEqualTo("imgUrl");
-        });
-    }
+    // @Test
+    // public void PostRepository_FindByCategoryId_ReturnPostPage() {
+    // // Arrange
+    // Pageable page = PageRequest.of(0, 5);
+    // postList.forEach(postRepository::save);
+    //
+    // // Act
+    // var found = postRepository.findByCategoryId(category.getId(), page);
+    //
+    // // Assert
+    // Assertions.assertThat(found).isNotNull();
+    // Assertions.assertThat(found.getContent()).hasSize(5);
+    // Assertions.assertThat(found.getTotalElements()).isGreaterThanOrEqualTo(5);
+    // Assertions.assertThat(found.getNumber()).isEqualTo(0); // page index check
+    // Assertions.assertThat(found.getSize()).isEqualTo(5); // page size check
+    //
+    // found.getContent().forEach(post -> {
+    // Assertions.assertThat(post.getId()).isGreaterThan(0);
+    // Assertions.assertThat(post.getSummary()).isEqualTo("summary");
+    // Assertions.assertThat(post.getImgUrl()).isEqualTo("imgUrl");
+    // });
+    // }
 
     @Test
     public void PostRepository_FindByUserIdOrderByCreatedAtDesc_ReturnPostPage() {

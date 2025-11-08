@@ -3,14 +3,15 @@ package com.nelani.blog_land_backend.service;
 import com.nelani.blog_land_backend.response.LikeResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface LikeService {
-    long getPostLikesCount(long postId);
+    long getPostLikesCount(UUID postId);
 
     List<LikeResponse> getUserLikes();
 
-    String addLike(long postId);
+    void addLike(UUID postId);
 
-    String removeLike(long likeId);
+    void removeLike(UUID likeId);
 
 }

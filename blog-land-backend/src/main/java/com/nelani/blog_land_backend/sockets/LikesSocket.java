@@ -16,6 +16,6 @@ public class LikesSocket {
 
     public void updatePostLikes(LikeRepository likeRepository, Post post) {
         long count = likeRepository.countByPost(post);
-        messagingTemplate.convertAndSend("/topic/like/post-likes/" + post.getId(), count);
+        messagingTemplate.convertAndSend("/topic/post/likes/" + post.getId(), count);
     }
 }
