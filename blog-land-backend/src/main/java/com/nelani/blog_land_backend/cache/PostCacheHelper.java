@@ -40,10 +40,10 @@ public class PostCacheHelper {
     }
 
     /** Evict all paginated user posts */
-    public void evictUserPosts(UUID userId) {
+    public void evictUserPosts(String email) {
         Cache cache = cacheManager.getCache("userPosts");
         if (cache != null) {
-            String prefix = userId + "_";
+            String prefix = email + "_";
             // Extract keys from the cache using Caffeine API
             Object nativeCache = cache.getNativeCache();
             if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache<?, ?> caffeineCache) {
@@ -69,12 +69,12 @@ public class PostCacheHelper {
     }
 
     /** Evict all caches related to a user */
-    public void evictAllUserPosts(UUID userId, UUID postId, UUID categoryId) {
+    public void evictAllUserPosts(String email, UUID postId, UUID categoryId) {
         evictPost(postId);
         evictTrendingPosts();
         evictAllPosts();
         evictCategoryPosts(categoryId);
-        evictUserPosts(userId);
+        evictUserPosts(email);
     }
 
 }

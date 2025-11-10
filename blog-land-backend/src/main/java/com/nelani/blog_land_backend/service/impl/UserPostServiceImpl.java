@@ -109,7 +109,7 @@ public class UserPostServiceImpl implements UserPostService {
 
         postRepository.save(newPost); // Save the new post
 
-        postCacheHelper.evictAllUserPosts(user.getId(), newPost.getId(), postDto.categoryId()); // Evict cache data
+        postCacheHelper.evictAllUserPosts(user.getEmail(), newPost.getId(), postDto.categoryId()); // Evict cache data
 
         // Update the socket
         postSocket.addNewPost(newPost);
@@ -151,7 +151,7 @@ public class UserPostServiceImpl implements UserPostService {
 
         postRepository.save(post); // Save updated post
 
-        postCacheHelper.evictAllUserPosts(user.getId(), post.getId(), postDto.categoryId());
+        postCacheHelper.evictAllUserPosts(user.getEmail(), post.getId(), postDto.categoryId());
 
         // Update the socket
         postSocket.updatePost(post);
@@ -173,20 +173,14 @@ public class UserPostServiceImpl implements UserPostService {
                     "You are not authorized to perform this action on this post.");
         }
 
-        deletePostAndRelations(existingPost);
-
-        postCacheHelper.evictAllUserPosts(user.getId(), existingPost.getId(), existingPost.getCategory().getId());
-
-        // Update the socket
-        postSocket.deletePost(postId);
-    }
-
-    @Transactional
-    public void deletePostAndRelations(Post existingPost) {
         likeRepository.deleteByPost(existingPost);
         commentRepository.deleteByPost(existingPost);
         postRepository.delete(existingPost);
-        postRepository.delete(existingPost);
+
+        postCacheHelper.evictAllUserPosts(user.getEmail(), existingPost.getId(), existingPost.getCategory().getId());
+
+        // Update the socket
+        postSocket.deletePost(postId);
     }
 
 }

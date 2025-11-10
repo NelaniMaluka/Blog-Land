@@ -127,7 +127,7 @@ public class CommentServiceImpl implements CommentService {
                 commentSocket.addNewComments(existingPost, newComment);
                 commentSocket.addUserComment(user, newComment, existingPost);
 
-                commentCacheHelper.evictAllForPost(user.getId(), postId); // Evict Caches
+                commentCacheHelper.evictAllForPost(user.getEmail(), postId); // Evict Caches
         }
 
         @Override
@@ -164,7 +164,7 @@ public class CommentServiceImpl implements CommentService {
                 commentSocket.updateComment(post, existingComment);
 
                 // Evict Caches
-                commentCacheHelper.evictPostCommentsPaginated(postId);
+                commentCacheHelper.evictPostCommentsPaginated();
         }
 
         @Override
@@ -192,7 +192,7 @@ public class CommentServiceImpl implements CommentService {
                 commentSocket.deleteComment(comment.getPost(), commentId);
                 commentSocket.removeUserComment(user, comment, comment.getPost());
 
-                commentCacheHelper.evictAllForPost(user.getId(), comment.getPost().getId()); // Evict Caches
+                commentCacheHelper.evictAllForPost(user.getEmail(), comment.getPost().getId()); // Evict Caches
         }
 
 }

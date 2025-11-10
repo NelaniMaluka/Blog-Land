@@ -31,7 +31,7 @@ public class ContactController {
     @ApiResponse(responseCode = "201", description = "Message received successfully")
     @PostMapping("/public/contact")
     public ResponseEntity<String> getContactMessage(@RequestBody @Valid ContactDto contactDto) {
-        contactService.getInfo(contactDto);
+        contactService.saveInfo(contactDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Success, we received your message. Thank you for reaching out.");
     }

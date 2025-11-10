@@ -1,9 +1,11 @@
 package com.nelani.blog_land_backend.sockets;
 
-import com.nelani.blog_land_backend.model.Post;
-import com.nelani.blog_land_backend.repository.LikeRepository;
+import com.nelani.blog_land_backend.response.LikeResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
 
 @Component
 public class LikesSocket {
@@ -14,8 +16,11 @@ public class LikesSocket {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void updatePostLikes(LikeRepository likeRepository, Post post) {
-        long count = likeRepository.countByPost(post);
-        messagingTemplate.convertAndSend("/topic/post/likes/" + post.getId(), count);
+    public void updatePostLikes(long count, UUID postId) {
+        messagingTemplate.convertAndSend("/topic/posts/likes/" + postId, count);
+    }
+
+    public void updateUserLikes(List<LikeResponse> likes) {
+        messagingTemplate.convertAndSend("/queue/user/likes/update", likes);
     }
 }

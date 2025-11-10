@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collections;
 import java.util.List;
 
 @Log4j2
@@ -75,9 +74,7 @@ public class UserServiceImpl implements UserService {
         String fileUrl = BackendBaseUrl + UPLOAD_DIR + fileName;
 
         // Fetch the user from the repository
-        User currentUser = userValidation.getAuthenticatedUser();
-        User user = userRepository.findById(currentUser.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = userValidation.getAuthenticatedUser();
 
         // Update URL
         user.setProfileIconUrl(fileUrl);
@@ -95,9 +92,7 @@ public class UserServiceImpl implements UserService {
         log.info("Starting profile image removal for user");
 
         // Fetch the user
-        User currentUser = userValidation.getAuthenticatedUser();
-        User user = userRepository.findById(currentUser.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = userValidation.getAuthenticatedUser();
 
         // Remove the file locally
         String filePath = user.getProfileIconUrl().replace(BackendBaseUrl, "");
@@ -120,7 +115,10 @@ public class UserServiceImpl implements UserService {
         // Get current authenticated user
         User user = userValidation.getAuthenticatedUser();
 
-        return UserMapper.buildLoggedInUser(user, Collections.emptyList());
+        // Fetch socials
+        var socials = userSocialRepository.findByUser(user);
+
+        return UserMapper.buildLoggedInUser(user, socials);
     }
 
     @Override
@@ -210,22 +208,17 @@ public class UserServiceImpl implements UserService {
         log.info("Deleting user with ID: {} and email: {}", user.getId(), user.getEmail());
 
         // Delete user
-        deleteUserAndRelations(user);
+        likeRepository.deleteByUser(user);
+        commentRepository.deleteByUser(user);
+        postRepository.deleteByUser(user);
+        passwordResetRepository.deleteByUser(user);
+        userSocialRepository.deleteByUser(user);
+        userRepository.delete(user);
 
         // Evict user cache
         userCacheHelper.evictAllForUser(user.getEmail(), user.getNaniId());
 
         log.info("User deleted successfully: ID {}", user.getId());
-    }
-
-    @Transactional
-    public void deleteUserAndRelations(User existingUser) {
-        likeRepository.deleteByUser(existingUser);
-        commentRepository.deleteByUser(existingUser);
-        postRepository.deleteByUser(existingUser);
-        passwordResetRepository.deleteByUser(existingUser);
-        userSocialRepository.deleteByUser(existingUser);
-        userRepository.delete(existingUser);
     }
 
 }

@@ -21,13 +21,13 @@ public class FullSeeder {
             RestTemplate restTemplate) {
 
         return args -> {
-            // 🧩 Step 1: Seed users first
+            // Step 1: Seed users first
             new UserSeeder(userRepository, userSocialRepository, passwordEncoder).seed();
 
-            // 🧩 Step 2: Then seed categories
+            // Step 2: Then seed categories
             new CategorySeeder().seed(categoryRepository);
 
-            // 🧩 Step 3: Then seed TechCrunch posts (which depend on users & categories)
+            // Step 3: Then seed TechCrunch posts (which depend on users & categories)
             new TechCrunchSeeder().seed(restTemplate, postRepository, userRepository, categoryRepository,
                     likeRepository);
         };

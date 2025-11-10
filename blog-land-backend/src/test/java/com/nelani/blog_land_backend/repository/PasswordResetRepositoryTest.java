@@ -93,4 +93,14 @@ public class PasswordResetRepositoryTest {
         Assertions.assertThat(passwordReset1).isNotNull();
     }
 
+    @Test
+    public void PasswordResetRepository_DeleteByUser_DeletesPasswordReset() {
+        // Act
+        passwordResetRepository.save(passwordReset);
+
+        // Assert
+        var count = passwordResetRepository.deleteByUser(user);
+        Assertions.assertThat(count).isEqualTo(1);
+    }
+
 }

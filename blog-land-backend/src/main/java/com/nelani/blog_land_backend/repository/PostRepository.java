@@ -18,8 +18,6 @@ import java.util.UUID;
 public interface PostRepository extends JpaRepository<Post, UUID> {
   long count();
 
-  long countByUser(User user);
-
   // Count only published posts in category
   @Query("SELECT COUNT(p) FROM Post p WHERE p.category.id = :categoryId AND " +
       "p.isDraft = false AND (p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP)")

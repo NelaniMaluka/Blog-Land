@@ -71,7 +71,8 @@ public class PostServiceImpl implements PostService {
         post.setViewCount(post.getViewCount() + 1);
         postRepository.save(post); // Save the post with the updated views
 
-        postCacheHelper.evictAllUserPosts(post.getUser().getId(), postId, post.getCategory().getId()); // Evict all data
+        postCacheHelper.evictAllUserPosts(post.getUser().getEmail(), postId, post.getCategory().getId()); // Evict all
+                                                                                                          // data
 
         // Update the socket
         postSocket.updatePost(post);

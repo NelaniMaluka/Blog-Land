@@ -23,16 +23,16 @@ public class CommentCacheHelper {
     }
 
     /** Evict the user’s comments for a post */
-    public void evictUserComments(UUID userId, UUID postId) {
+    public void evictUserComments(String email, UUID postId) {
         Cache cache = cacheManager.getCache("userComments");
         if (cache != null) {
-            String key = userId + "_" + postId;
+            String key = email + "_" + postId;
             cache.evict(key); // keys are Strings
         }
     }
 
     /** Evict all paginated comments for a post */
-    public void evictPostCommentsPaginated(UUID postId) {
+    public void evictPostCommentsPaginated() {
         Cache cache = cacheManager.getCache("postComments");
         if (cache != null) {
             cache.clear(); // safest simple option
@@ -40,9 +40,9 @@ public class CommentCacheHelper {
     }
 
     /** Evict all caches related to a post for a specific user */
-    public void evictAllForPost(UUID userId, UUID postId) {
+    public void evictAllForPost(String email, UUID postId) {
         evictPostCommentsCount(postId);
-        evictUserComments(userId, postId);
-        evictPostCommentsPaginated(postId);
+        evictUserComments(email, postId);
+        evictPostCommentsPaginated();
     }
 }

@@ -15,6 +15,7 @@ public class UserMapper {
                 .collect(Collectors.toMap(UserSocial::getPlatform, UserSocial::getUrl));
 
         return UserResponse.builder()
+                .naniId(user.getNaniId())
                 .email(user.getEmail())
                 .firstname(user.getFirstname())
                 .lastname(user.getLastname())
@@ -22,7 +23,7 @@ public class UserMapper {
                 .profileIconUrl(user.getProfileIconUrl())
                 .location(user.getLocation())
                 .experience(user.getExperience())
-                .socials(socialsMap) // now a Map<String, String>
+                .socials(socialsMap)
                 .summary(user.getSummary())
                 .title(user.getTitle())
                 .joinedAt(user.getJoinedAt())
@@ -31,6 +32,7 @@ public class UserMapper {
 
     public static UserResponse publicUserWithMinimalDetails(User user) {
         return UserResponse.builder()
+                .naniId(user.getNaniId())
                 .firstname(user.getFirstname())
                 .lastname(user.getLastname())
                 .profileIconUrl(user.getProfileIconUrl())

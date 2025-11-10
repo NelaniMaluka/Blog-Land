@@ -24,16 +24,16 @@ public class LikeCacheHelper {
     }
 
     /** Evict the list of the user’s likes */
-    public void evictUserLikes(UUID userId, UUID postId) {
+    public void evictUserLikes(String email) {
         Cache cache = cacheManager.getCache("userLikes");
         if (cache != null) {
-            cache.evict(userId);
+            cache.evict(email);
         }
     }
 
     /** Evict all caches related to a post for a specific user */
-    public void evictAllForPost(UUID userId, UUID postId) {
+    public void evictAllForPost(String email, UUID postId) {
         evictPostLikesCount(postId);
-        evictUserLikes(userId, postId);
+        evictUserLikes(email);
     }
 }

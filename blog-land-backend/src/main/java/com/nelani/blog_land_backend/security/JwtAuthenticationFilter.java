@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,7 +25,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(HandlerExceptionResolver handlerExceptionResolver,
+    public JwtAuthenticationFilter(
+            HandlerExceptionResolver handlerExceptionResolver,
             JwtService jwtService,
             UserDetailsService userDetailsService) {
         this.handlerExceptionResolver = handlerExceptionResolver;
@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
-        // Skip actuator, auth, recipe, password reset, swagger
+        // Skip public and non-protected endpoints
         return path.startsWith("/api/public")
                 || path.startsWith("/actuator")
                 || path.startsWith("/v2/api-docs")
@@ -52,44 +52,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        String path = request.getServletPath();
-        log.debug("Incoming request: {} {}", request.getMethod(), path);
-
         final String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            log.warn("Missing or invalid Authorization header for path: {}", path);
+            // Avoid noisy warnings; this is normal for public endpoints
+            log.trace("No valid Authorization header on {}", request.getServletPath());
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
             final String jwt = authHeader.substring(7);
-            final String username = jwtService.extractUsername(jwt); // JWT subject = username
-            log.debug("Extracted username from JWT: {}", username);
+            final String username = jwtService.extractUsername(jwt);
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-            if (username != null && authentication == null) {
-                // Load user by username (matches DB username field)
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                log.debug("Authorities: {}", userDetails.getAuthorities());
-
                 if (jwtService.isTokenValid(jwt, userDetails)) {
-                    log.info("Authenticated user: {}", username);
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
                             null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                    log.debug("JWT authentication successful for user={}", username);
                 } else {
-                    log.warn("Invalid JWT for user: {}", username);
+                    log.debug("Invalid JWT for user={}", username);
                 }
             }
 
             filterChain.doFilter(request, response);
 
         } catch (Exception e) {
-            log.error("JWT authentication error: {}", e.getMessage());
+            log.error("JWT authentication failed: {}", e.getMessage());
             handlerExceptionResolver.resolveException(request, response, null, e);
         }
     }

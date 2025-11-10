@@ -1,5 +1,6 @@
 package com.nelani.blog_land_backend.security;
 
+import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -23,14 +24,24 @@ public class WebSocketJwtInterceptor implements ChannelInterceptor {
     }
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+    public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        if (accessor == null)
+            return message;
 
+        // Only check authentication on CONNECT
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             String token = accessor.getFirstNativeHeader("Authorization");
-            if (token != null && token.startsWith("Bearer ")) {
-                String jwt = token.substring(7);
-                String username = jwtService.extractUsername(jwt);
+
+            // Skip auth for clients connecting without a token (public viewers)
+            if (token == null || !token.startsWith("Bearer ")) {
+                return message;
+            }
+
+            String jwt = token.substring(7);
+            String username = jwtService.extractUsername(jwt);
+
+            if (username != null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 if (jwtService.isTokenValid(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails,

@@ -13,6 +13,8 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(name = "UserResponse", description = "Represents a user profile including social links and account metadata")
 public record UserResponse(
+                @Schema(description = "Unique identifier of the user within the system (NANI ID)", example = "nani12345") String naniId,
+
                 @Schema(description = "User's email address", example = "[user@example.com](mailto:user@example.com)") String email,
 
                 @Schema(description = "User's first name", example = "John") String firstname,
