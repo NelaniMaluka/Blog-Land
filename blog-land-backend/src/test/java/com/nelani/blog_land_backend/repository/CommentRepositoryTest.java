@@ -119,7 +119,7 @@ public class CommentRepositoryTest {
         Assertions.assertThat(found.size()).isEqualTo(1);
         Assertions.assertThat(found.get(0).getId()).isEqualTo(savedComment.getId());
         Assertions.assertThat(found.get(0).getUser().getId()).isEqualTo(savedComment.getUser().getId());
-        Assertions.assertThat(found.get(0).getPost().getId()).isEqualTo(savedComment.getUser().getId());
+        Assertions.assertThat(found.get(0).getPost().getId()).isEqualTo(savedComment.getPost().getId());
     }
 
     @Test

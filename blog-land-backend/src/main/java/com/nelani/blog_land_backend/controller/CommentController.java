@@ -36,7 +36,6 @@ public class CommentController {
 
         @Operation(summary = "Get total comments count for a post")
         @ApiResponse(responseCode = "200", description = "Total comments count retrieved successfully", content = @Content(schema = @Schema(implementation = Long.class)))
-
         @GetMapping("/public/posts/{postId}/comments/count")
         public ResponseEntity<Long> getCommentsCountByPost(
                         @PathVariable("postId") @NotNull UUID postId) {

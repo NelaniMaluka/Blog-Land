@@ -40,20 +40,20 @@ public class PostsController {
                 this.postService = postService;
         }
 
-        @GetMapping("/public/posts/search")
         @Operation(summary = "Search posts by keyword", description = "Retrieves a list of posts ranked by relevance based on the provided keyword.")
         @ApiResponse(responseCode = "200", description = "Successfully retrieved search results", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostResponse.class)))
+        @GetMapping("/public/posts/search")
         public ResponseEntity<List<PostResponse>> searchPosts(
                         @RequestParam String keyword) {
                 List<PostResponse> rankedResults = postService.searchByKeyword(keyword);
                 return ResponseEntity.ok(rankedResults);
         }
 
-        @GetMapping("/public/posts/random")
         @Operation(summary = "Get a random post", description = "Retrieves a single randomly selected post from the database. "
                         +
                         "This endpoint is publicly accessible and returns post details with user information.")
         @ApiResponse(responseCode = "200", description = "Successfully retrieved a random post", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostResponse.class)))
+        @GetMapping("/public/posts/random")
         public ResponseEntity<PostResponse> getRandomPost() {
                 Post post = postRepository.findRandomPost();
 
@@ -61,11 +61,11 @@ public class PostsController {
                 return ResponseEntity.ok(response);
         }
 
-        @GetMapping("/public/posts/related")
         @Operation(summary = "Get related (random) posts", description = "Retrieves a list of randomly selected posts that can be used as related or suggested content. "
                         +
                         "This endpoint is publicly accessible and returns multiple post previews.")
         @ApiResponse(responseCode = "200", description = "Successfully retrieved related posts", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostResponse.class)))
+        @GetMapping("/public/posts/related")
         public ResponseEntity<List<PostResponse>> getRandomPosts() {
                 List<Post> posts = postRepository.findRandomPosts();
 
@@ -76,11 +76,11 @@ public class PostsController {
                 return ResponseEntity.ok(response);
         }
 
-        @GetMapping("/public/posts/latest")
         @Operation(summary = "Get the latest posts", description = "Retrieves a paginated list of the most recently published posts. "
                         +
                         "This endpoint is publicly accessible and supports pagination parameters.")
         @ApiResponse(responseCode = "200", description = "Successfully retrieved the latest posts", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostResponse.class)))
+        @GetMapping("/public/posts/latest")
         public ResponseEntity<List<PostResponse>> getLatestPost(
                         @RequestParam int page,
                         @RequestParam int size) {
@@ -88,11 +88,11 @@ public class PostsController {
                 return ResponseEntity.ok(postResponses);
         }
 
-        @GetMapping("/public/posts/popular")
         @Operation(summary = "Get popular (trending) posts", description = "Retrieves a paginated list of trending or most popular posts. "
                         +
                         "This endpoint is publicly accessible and uses caching to improve performance.")
         @ApiResponse(responseCode = "200", description = "Successfully retrieved popular posts", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostResponse.class)))
+        @GetMapping("/public/posts/popular")
         @Cacheable(value = "trendingPosts", key = "#page + '_' + #size")
         public ResponseEntity<Page<PostResponse>> getTrendingPost(
                         @RequestParam int page,
@@ -104,10 +104,10 @@ public class PostsController {
                 return ResponseEntity.ok(responsePage);
         }
 
-        @GetMapping("/public/posts/{postId}")
         @Operation(summary = "Get a post by ID", description = "Retrieves a single post by its unique ID. " +
                         "This endpoint is publicly accessible and uses caching to optimize performance.")
         @ApiResponse(responseCode = "200", description = "Successfully retrieved the post", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostResponse.class)))
+        @GetMapping("/public/posts/{postId}")
         @Cacheable(value = "post", key = "#postId")
         public ResponseEntity<PostResponse> getPost(
                         @PathVariable UUID postId) {
@@ -119,12 +119,12 @@ public class PostsController {
                 return ResponseEntity.ok(response);
         }
 
-        @GetMapping("/public/posts")
         @Operation(summary = "Get all posts with pagination and order", description = "Retrieves a paginated list of all posts. "
                         +
                         "Supports ordering by latest or oldest posts. " +
                         "This endpoint is publicly accessible and uses caching to improve performance.")
         @ApiResponse(responseCode = "200", description = "Successfully retrieved all posts", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostResponse.class)))
+        @GetMapping("/public/posts")
         @Cacheable(value = "allPosts", key = "#page + '_' + #size + '_' + #order")
         public ResponseEntity<Page<PostResponse>> getAllPosts(
                         @RequestParam int page,
@@ -140,11 +140,11 @@ public class PostsController {
                 return ResponseEntity.ok(responsePage);
         }
 
-        @PostMapping("/public/posts/{postId}/view")
         @Operation(summary = "Increment post view count", description = "Increments the view count for the specified post. "
                         +
                         "This endpoint does not return any content.")
         @ApiResponse(responseCode = "204", description = "Successfully incremented view count, no content returned")
+        @PostMapping("/public/posts/{postId}/view")
         public ResponseEntity<Void> incrementViewCount(
                         @PathVariable("postId") UUID postId) {
                 postService.incrementViews(postId);

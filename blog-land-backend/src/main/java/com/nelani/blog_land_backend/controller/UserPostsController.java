@@ -30,9 +30,9 @@ public class UserPostsController {
                 this.userPostService = userPostService;
         }
 
-        @GetMapping("/user/posts")
         @Operation(summary = "Get all posts by authenticated user", description = "Retrieves a paginated list of all posts created by the currently authenticated user.")
         @ApiResponse(responseCode = "200", description = "Successfully retrieved user's posts", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostResponse.class)))
+        @GetMapping("/user/posts")
         @PreAuthorize("hasAuthority('post:read')")
         public ResponseEntity<Page<PostResponse>> getAllPostsByUserId(
                         @RequestParam int page,
@@ -41,27 +41,27 @@ public class UserPostsController {
                 return ResponseEntity.ok(responsePage);
         }
 
-        @PostMapping("/user/posts/add")
         @Operation(summary = "Add a new post for the authenticated user", description = "Creates a new post for the currently authenticated user using the provided post data.")
         @ApiResponse(responseCode = "201", description = "Successfully added post", content = @Content(mediaType = "application/json", schema = @Schema(example = "\"Success, Your post was successfully added\"")))
+        @PostMapping("/user/posts/add")
         @PreAuthorize("hasAuthority('post:write')")
         public ResponseEntity<String> addPostsByUserId(@RequestBody PostDto postDto) {
                 userPostService.addPost(postDto);
                 return ResponseEntity.status(HttpStatus.CREATED).body("Success, Your post was successfully added");
         }
 
-        @PutMapping("/user/posts/update")
         @Operation(summary = "Update a user's post", description = "Updates an existing post of the currently authenticated user using the provided post data.")
         @ApiResponse(responseCode = "200", description = "Successfully updated post", content = @Content(mediaType = "application/json", schema = @Schema(example = "\"Success, Your post was successfully updated\"")))
+        @PutMapping("/user/posts/update")
         @PreAuthorize("hasAuthority('post:write')")
         public ResponseEntity<String> updateUserPost(@RequestBody PostDto postDto) {
                 userPostService.updatePost(postDto);
                 return ResponseEntity.ok("Success, Your post was successfully updated");
         }
 
-        @DeleteMapping("/user/posts/remove")
         @Operation(summary = "Delete a user's post", description = "Deletes a specific post of the currently authenticated user by providing its unique ID.")
         @ApiResponse(responseCode = "204", description = "Successfully deleted post")
+        @DeleteMapping("/user/posts/remove")
         @PreAuthorize("hasAuthority('post:delete')")
         public ResponseEntity<String> deleteUserPost(
                         @RequestParam UUID id) {

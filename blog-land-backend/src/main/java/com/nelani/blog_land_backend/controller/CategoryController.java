@@ -55,11 +55,11 @@ public class CategoryController {
         return ResponseEntity.ok(categoryDtos);
     }
 
-    @GetMapping("/public/posts/categories/{categoryId}")
     @Operation(summary = "Get posts by category", description = "Retrieves a paginated list of posts belonging to a specific category. "
             +
             "Supports ordering by latest or oldest posts.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved posts by category", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostResponse.class)))
+    @GetMapping("/public/posts/categories/{categoryId}")
     public ResponseEntity<Page<PostResponse>> getAllPostsByCategory(
             @PathVariable UUID categoryId,
             @RequestParam int page,

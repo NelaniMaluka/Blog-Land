@@ -48,11 +48,11 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/user/auth/log-out")
     @Operation(summary = "Log out the authenticated user", description = "Logs out the currently authenticated user by clearing the security context "
             +
             "and invalidating the session. Returns a success message upon completion.")
     @ApiResponse(responseCode = "200", description = "User successfully logged out")
+    @PostMapping("/user/auth/log-out")
     public ResponseEntity<String> logOut(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
