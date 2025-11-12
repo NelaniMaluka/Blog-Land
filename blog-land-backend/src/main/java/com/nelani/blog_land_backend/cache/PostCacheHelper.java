@@ -2,6 +2,7 @@ package com.nelani.blog_land_backend.cache;
 
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class PostCacheHelper {
     }
 
     /** Evict the post */
-    public void evictPost(UUID postId) {
+    public void evictPost(@NonNull UUID postId) {
         Cache cache = cacheManager.getCache("post");
         if (cache != null) {
             cache.evict(postId);
@@ -69,7 +70,7 @@ public class PostCacheHelper {
     }
 
     /** Evict all caches related to a user */
-    public void evictAllUserPosts(String email, UUID postId, UUID categoryId) {
+    public void evictAllUserPosts(String email, @NonNull UUID postId, UUID categoryId) {
         evictPost(postId);
         evictTrendingPosts();
         evictAllPosts();

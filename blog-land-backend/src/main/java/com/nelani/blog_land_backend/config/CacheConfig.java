@@ -22,31 +22,41 @@ public class CacheConfig {
                                 .expireAfterWrite(5, TimeUnit.MINUTES)
                                 .maximumSize(500);
 
-                cacheManager.registerCustomCache("postComments", commentCache.build());
-                cacheManager.registerCustomCache("postCommentsCount", commentCache.build());
-                cacheManager.registerCustomCache("postLikesCount", commentCache.build());
-                cacheManager.registerCustomCache("userComments", commentCache.build());
-                cacheManager.registerCustomCache("userLikes", commentCache.build());
+                var builtCommentCache = commentCache.build();
+                if (builtCommentCache != null) {
+                        cacheManager.registerCustomCache("postComments", builtCommentCache);
+                        cacheManager.registerCustomCache("postCommentsCount", builtCommentCache);
+                        cacheManager.registerCustomCache("postLikesCount", builtCommentCache);
+                        cacheManager.registerCustomCache("userComments", builtCommentCache);
+                        cacheManager.registerCustomCache("userLikes", builtCommentCache);
+                }
 
                 // User activity and trending-related caches (moderately dynamic)
                 Caffeine<Object, Object> activityCache = Caffeine.newBuilder()
                                 .expireAfterWrite(1, TimeUnit.HOURS)
                                 .maximumSize(300);
 
-                cacheManager.registerCustomCache("userPosts", activityCache.build());
-                cacheManager.registerCustomCache("trendingPosts", activityCache.build());
-                cacheManager.registerCustomCache("allPosts", activityCache.build());
+                var builtActivityCache = activityCache.build();
+                if (builtActivityCache != null) {
+                        cacheManager.registerCustomCache("userPosts", builtActivityCache);
+                        cacheManager.registerCustomCache("trendingPosts", builtActivityCache);
+                        cacheManager.registerCustomCache("allPosts", builtActivityCache);
+                }
 
                 // Post and category data caches (mostly static)
                 Caffeine<Object, Object> contentCache = Caffeine.newBuilder()
                                 .expireAfterWrite(7, TimeUnit.DAYS)
                                 .maximumSize(200);
 
-                cacheManager.registerCustomCache("post", contentCache.build());
-                cacheManager.registerCustomCache("categoryPosts", contentCache.build());
-                cacheManager.registerCustomCache("categories", contentCache.build());
-                cacheManager.registerCustomCache("user", contentCache.build());
+                var builtContentCache = contentCache.build();
+                if (builtContentCache != null) {
+                        cacheManager.registerCustomCache("post", builtContentCache);
+                        cacheManager.registerCustomCache("categoryPosts", builtContentCache);
+                        cacheManager.registerCustomCache("categories", builtContentCache);
+                        cacheManager.registerCustomCache("user", builtContentCache);
+                }
 
                 return cacheManager;
         }
+
 }

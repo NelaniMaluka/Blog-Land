@@ -2,6 +2,8 @@ package com.nelani.blog_land_backend.notifications;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.log4j.Log4j2;
+
+import org.springframework.lang.NonNull;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -21,7 +23,7 @@ public class EmailService {
 
     @Async("emailTaskExecutor")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void sendEmail(String toEmail, String subject, String htmlContent) {
+    private void sendEmail(@NonNull String toEmail, @NonNull String subject, @NonNull String htmlContent) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -35,7 +37,7 @@ public class EmailService {
         }
     }
 
-    public void sendPasswordResetEmail(String toEmail, String token) {
+    public void sendPasswordResetEmail(@NonNull String toEmail, String token) {
         String subject = "Blog Land – Reset Your Password";
         String resetUrl = "https://blog-land.web.app/reset-password?token=" + token;
         String logoUrl = "https://blog-land.web.app/logo-header.png";

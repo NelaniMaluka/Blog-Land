@@ -3,6 +3,7 @@ package com.nelani.blog_land_backend.cache;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
+import org.springframework.lang.NonNull;
 
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ public class CommentCacheHelper {
     }
 
     /** Evict the count of comments for a post */
-    public void evictPostCommentsCount(UUID postId) {
+    public void evictPostCommentsCount(@NonNull UUID postId) {
         Cache cache = cacheManager.getCache("postCommentsCount");
         if (cache != null)
             cache.evict(postId);
@@ -40,7 +41,7 @@ public class CommentCacheHelper {
     }
 
     /** Evict all caches related to a post for a specific user */
-    public void evictAllForPost(String email, UUID postId) {
+    public void evictAllForPost(String email, @NonNull UUID postId) {
         evictPostCommentsCount(postId);
         evictUserComments(email, postId);
         evictPostCommentsPaginated();

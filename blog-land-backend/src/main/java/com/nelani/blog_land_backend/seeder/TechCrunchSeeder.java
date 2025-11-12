@@ -17,7 +17,6 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class TechCrunchSeeder {
