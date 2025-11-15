@@ -151,7 +151,7 @@ public class LikeServiceImplTest {
         verify(likeRepository, times(1)).countByPost(post);
 
         verify(likesSocket, times(1)).updatePostLikes(1L, postId);
-        verify(likesSocket, times(1)).updateUserLikes(anyList());
+        verify(likesSocket, times(1)).updateUserLikes(any(), anyList());
         verify(likeCacheHelper, times(1)).evictAllForPost(user.getEmail(), postId);
     }
 
@@ -183,7 +183,7 @@ public class LikeServiceImplTest {
         verify(likeRepository, times(1)).findAllByUser(user);
         verify(likeRepository, times(1)).countByPost(post);
         verify(likesSocket, times(1)).updatePostLikes(0L, postId);
-        verify(likesSocket, times(1)).updateUserLikes(anyList());
+        verify(likesSocket, times(1)).updateUserLikes(any(), anyList());
         verify(likeCacheHelper, times(1)).evictAllForPost(user.getEmail(), postId);
     }
 

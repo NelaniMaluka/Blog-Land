@@ -15,7 +15,7 @@ import FallbackAvatars from '../../../common/Avatar';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
-import { useLogoutUser } from '../../../../hooks/useUser';
+import { useLogoutUser } from '../../../../hooks/useAuth';
 
 export type MenuKey = 'profile' | 'posts';
 

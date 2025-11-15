@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UserResponse } from '../types/user/response';
+import { LoginResponse, UserResponse } from '../types/user/response';
 
 interface AuthState {
   jwtToken: string | null;
@@ -24,6 +24,11 @@ const authSlice = createSlice({
     setUser: (state, action: PayloadAction<UserResponse>) => {
       state.user = action.payload;
     },
+    setLoginResponse: (state, action: PayloadAction<LoginResponse>) => {
+      state.jwtToken = action.payload.token;
+      state.user = action.payload.user;
+      state.isAuthenticated = true;
+    },
     logout: (state) => {
       state.jwtToken = null;
       state.user = null;
@@ -32,5 +37,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setToken, setUser, logout } = authSlice.actions;
+export const { setToken, setUser, setLoginResponse, logout } = authSlice.actions;
 export default authSlice.reducer;

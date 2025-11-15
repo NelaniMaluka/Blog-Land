@@ -11,12 +11,12 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
+import storage from 'redux-persist/lib/storage';
 
 const persistConfig = {
   key: 'auth',
   storage,
-  whitelist: ['jwtToken', 'user', 'isAuthenticated'], // persist these fields
+  whitelist: ['jwtToken', 'user', 'isAuthenticated'],
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);

@@ -5,7 +5,7 @@ export const updateProfileIcon = async (file: File) => {
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await apiClient.post('/user/upload-profile-image', formData, {
+  const response = await apiClient.post('/user/image/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -14,36 +14,27 @@ export const updateProfileIcon = async (file: File) => {
 };
 
 export const removeProfileIcon = async () => {
-  const response = await apiClient.delete('/user/remove-profile-image', {});
+  const response = await apiClient.delete('/user/image/remove');
   return response.data;
 };
 
-export const getUserDetails = async () => {
-  const response = await apiClient.get('/user/get-user', {});
+export const getPublicUserDetails = async (nanoId: string) => {
+  const response = await apiClient.get(`/public/user/${nanoId}`);
   return response;
 };
 
-export const getPublicUserDetails = async (nanoId: string) => {
-  const response = await apiClient.get(`/user/get/public-user-details/${nanoId}`, {});
+export const getUserDetails = async () => {
+  const response = await apiClient.get('/user/me');
   return response;
 };
 
 export const updateUserDetails = async (payload: UpdateUserRequest) => {
-  const response = await apiClient.put('/user/update-user', payload);
+  const response = await apiClient.put('/user/update', payload);
+
   return response;
 };
 
 export const deleteUserDetails = async () => {
-  const response = await apiClient.delete('/user/delete-user', {});
-  return response;
-};
-
-export const logoutUser = async () => {
-  const response = await apiClient.post('/user/log-out', {});
-  return response;
-};
-
-export const getUserSummaryAnalytics = async () => {
-  const response = await apiClient.get('/user/get-user-summary-analytics', {});
+  const response = await apiClient.delete('/user/remove');
   return response;
 };

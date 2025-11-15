@@ -11,7 +11,7 @@ export const addPostSchema = z.object({
 });
 
 export const updatePostSchema = z.object({
-  id: z.number().int().min(1).default(0),
+  id: z.uuid({ message: 'Invalid ID format' }),
   title: z.string().min(1, { message: 'First name cannot be empty' }),
   content: z.string().min(1, { message: 'First name cannot be empty' }),
   categoryId: z.number().int().min(1).default(0),

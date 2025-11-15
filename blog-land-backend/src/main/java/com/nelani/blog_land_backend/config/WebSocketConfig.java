@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.config;
 
-import com.nelani.blog_land_backend.security.WebSocketJwtInterceptor;
+import com.nelani.blog_land_backend.security.JwtChannelInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -13,9 +13,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final WebSocketJwtInterceptor webSocketJwtInterceptor;
+    private final JwtChannelInterceptor webSocketJwtInterceptor;
 
-    public WebSocketConfig(WebSocketJwtInterceptor webSocketJwtInterceptor) {
+    public WebSocketConfig(JwtChannelInterceptor webSocketJwtInterceptor) {
         this.webSocketJwtInterceptor = webSocketJwtInterceptor;
     }
 

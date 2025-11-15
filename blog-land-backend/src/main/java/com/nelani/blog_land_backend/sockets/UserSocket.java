@@ -24,7 +24,7 @@ public class UserSocket {
 
         // Send updated comment to subscribers
         messagingTemplate.convertAndSendToUser(
-                user.getId().toString(),
+                user.getEmail(),
                 "/queue/user/update",
                 userResponse);
     }

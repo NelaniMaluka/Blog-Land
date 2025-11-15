@@ -33,7 +33,14 @@ export interface AuthState {
   isAuthenticated: boolean;
 }
 
+export interface LoginResponse {
+  token: string;
+  expiresIn: number;
+  user: UserResponse;
+}
+
 export interface UserResponse {
+  naniId: string;
   email?: string;
   firstname: string;
   lastname: string;
@@ -52,11 +59,4 @@ export interface UserResponse {
     facebook?: string;
     instagram?: string;
   };
-}
-
-export interface UserSummaryAnalyticsResponse {
-  totalPosts: number;
-  totalComments: number;
-  totalViews: number;
-  totalLikes: number;
 }

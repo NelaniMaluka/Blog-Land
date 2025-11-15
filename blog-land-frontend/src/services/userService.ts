@@ -2,13 +2,11 @@ import {
   getUserDetails,
   updateUserDetails,
   deleteUserDetails,
-  logoutUser,
   updateProfileIcon,
   removeProfileIcon,
-  getUserSummaryAnalytics,
   getPublicUserDetails,
 } from '../api/userApi';
-import { UserResponse, UserSummaryAnalyticsResponse } from '../types/user/response';
+import { LoginResponse, UserResponse } from '../types/user/response';
 import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
 import { UpdateUserRequest } from '../types/user/request';
 import { updateUserSchema, fileSchema } from '../schemas/userSchema';
@@ -55,12 +53,12 @@ export const removeUserProfileImg = async (): Promise<string> => {
   }
 };
 
-export const updateUser = async (payload: UpdateUserRequest): Promise<string> => {
+export const updateUser = async (payload: UpdateUserRequest): Promise<LoginResponse> => {
   const validPayload = validateOrThrow(updateUserSchema, payload);
 
   try {
     const response = await updateUserDetails(validPayload);
-    return response?.data as string;
+    return response?.data;
   } catch (error) {
     throw new Error(
       getAxiosErrorMessage(error, 'User update failed. Please check your credentials.')
@@ -74,24 +72,5 @@ export const deleteUser = async (): Promise<{ message: string }> => {
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to delete user'));
-  }
-};
-
-export const submitLogoutUser = async (): Promise<{ message: string }> => {
-  try {
-    const response = await logoutUser();
-    return response?.data;
-  } catch (error) {
-    console.log(error);
-    throw new Error(getAxiosErrorMessage(error, 'Failed to logout user'));
-  }
-};
-
-export const fetchUserSummaryAnalytics = async (): Promise<UserSummaryAnalyticsResponse> => {
-  try {
-    const response = await getUserSummaryAnalytics();
-    return response?.data;
-  } catch (error) {
-    throw new Error(getAxiosErrorMessage(error, 'Failed to get user analytics'));
   }
 };

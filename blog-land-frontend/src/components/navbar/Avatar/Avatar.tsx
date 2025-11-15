@@ -5,7 +5,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
 import { ROUTES } from '../../../constants/routes';
-import { useLogoutUser } from '../../../hooks/useUser';
+
 import styles from './Avatar.module.css';
 import LoginDialog from '../../forms/Login';
 import RegisterDialog from '../../forms/Register';
@@ -15,6 +15,7 @@ import { useDialog } from '../../../features/LoginProvider/LoginProvider';
 import FallbackAvatars from '../../common/Avatar';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
+import { useLogoutUser } from '../../../hooks/useAuth';
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

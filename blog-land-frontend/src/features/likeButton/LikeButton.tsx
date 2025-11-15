@@ -12,7 +12,7 @@ import { useDialog } from '../LoginProvider/LoginProvider';
 import styles from './LikeButton.module.css';
 
 interface LikeButtonProps {
-  postId: number;
+  postId: string;
 }
 
 const LikeButton = ({ postId }: LikeButtonProps) => {
@@ -50,8 +50,8 @@ const LikeButton = ({ postId }: LikeButtonProps) => {
         await removeLike.mutateAsync(like.likeId, {
           onSuccess: () => {
             setIsLiked(false);
-            queryClient.invalidateQueries({ queryKey: ['postLikes', postId] });
-            queryClient.invalidateQueries({ queryKey: ['userLikes'] });
+            queryClient.invalidateQueries({ queryKey: ['post-likes', postId] });
+            queryClient.invalidateQueries({ queryKey: ['user-likes'] });
           },
         });
       } catch (err) {}
@@ -60,8 +60,8 @@ const LikeButton = ({ postId }: LikeButtonProps) => {
         await addLike.mutateAsync(postId, {
           onSuccess: () => {
             setIsLiked(true);
-            queryClient.invalidateQueries({ queryKey: ['postLikes', postId] });
-            queryClient.invalidateQueries({ queryKey: ['userLikes'] });
+            queryClient.invalidateQueries({ queryKey: ['post-likes', postId] });
+            queryClient.invalidateQueries({ queryKey: ['user-likes'] });
           },
         });
       } catch (err) {}

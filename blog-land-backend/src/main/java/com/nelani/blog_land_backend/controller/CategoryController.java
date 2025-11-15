@@ -41,7 +41,7 @@ public class CategoryController {
 
     @Operation(summary = "Get all categories with post counts")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of categories")
-    @GetMapping("public/posts/categories")
+    @GetMapping("/public/posts/categories")
     @Cacheable(value = "categories")
     public ResponseEntity<List<CategoryResponse>> getCategories() {
         List<CategoryResponse> categoryDtos = categoryRepository.findAll()

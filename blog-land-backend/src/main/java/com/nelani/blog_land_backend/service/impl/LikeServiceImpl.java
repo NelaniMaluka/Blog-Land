@@ -109,7 +109,7 @@ public class LikeServiceImpl implements LikeService {
                 // update socket
                 long count = likeRepository.countByPost(existingPost);
                 likesSocket.updatePostLikes(count, existingPost.getId());
-                likesSocket.updateUserLikes(userLikesList);
+                likesSocket.updateUserLikes(user, userLikesList);
 
                 likeCacheHelper.evictAllForPost(user.getEmail(), postId); // Evict Likes
         }
@@ -153,7 +153,7 @@ public class LikeServiceImpl implements LikeService {
                 // update socket
                 long count = likeRepository.countByPost(post);
                 likesSocket.updatePostLikes(count, post.getId());
-                likesSocket.updateUserLikes(userLikesList);
+                likesSocket.updateUserLikes(user, userLikesList);
 
                 likeCacheHelper.evictAllForPost(user.getEmail(), post.getId()); // Evict Likes
         }

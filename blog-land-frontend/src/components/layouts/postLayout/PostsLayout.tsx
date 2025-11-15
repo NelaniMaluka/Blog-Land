@@ -3,8 +3,6 @@ import LoadingScreen from '../../../features/LoadingScreen/LoadingScreen';
 import styles from './PostsLayout.module.css';
 import { Order, PostResponse } from '../../../types/post/response';
 import { useGetCategories } from '../../../hooks/useCategory';
-import Pagination from '@mui/material/Pagination';
-import PaginationItem from '@mui/material/PaginationItem';
 import BasicBreadcrumbs from '../../breadcrumbs/breadcrumbs';
 import CustomPagination from '../../buttons/Pagination/Pagination';
 

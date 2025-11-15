@@ -64,8 +64,8 @@ public class UserPostsController {
         @DeleteMapping("/user/posts/remove")
         @PreAuthorize("hasAuthority('post:delete')")
         public ResponseEntity<String> deleteUserPost(
-                        @RequestParam UUID id) {
-                userPostService.deletePost(id);
+                        @RequestParam UUID postId) {
+                userPostService.deletePost(postId);
                 return ResponseEntity.noContent().build();
         }
 }

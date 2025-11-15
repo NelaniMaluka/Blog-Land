@@ -57,7 +57,7 @@ public class CommentSocket {
     public void addUserComment(User user, Comment comment, Post post) {
         // Send updated comment to subscribers
         messagingTemplate.convertAndSendToUser(
-                user.getId().toString(),
+                user.getEmail(),
                 "/queue/posts/comment/add/" + post.getId(),
                 comment.getId());
     }
@@ -65,7 +65,7 @@ public class CommentSocket {
     public void removeUserComment(User user, Comment comment, Post post) {
         // Send updated comment to subscribers
         messagingTemplate.convertAndSendToUser(
-                user.getId().toString(),
+                user.getEmail(),
                 "/queue/posts/comment/remove/" + post.getId(),
                 comment.getId());
     }

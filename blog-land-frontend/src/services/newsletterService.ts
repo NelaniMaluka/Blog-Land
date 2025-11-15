@@ -3,10 +3,10 @@ import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
 import { emailSchema } from '../schemas/generalSchema';
 
 export const submitNewsletterSubscription = async (email: string): Promise<string> => {
-  const validPayload = validateOrThrow(emailSchema, { email });
+  const validPayload = validateOrThrow(emailSchema, email);
 
   try {
-    const response = await subscribeToNewsletter(validPayload.email);
+    const response = await subscribeToNewsletter(validPayload);
     return response?.data;
   } catch (error) {
     throw new Error(

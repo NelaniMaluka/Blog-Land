@@ -1,5 +1,5 @@
 export type likeResponse = {
-  likeId: number;
+  likeId: string;
   likedAt: string;
-  postId: number;
+  postId: string;
 };

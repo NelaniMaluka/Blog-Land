@@ -1,13 +1,13 @@
 import { PostResponse } from '../post/response';
 
 export interface CategoryResponse {
-  id: number;
+  id: string;
   name: string;
   postCount: number;
 }
 
 export interface CategoryPostGroupResponse {
-  id: number;
+  id: string;
   categoryName: string;
   posts: PostResponse[];
 }

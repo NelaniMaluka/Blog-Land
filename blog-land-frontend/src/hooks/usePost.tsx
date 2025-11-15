@@ -7,18 +7,12 @@ import {
   fetchAllPosts,
   fetchLatestPosts,
   fetchTrendingPosts,
-  fetchPostByCategory,
-  fetchAllUserPosts,
   submitView,
-  submitPost,
-  updatePosts,
-  deletePosts,
 } from '../services/postService';
 import { useDebounce } from './useDebounce';
 import { Order } from '../types/post/response';
 import { useMutation } from '@tanstack/react-query';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { PaginatedPosts } from '../types/post/response';
+import { useQuery } from '@tanstack/react-query';
 import { useSnackbar } from '../features/Snackbars/errorMessage';
 import { PostResponse } from '../types/post/response';
 import { useEffect } from 'react';
@@ -58,27 +52,27 @@ export const useSearchPost = () => {
 };
 
 export const useGetRandomPost = () => {
-  return useQuery({ queryKey: ['randomPost'], queryFn: () => fetchRandomPost() });
+  return useQuery({ queryKey: ['random-post'], queryFn: () => fetchRandomPost() });
 };
 
 export const useGetRandomPosts = () => {
   return useQuery({
-    queryKey: ['randomPosts'],
+    queryKey: ['random-posts'],
     queryFn: () => fetchRandomPosts(),
     refetchOnWindowFocus: true,
   });
 };
 
-export const useGetPost = (payload: { id: number }) => {
+export const useGetPost = (id: string) => {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['singlePost', payload],
-    queryFn: () => fetchPost(payload),
-    enabled: !!payload,
+    queryKey: ['single-post', id],
+    queryFn: () => fetchPost(id),
+    enabled: !!id,
   });
 
-  useWebSocket(`/topic/post/update/${payload.id}`, (message) => {
+  useWebSocket(`/topic/posts/update/${id}`, (message) => {
     const raw = JSON.parse(message);
     const updatedPost: PostResponse = {
       ...raw,
@@ -87,7 +81,7 @@ export const useGetPost = (payload: { id: number }) => {
       createdAt: formatDate(raw.createdAt),
     };
 
-    queryClient.setQueryData(['singlePost', payload], () => {
+    queryClient.setQueryData(['singlePost', id], () => {
       return updatedPost;
     });
   });
@@ -97,48 +91,30 @@ export const useGetPost = (payload: { id: number }) => {
 
 export const useGetAllPost = (payload: { page: number; size: number; order: Order }) => {
   return useQuery({
-    queryKey: ['allPosts', payload],
+    queryKey: ['all-posts', payload],
     queryFn: () => fetchAllPosts(payload),
   });
 };
 
-export const useGetLatestPosts = (payload: { page: number; size: number }) => {
-  return useQuery({
-    queryKey: ['latestPosts', payload],
-    queryFn: () => fetchLatestPosts(payload),
+export const useGetLatestPosts = ({
+  page,
+  size,
+  enabled = true,
+}: {
+  page: number;
+  size: number;
+  enabled?: boolean;
+}) =>
+  useQuery({
+    queryKey: ['latest-posts', page],
+    queryFn: () => fetchLatestPosts({ page, size }),
+    enabled,
   });
-};
 
 export const useGetTrendingPosts = (payload: { page: number; size: number }) => {
   return useQuery({
-    queryKey: ['trendingPosts', payload],
+    queryKey: ['trending-posts', payload],
     queryFn: () => fetchTrendingPosts(payload),
-  });
-};
-
-export const useGetCategoryPosts = (payload: {
-  categoryId: number;
-  page: number;
-  size: number;
-  order: Order;
-}): UseQueryResult<PaginatedPosts, Error> => {
-  return useQuery<PaginatedPosts, Error>({
-    queryKey: ['categoryPosts', payload.categoryId, payload.page, payload.size, payload.order],
-    queryFn: () => fetchPostByCategory(payload),
-  });
-};
-
-export const useGetAllUserPost = (payload: {
-  page: number;
-  size: number;
-  options?: { enabled?: boolean };
-}) => {
-  const { page, size, options } = payload;
-
-  return useQuery({
-    queryKey: ['userPosts', page, size],
-    queryFn: () => fetchAllUserPosts({ page, size }),
-    enabled: options?.enabled ?? true,
   });
 };
 
@@ -147,42 +123,6 @@ export const useAddViewCount = () => {
 
   return useMutation({
     mutationFn: submitView,
-    onError: (error: any) => {
-      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
-      showError(msg);
-    },
-  });
-};
-
-export const useAddPost = () => {
-  const { showError } = useSnackbar();
-
-  return useMutation({
-    mutationFn: submitPost,
-    onError: (error: any) => {
-      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
-      showError(msg);
-    },
-  });
-};
-
-export const useUpdatePost = () => {
-  const { showError } = useSnackbar();
-
-  return useMutation({
-    mutationFn: updatePosts,
-    onError: (error: any) => {
-      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
-      showError(msg);
-    },
-  });
-};
-
-export const useDeletePost = () => {
-  const { showError } = useSnackbar();
-
-  return useMutation({
-    mutationFn: deletePosts,
     onError: (error: any) => {
       const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
       showError(msg);
