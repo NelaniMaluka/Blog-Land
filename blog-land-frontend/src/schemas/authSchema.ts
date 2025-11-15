@@ -19,7 +19,7 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address' }),
+  email: z.email({ message: 'Please enter a valid email address' }),
   password: passwordSchema,
 });
 
@@ -29,8 +29,7 @@ export const changePasswordSchema = z.object({
   repeatPassword: passwordSchema,
 });
 
-export const changePasswordWithTokenSchema = z.object({
-  token: z.string().min(1, { message: 'Token cannot be empty' }),
+export const forgotPasswordSchema = z.object({
   newPassword: passwordSchema,
   repeatPassword: passwordSchema,
 });

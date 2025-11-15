@@ -1,9 +1,10 @@
-import { registerUser, loginUser } from '../api/authApi';
+import { registerUser, loginUser, logoutUser } from '../api/authApi';
 import { getAxiosErrorMessage, validateOrThrow } from '../utils/errorUtils';
 import { RegisterRequest, LoginRequest } from '../types/auth/requests';
 import { registerSchema, loginSchema } from '../schemas/authSchema';
+import { LoginResponse } from '../types/user/response';
 
-export const createUser = async (payload: RegisterRequest): Promise<string> => {
+export const createUser = async (payload: RegisterRequest): Promise<LoginResponse> => {
   const validPayload = validateOrThrow(registerSchema, payload);
 
   try {
@@ -21,7 +22,7 @@ export const createUser = async (payload: RegisterRequest): Promise<string> => {
   }
 };
 
-export const authenticateUser = async (payload: LoginRequest): Promise<string> => {
+export const authenticateUser = async (payload: LoginRequest): Promise<LoginResponse> => {
   const validPayload = validateOrThrow(loginSchema, payload);
 
   try {
@@ -34,6 +35,16 @@ export const authenticateUser = async (payload: LoginRequest): Promise<string> =
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Login failed. Please check your credentials.'));
+  }
+};
+
+export const submitLogoutUser = async (): Promise<{ message: string }> => {
+  try {
+    const response = await logoutUser();
+    return response?.data;
+  } catch (error) {
+    console.log(error);
+    throw new Error(getAxiosErrorMessage(error, 'Failed to logout user'));
   }
 };
 

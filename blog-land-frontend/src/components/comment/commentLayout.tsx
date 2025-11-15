@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useUpdateComment } from '../../hooks/useComment';
 
 interface CommentLayoutProps {
-  postId: number;
+  postId: string;
   comment: CommentResponse;
   isOwner: boolean;
   isAuthenticated: boolean;
@@ -40,7 +40,14 @@ const CommentLayout: React.FC<CommentLayoutProps> = ({
   const updateComment = useUpdateComment(); // mutation inside the layout
 
   const handleSaveEdit = () => {
-    updateComment.mutateAsync({ id: comment.id, content: editContent, postId: postId });
+    updateComment.mutateAsync({
+      postId,
+      commentId: comment.id,
+      data: {
+        content: editContent,
+      },
+    });
+
     setIsEditing(false);
   };
 

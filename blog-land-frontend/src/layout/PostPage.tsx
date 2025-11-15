@@ -5,12 +5,12 @@ import { Helmet } from 'react-helmet-async';
 import { useGetPublicUser } from '../hooks/useUser';
 
 export const PostPage = () => {
-  const { idAndSlug } = useParams<{ idAndSlug: string }>();
-  const [idStr, ...slugParts] = idAndSlug?.split('-') || [];
-  const id = Number(idStr);
-  const slug = slugParts.join('-');
+  const idAndSlug = useParams<{ idAndSlug: string }>()?.idAndSlug || '';
 
-  const { data: post, isLoading, isError } = useGetPost({ id });
+  const id = idAndSlug.substring(0, 36);
+  const slug = idAndSlug.substring(37);
+
+  const { data: post, isLoading, isError } = useGetPost(id);
   const { data: user } = useGetPublicUser(post?.userId);
 
   const canonicalUrl = window.location.href;

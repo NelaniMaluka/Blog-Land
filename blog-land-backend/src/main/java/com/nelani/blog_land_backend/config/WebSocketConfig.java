@@ -2,6 +2,7 @@ package com.nelani.blog_land_backend.config;
 
 import com.nelani.blog_land_backend.security.JwtChannelInterceptor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -12,28 +13,29 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final JwtChannelInterceptor jwtChannelInterceptor;
+    private final JwtChannelInterceptor webSocketJwtInterceptor;
 
-    public WebSocketConfig(JwtChannelInterceptor jwtChannelInterceptor) {
-        this.jwtChannelInterceptor = jwtChannelInterceptor;
+    public WebSocketConfig(JwtChannelInterceptor webSocketJwtInterceptor) {
+        this.webSocketJwtInterceptor = webSocketJwtInterceptor;
     }
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
+    public void configureMessageBroker(@NonNull MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic", "/queue");
         config.setApplicationDestinationPrefixes("/app");
         config.setUserDestinationPrefix("/user");
     }
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
+    public void registerStompEndpoints(@NonNull StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
     @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(jwtChannelInterceptor);
+    public void configureClientInboundChannel(@NonNull ChannelRegistration registration) {
+        registration.interceptors(webSocketJwtInterceptor);
     }
+
 }

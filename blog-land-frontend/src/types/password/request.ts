@@ -4,8 +4,7 @@ export type changePasswordRequest = {
   repeatPassword: string;
 };
 
-export type changePasswordWithTokenRequest = {
-  token: string;
+export type forgotPasswordRequest = {
   newPassword: string;
   repeatPassword: string;
 };

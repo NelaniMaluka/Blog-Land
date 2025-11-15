@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import {
   submitChangePassword,
-  submitForgotPassword,
-  submitChangeWithTokenPassword,
+  submitResetPassword,
+  submitRequestPasswordReset,
 } from '../services/changePasswordService';
 import { ShowSuccessSwal } from '../features/Alerts/SuccessMessage';
 import { useSnackbar } from '../features/Snackbars/errorMessage';
@@ -24,7 +24,7 @@ export const useForgotPassword = () => {
 
   return useMutation({
     mutationFn: async (email: string) => {
-      const response = await submitForgotPassword(email);
+      const response = await submitRequestPasswordReset(email);
       return response;
     },
     onSuccess: () => {
@@ -44,7 +44,7 @@ export const useChangeWithTokenPassword = () => {
   const { showError } = useSnackbar();
 
   return useMutation({
-    mutationFn: submitChangeWithTokenPassword,
+    mutationFn: submitResetPassword,
     onError: (error: any) => {
       const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
       showError(msg);

@@ -1,6 +1,6 @@
 package com.nelani.blog_land_backend.sockets;
 
-import com.nelani.blog_land_backend.util.builders.PostBuilder;
+import com.nelani.blog_land_backend.mapper.PostBuilder;
 import com.nelani.blog_land_backend.model.Comment;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.model.User;
@@ -9,7 +9,7 @@ import com.nelani.blog_land_backend.response.CommentResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-import static com.nelani.blog_land_backend.util.builders.PostBuilder.mapCommentIds;
+import java.util.UUID;
 
 @Component
 public class CommentSocket {
@@ -24,7 +24,7 @@ public class CommentSocket {
 
     public void updateCommentCount(Post post) {
         long count = commentRepository.countByPost(post);
-        messagingTemplate.convertAndSend("/topic/comments/comments-count/" + post.getId(), count);
+        messagingTemplate.convertAndSend("/topic/posts/comments/count/" + post.getId(), count);
     }
 
     public void addNewComments(Post post, Comment newComment) {
@@ -33,7 +33,7 @@ public class CommentSocket {
 
         // Send new comment to subscribers
         messagingTemplate.convertAndSend(
-                "/topic/comments/add/" + post.getId(),
+                "/topic/posts/comments/add/" + post.getId(),
                 commentResponse);
     }
 
@@ -43,33 +43,30 @@ public class CommentSocket {
 
         // Send updated comment to subscribers
         messagingTemplate.convertAndSend(
-                "/topic/comments/update/" + post.getId(),
+                "/topic/posts/comments/update/" + post.getId(),
                 commentResponse);
     }
 
-    public void deleteComment(Post post, Long deletedCommentId) {
+    public void deleteComment(Post post, UUID deletedCommentId) {
         // Send deleted comment ID to subscribers
         messagingTemplate.convertAndSend(
-                "/topic/comments/remove/" + post.getId(),
+                "/topic/posts/comments/remove/" + post.getId(),
                 deletedCommentId);
     }
 
     public void addUserComment(User user, Comment comment, Post post) {
-        // Map to DTO
-        CommentResponse newCommentId = mapCommentIds(comment);
-
         // Send updated comment to subscribers
         messagingTemplate.convertAndSendToUser(
-                user.getId().toString(),
-                "/queue/comment/add/" + post.getId(),
-                newCommentId);
+                user.getEmail(),
+                "/queue/posts/comment/add/" + post.getId(),
+                comment.getId());
     }
 
     public void removeUserComment(User user, Comment comment, Post post) {
         // Send updated comment to subscribers
         messagingTemplate.convertAndSendToUser(
-                user.getId().toString(),
-                "/queue/comment/remove/" + post.getId(),
+                user.getEmail(),
+                "/queue/posts/comment/remove/" + post.getId(),
                 comment.getId());
     }
 }

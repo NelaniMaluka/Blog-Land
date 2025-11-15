@@ -1,10 +1,3 @@
-export type AddCommentRequest = {
-  postId: number;
+export type CommentRequest = {
   content: string;
-};
-
-export type UpdateCommentRequest = {
-  id: number;
-  content: string;
-  postId: number;
 };

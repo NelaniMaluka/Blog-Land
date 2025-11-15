@@ -3,7 +3,6 @@ import {
   useGetCommentsWithPostId,
   useAddComment,
   useDeleteComment,
-  useUpdateComment,
 } from '../../hooks/useComment';
 import { Avatar } from '@mui/material';
 import FallbackAvatars from '../common/Avatar';
@@ -21,7 +20,7 @@ import CommentLayout from './commentLayout';
 import styles from './comments.module.css';
 
 interface CommentsProps {
-  postId: number;
+  postId: string;
 }
 
 interface EmojiClickData {
@@ -41,8 +40,8 @@ const Comments = ({ postId }: CommentsProps) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [menuCommentId, setMenuCommentId] = useState<number | null>(null);
-  const [readyPostId, setReadyPostId] = useState<number | null>(null);
+  const [menuCommentId, setMenuCommentId] = useState<string | null>(null);
+  const [readyPostId, setReadyPostId] = useState<string | null>(null);
   const open = Boolean(anchorEl);
 
   // Auth data
@@ -51,7 +50,6 @@ const Comments = ({ postId }: CommentsProps) => {
 
   // Mutations
   const addComment = useAddComment();
-  const updateComment = useUpdateComment();
   const deleteComment = useDeleteComment();
 
   // Checks if post id is here before running
@@ -62,13 +60,12 @@ const Comments = ({ postId }: CommentsProps) => {
   }, [postId]);
 
   // Fetching post data
-  const { data: postCount } = useGetCommentsCountByPost(readyPostId ?? 0);
-  const { data: comments } = useGetCommentsWithPostId({
-    postId: readyPostId ?? 0,
+  const { data: postCount } = useGetCommentsCountByPost(readyPostId ?? '');
+  const { data: comments } = useGetCommentsWithPostId(readyPostId ?? '', {
     page: 0,
     size: 20,
   });
-  const { data: userComments = [] } = useGetUserCommentsWithPostId(readyPostId ?? 0, {
+  const { data: userComments = [] } = useGetUserCommentsWithPostId(readyPostId ?? '', {
     enabled: isAuthenticated && !!readyPostId,
   });
 
@@ -89,7 +86,7 @@ const Comments = ({ postId }: CommentsProps) => {
     };
   }, [showEmojiPicker]);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>, commentId: number) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>, commentId: string) => {
     setAnchorEl(event.currentTarget);
     setMenuCommentId(commentId);
   };
@@ -106,13 +103,15 @@ const Comments = ({ postId }: CommentsProps) => {
       return;
     }
     try {
-      addComment.mutateAsync({ postId: postId!, content: isComment });
+      addComment.mutateAsync({
+        postId,
+        data: {
+          content: isComment,
+        },
+      });
+
       setIsComment('');
     } catch {}
-  };
-
-  const handleUpdateComment = (id: number) => {
-    updateComment.mutateAsync({ id: id, content: editContent, postId: postId! });
   };
 
   const handleEmojiSelect = (emoji: EmojiClickData) => {
@@ -120,7 +119,7 @@ const Comments = ({ postId }: CommentsProps) => {
     setShowEmojiPicker(false); // close after selecting
   };
 
-  const handleDeleteComment = (id: number) => {
+  const handleDeleteComment = (id: string) => {
     deleteComment.mutateAsync(id);
   };
 
@@ -170,14 +169,14 @@ const Comments = ({ postId }: CommentsProps) => {
       {/* Comments List */}
       {comments && comments.length > 0 ? (
         comments.map((comment) => {
-          const isOwner = !!userComments?.find((uc) => uc.id === comment.id);
+          const isOwner = !!userComments?.includes(comment.id);
 
           return (
             <CommentLayout
               key={comment.id}
               postId={postId}
               comment={comment}
-              isOwner={!!userComments?.find((uc) => uc.id === comment.id)}
+              isOwner={isOwner}
               isAuthenticated={isAuthenticated}
               onMenuClick={(e: any) => handleClick(e, comment.id)}
               onDelete={() => handleDeleteComment(comment.id)}

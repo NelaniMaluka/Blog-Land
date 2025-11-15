@@ -1,12 +1,8 @@
 import { useGetUser } from '../hooks/useUser';
-import {
-  useGetAllPost,
-  useGetTrendingPosts,
-  useGetLatestPosts,
-  useGetAllUserPost,
-} from '../hooks/usePost';
+import { useGetAllPost, useGetTrendingPosts, useGetLatestPosts } from '../hooks/usePost';
 import { Order } from '../types/post/response';
 import { store } from '../store/store';
+import { useGetAllUserPost } from '../hooks/useUserPost';
 
 export function GlobalPreloadQueries() {
   const isAuthenticated = store.getState().auth.isAuthenticated;

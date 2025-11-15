@@ -4,11 +4,11 @@ import { likeResponse } from '../types/like/likeResponse';
 import { validateOrThrow, getAxiosErrorMessage } from '../utils/errorUtils';
 import { formatDigit } from '../utils/formatUtils';
 
-export const fetchPostLikesCount = async (id: number): Promise<string> => {
-  const validPayload = validateOrThrow(idSchema, { id });
+export const fetchPostLikesCount = async (postId: string): Promise<string> => {
+  const validPayload = validateOrThrow(idSchema, postId);
   try {
-    const response = await getPostLikesCount(validPayload.id);
-    return formatDigit(response?.data);
+    const response = await getPostLikesCount(validPayload);
+    return formatDigit(response?.data.likesCount);
   } catch (error) {
     throw new Error(
       getAxiosErrorMessage(error, 'Failed to fetch post likes count. Please try again later.')
@@ -27,22 +27,22 @@ export const fetchUserLikes = async (): Promise<likeResponse[]> => {
   }
 };
 
-export const submitLike = async (id: number): Promise<string> => {
-  const validPayload = validateOrThrow(idSchema, { id });
+export const submitLike = async (postId: string): Promise<string> => {
+  const validPayload = validateOrThrow(idSchema, postId);
 
   try {
-    const response = await addLike(validPayload.id);
+    const response = await addLike(validPayload);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to submit like. Please try again later.'));
   }
 };
 
-export const deleteLike = async (id: number): Promise<string> => {
-  const validPayload = validateOrThrow(idSchema, { id });
+export const deleteLike = async (likeId: string): Promise<string> => {
+  const validPayload = validateOrThrow(idSchema, likeId);
 
   try {
-    const response = await removeLike(validPayload.id);
+    const response = await removeLike(validPayload);
     return response?.data;
   } catch (error) {
     throw new Error(getAxiosErrorMessage(error, 'Failed to remove like. Please try again later.'));

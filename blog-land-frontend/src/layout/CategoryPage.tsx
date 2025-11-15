@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useGetCategories } from '../hooks/useCategory';
-import { useGetCategoryPosts } from '../hooks/usePost';
+import { useGetCategoryPosts } from '../hooks/useCategory';
 import { PostsLayout } from '../components/layouts/postLayout/PostsLayout';
 import { Order, PostResponse } from '../types/post/response';
 import { Helmet } from 'react-helmet-async';
 
 export const CategoryPage = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { data: categories } = useGetCategories();
+  const { data: categories, isLoading: isCategoriesLoading } = useGetCategories();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // read from URL
@@ -22,8 +22,7 @@ export const CategoryPage = () => {
   const decodedSlug = decodeURIComponent(slug || '');
   const category = categories?.find((c) => c.name.toLowerCase() === decodedSlug.toLowerCase());
 
-  const { data, isLoading, isError } = useGetCategoryPosts({
-    categoryId: category?.id || 0,
+  const { data, isLoading, isError } = useGetCategoryPosts(category?.id ?? '', {
     page,
     size: 12,
     order,
@@ -102,7 +101,7 @@ export const CategoryPage = () => {
       </Helmet>
 
       <PostsLayout
-        title={category?.name || 'Category'}
+        title={category?.name}
         posts={posts}
         isLoading={isLoading}
         isError={isError}

@@ -1,12 +1,14 @@
 package com.nelani.blog_land_backend.model;
 
+import com.nelani.blog_land_backend.security.ApplicationUserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -17,31 +19,35 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements UserDetails {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        @GeneratedValue(strategy = GenerationType.UUID)
+        private UUID id;
 
         @Builder.Default
         @Column(nullable = false, unique = true, updatable = false)
         private String naniId = "nani_" + UUID.randomUUID().toString().substring(0, 8);
 
+        private String username;
+
+        @Builder.Default
+        private boolean enabled = true;
+
         @Size(min = 6, message = "Password must be at least 6 characters")
-        @Column(nullable = true)
         private String password;
 
         @Size(max = 50, message = "Title must not exceed 50 characters")
-        @Column(nullable = true, length = 50)
+        @Column(length = 50)
         private String title;
 
         @Size(max = 500, message = "Summary must not exceed 500 characters")
-        @Column(nullable = true, length = 500)
+        @Column(length = 500)
         private String summary;
 
         @Email(message = "Email should be valid")
         @NotBlank(message = "Email is required")
-        @Column(unique = true, nullable = false, length = 255)
+        @Column(unique = true, nullable = false)
         private String email;
 
         @NotBlank(message = "First name is required")
@@ -54,12 +60,9 @@ public class User {
         @Column(nullable = false, length = 100)
         private String lastname;
 
-        @Enumerated(EnumType.STRING)
-        private Provider provider; // GOOGLE or LOCAL
-
         @Builder.Default
         @Enumerated(EnumType.STRING)
-        private Role role = Role.USER;
+        private Provider provider = Provider.LOCAL;
 
         @Size(max = 500, message = "Profile icon URL must not exceed 500 characters")
         private String profileIconUrl;
@@ -74,32 +77,44 @@ public class User {
         @Column(nullable = false, updatable = false)
         private LocalDateTime joinedAt = LocalDateTime.now();
 
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false)
         @Builder.Default
-        @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
-        private List<Post> posts = new ArrayList<>();
-
-        @Builder.Default
-        @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
-        private List<Comment> comments = new ArrayList<>();
-
-        @Builder.Default
-        @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
-        private List<Like> likes = new ArrayList<>();
-
-        @Builder.Default
-        @BatchSize(size = 10)
-        @ElementCollection(fetch = FetchType.EAGER)
-        @CollectionTable(name = "author_socials", joinColumns = @JoinColumn(name = "author_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
-                        "author_id", "platform" }))
-        @Column(name = "url")
-        @MapKeyColumn(name = "platform")
-        private Map<@Size(max = 50, message = "Platform name must not exceed 50 characters") String,
-
-                        @Size(max = 500, message = "URL must not exceed 500 characters") String> socials = new HashMap<>();
+        private ApplicationUserRole role = ApplicationUserRole.USER;
 
         @Override
         public String toString() {
                 return "User{id=" + id + ", name='" + firstname + " " + lastname + "'}";
         }
 
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+                return role.grantedAuthorities();
+        }
+
+        @Override
+        public boolean isAccountNonExpired() {
+                return true;
+        }
+
+        @Override
+        public boolean isAccountNonLocked() {
+                return true;
+        }
+
+        @Override
+        public boolean isCredentialsNonExpired() {
+                return true;
+        }
+
+        @Override
+        public boolean isEnabled() {
+                return enabled;
+        }
+
+        @PrePersist
+        @PreUpdate
+        public void syncUsernameWithEmail() {
+                this.username = this.email;
+        }
 }

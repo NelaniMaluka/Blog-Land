@@ -1,18 +1,15 @@
-// src/hooks/useUser.tsx
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   fetchUser,
   fetchPublicUser,
   updateUser,
   deleteUser,
-  submitLogoutUser,
   updateUserProfileImg,
   removeUserProfileImg,
-  fetchUserSummaryAnalytics,
 } from '../services/userService';
-import { setUser, logout, setToken } from '../store/authSlice';
+import { setUser, setLoginResponse } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { UserResponse } from '../types/user/response';
+import { LoginResponse, UserResponse } from '../types/user/response';
 import { RootState } from '../store/store';
 import { ShowSuccessSwal } from '../features/Alerts/SuccessMessage';
 import { UpdateUserRequest } from '../types/user/request';
@@ -62,7 +59,7 @@ export const useGetPublicUser = (nanoId: string | undefined) => {
     enabled: !!nanoId,
   });
 
-  useWebSocket(`/queue/user/public-update/${nanoId}`, (message: string) => {
+  useWebSocket(`/topic/user/update/${nanoId}`, (message: string) => {
     const updatedUser: UserResponse = JSON.parse(message);
     queryClient.setQueryData(['publicUser', nanoId], updatedUser);
   });
@@ -100,12 +97,12 @@ export const useUpdateUser = () => {
 
   return useMutation({
     mutationFn: async (payload: { data: UpdateUserRequest }) => {
-      const token = await updateUser(payload.data);
-      dispatch(setToken(token));
-      return token;
+      const data = await updateUser(payload.data);
+      dispatch(setLoginResponse(data));
+      return data;
     },
-    onSuccess: async (token) => {
-      scheduleLogout(token, dispatch);
+    onSuccess: async (data: LoginResponse) => {
+      scheduleLogout(data.expiresIn, dispatch);
       ShowSuccessSwal('Profile Updated', `Your profile was successfully updated!`);
     },
     onError: (error: any) => {
@@ -124,33 +121,5 @@ export const useDeleteUser = () => {
       const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
       showError(msg);
     },
-  });
-};
-
-export const useLogoutUser = () => {
-  const dispatch = useDispatch();
-  const { showError } = useSnackbar();
-
-  return useMutation({
-    mutationFn: async () => {
-      const response = await submitLogoutUser();
-      return response;
-    },
-    onSuccess: () => {
-      dispatch(logout());
-      ShowSuccessSwal('Logout Successful', `We hope to see you again soon!`);
-    },
-    onError: (error: any) => {
-      dispatch(logout());
-      const msg = error?.response?.data?.message || error?.message || 'Something went wrong';
-      showError(msg);
-    },
-  });
-};
-
-export const useGetUserSumAnalytics = () => {
-  return useQuery({
-    queryKey: ['userSumAnalytics'],
-    queryFn: () => fetchUserSummaryAnalytics(),
   });
 };

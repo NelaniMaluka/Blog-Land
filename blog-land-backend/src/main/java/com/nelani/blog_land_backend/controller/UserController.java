@@ -1,93 +1,98 @@
 package com.nelani.blog_land_backend.controller;
 
 import com.nelani.blog_land_backend.dto.UpdateUserDto;
+import com.nelani.blog_land_backend.response.LoginResponse;
 import com.nelani.blog_land_backend.response.UserResponse;
-import com.nelani.blog_land_backend.response.UserSummaryAnalyticsResponse;
 import com.nelani.blog_land_backend.service.UserService;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
 
+@Validated
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api")
+@Tag(name = "User Controller", description = "Endpoints for managing authenticated user actions and data")
 public class UserController {
 
-    private final UserService userService;
+        private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
-    @PostMapping("/upload-profile-image")
-    public ResponseEntity<?> uploadProfileImage(
-            @RequestParam("file") @NotNull(message = "File must be provided") MultipartFile file) {
-        String response = userService.saveUserProfileImage(file);
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/remove-profile-image")
-    public ResponseEntity<?> removeProfileImage() {
-        String response = userService.removeUserProfileImage();
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/get-user")
-    public ResponseEntity<?> getUserDetails() {
-        UserResponse userResponse = userService.getUserDetails();
-        return ResponseEntity.ok(userResponse);
-    }
-
-    @GetMapping("/get/public-user-details/{nanoId}")
-    public ResponseEntity<?> getPublicUserDetails(
-            @PathVariable @NotBlank(message = "User ID cannot be blank") String nanoId) {
-
-        UserResponse userResponse = userService.getPublicUserDetails(nanoId);
-        return ResponseEntity.ok(userResponse);
-    }
-
-    @GetMapping("/get-user-summary-analytics")
-    public ResponseEntity<?> getUseSummaryAnalytics() {
-        UserSummaryAnalyticsResponse userResponse = userService.getUserSummaryAnalytics();
-        return ResponseEntity.ok(userResponse);
-    }
-
-    @PutMapping("/update-user")
-    public ResponseEntity<?> updateUseDetails(@RequestBody @Valid UpdateUserDto user) {
-        String newToken = userService.updateUserDetails(user);
-        return ResponseEntity.ok(newToken);
-    }
-
-    @DeleteMapping("/delete-user")
-    public ResponseEntity<?> deleteUseDetails() {
-        userService.deleteUserDetails();
-        return ResponseEntity.ok("Success, Successfully deleted your account");
-    }
-
-    @PostMapping("/log-out")
-    public ResponseEntity<?> logOut(HttpServletRequest request, HttpServletResponse response) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            new SecurityContextLogoutHandler().logout(request, response, auth);
+        public UserController(UserService userService) {
+                this.userService = userService;
         }
 
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            authHeader.substring(7);
-
-        } else {
-            throw new RuntimeException("No Authorization header provided or token is missing.");
+        @Operation(summary = "Upload a profile image", description = "Allows the authenticated user to upload a profile image. "
+                        +
+                        "The uploaded file must be provided as a multipart/form-data request.")
+        @ApiResponse(responseCode = "200", description = "Successfully uploaded image")
+        @PostMapping("/user/image/upload")
+        @PreAuthorize("hasAuthority('user:write')")
+        public ResponseEntity<String> uploadProfileImage(
+                        @RequestParam("file") @NotNull(message = "File must be provided") MultipartFile file) {
+                userService.saveUserProfileImage(file);
+                return ResponseEntity.ok("Successfully uploaded image");
         }
 
-        return ResponseEntity.ok("Logged out successfully");
-    }
+        @Operation(summary = "Remove profile image", description = "Removes the profile image of the authenticated user. "
+                        +
+                        "This endpoint does not return any content.")
+        @ApiResponse(responseCode = "204", description = "Successfully removed profile image, no content returned")
+        @DeleteMapping("/user/image/remove")
+        @PreAuthorize("hasAuthority('user:write')")
+        public ResponseEntity<Void> removeProfileImage() {
+                userService.removeUserProfileImage();
+                return ResponseEntity.noContent().build();
+        }
+
+        @Operation(summary = "Get public user details", description = "Retrieves publicly visible details of a user by their unique Nano ID.")
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved public user details", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class)))
+        @GetMapping("/public/user/{nanoId}")
+        public ResponseEntity<UserResponse> getPublicUserDetails(
+                        @PathVariable @NotBlank(message = "User ID cannot be blank") String nanoId) {
+                UserResponse userResponse = userService.getPublicUserDetails(nanoId);
+
+                return ResponseEntity.ok(userResponse);
+        }
+
+        @Operation(summary = "Get authenticated user details", description = "Retrieves the details of the currently authenticated user.")
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved user details", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class)))
+        @GetMapping("/user/me")
+        @PreAuthorize("hasAuthority('user:read')")
+        public ResponseEntity<UserResponse> getUserDetails() {
+                UserResponse userResponse = userService.getUserDetails();
+                return ResponseEntity.ok(userResponse);
+        }
+
+        @Operation(summary = "Update authenticated user details", description = "Updates the details of the currently authenticated user using the provided information.")
+        @ApiResponse(responseCode = "200", description = "Successfully updated user details", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class)))
+        @PutMapping("/user/update")
+        @PreAuthorize("hasAuthority('user:write')")
+        public ResponseEntity<LoginResponse> updateUseDetails(
+                        @RequestBody @Valid UpdateUserDto user) {
+                LoginResponse response = userService.updateUserDetails(user);
+                return ResponseEntity.ok(response);
+        }
+
+        @Operation(summary = "Delete authenticated user account", description = "Deletes the currently authenticated user's account. "
+                        +
+                        "This endpoint does not return any content.")
+        @ApiResponse(responseCode = "204", description = "Successfully deleted user account, no content returned")
+        @DeleteMapping("/user/remove")
+        @PreAuthorize("hasAuthority('user:delete')")
+        public ResponseEntity<Void> deleteUseDetails() {
+                userService.deleteUserDetails();
+                return ResponseEntity.noContent().build();
+        }
+
 }

@@ -1,5 +1,4 @@
 import { CommentResponse } from '../comment/response';
-import { UserResponse } from '../user/response';
 
 export enum Order {
   LATEST = 'latest',
@@ -7,13 +6,13 @@ export enum Order {
 }
 
 export interface PostResponse {
-  id: number;
+  id: string;
   title: string;
   content: string;
   readTime: number;
   createdAt: string;
   updatedAt: string;
-  categoryId: number;
+  categoryId: string;
   summary?: string | null;
   postImgUrl: string;
   views: number;
@@ -28,7 +27,7 @@ export interface PostResponse {
 }
 
 export interface PostWithCategoryResponse {
-  categoryId: number;
+  categoryId: string;
   categoryName: string;
   posts: PostResponse;
 }

@@ -7,34 +7,52 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { useSnackbar } from '../features/Snackbars/errorMessage';
-import { store } from '../store/store';
+import { RootState, store } from '../store/store';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './useWebSocket';
+import { useSelector } from 'react-redux';
+import { likeResponse } from '../types/like/likeResponse';
 
-export const useGetPostLikesCount = (postId: number) => {
+export const useGetPostLikesCount = (postId: string) => {
   const queryClient = useQueryClient();
 
   // React Query for initial fetch
   const query = useQuery({
-    queryKey: ['postLikes', postId],
+    queryKey: ['post-likes', postId],
     queryFn: () => fetchPostLikesCount(postId),
   });
 
-  useWebSocket(`/topic/like/post-likes/${postId}`, (message) => {
-    queryClient.setQueryData(['postLikes', postId], Number(message));
+  useWebSocket(`/topic/posts/likes/${postId}`, (message) => {
+    queryClient.setQueryData(['post-likes', postId], Number(message));
   });
 
   return query;
 };
 
 export const useGetUserLikes = () => {
+  const queryClient = useQueryClient();
   const isAuthenticated = store.getState().auth.isAuthenticated;
 
-  return useQuery({
-    queryKey: ['userLikes'],
+  const query = useQuery({
+    queryKey: ['user-likes'],
     queryFn: () => fetchUserLikes(),
     enabled: isAuthenticated,
   });
+
+  // Subscribe to WebSocket updates for user likes
+  if (isAuthenticated) {
+    const token = useSelector((state: RootState) => state.auth.jwtToken) ?? undefined;
+    useWebSocket(
+      '/user/queue/user/posts/likes/update',
+      (message) => {
+        const updatedLikes: likeResponse[] = JSON.parse(message);
+        queryClient.setQueryData(['user-likes'], updatedLikes);
+      },
+      token
+    );
+  }
+
+  return query;
 };
 
 export const useAddLike = () => {

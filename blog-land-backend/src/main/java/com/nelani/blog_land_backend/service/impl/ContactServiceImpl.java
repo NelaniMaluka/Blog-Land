@@ -19,7 +19,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
-    public void getInfo(ContactDto contactDto) {
+    public void saveInfo(ContactDto contactDto) {
         Contact contact = Contact.builder()
                 .fullName(contactDto.fullName())
                 .email(contactDto.email())

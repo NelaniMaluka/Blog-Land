@@ -1,9 +1,9 @@
-import { useGetArticles } from '../../../../hooks/useTechCrunch';
 import LoadingScreen from '../../../../features/LoadingScreen/LoadingScreen';
+import { useGetLatestPosts } from '../../../../hooks/usePost';
 import styles from './Article.module.css';
 
 export const Article = () => {
-  const { data, isLoading, error } = useGetArticles();
+  const { data, isLoading, error } = useGetLatestPosts({ page: 30, size: 3 });
 
   if (error) return <></>;
 
@@ -21,11 +21,11 @@ export const Article = () => {
                   <div key={index} className={styles.article}>
                     <img src="techC.png" alt="Logo" />
                     <div>
-                      <a href={article.link} target="_blank" rel="noopener noreferrer">
+                      <a href="https://techcrunch.com/" target="_blank" rel="noopener noreferrer">
                         {article.title}
                       </a>
                     </div>
-                    <span className={styles.date}>{article.date}</span>
+                    <span className={styles.date}>{article.createdAt}</span>
                     <p>{article.summary}</p>
                   </div>
                 ))

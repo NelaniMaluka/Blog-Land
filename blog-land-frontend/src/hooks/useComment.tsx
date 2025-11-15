@@ -17,7 +17,7 @@ import { formatDate } from '../utils/formatUtils';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 
-export const useGetCommentsCountByPost = (postId: number) => {
+export const useGetCommentsCountByPost = (postId: string) => {
   const queryClient = useQueryClient();
 
   const query = useQuery({
@@ -25,7 +25,7 @@ export const useGetCommentsCountByPost = (postId: number) => {
     queryFn: () => fetchCommentsCountByPost(postId),
   });
 
-  useWebSocket(`/topic/comments/comments-count/${postId}`, (message) => {
+  useWebSocket(`/topic/posts/comments/count/${postId}`, (message) => {
     queryClient.setQueryData(['commentsCount', postId], Number(message));
   });
 
@@ -33,60 +33,65 @@ export const useGetCommentsCountByPost = (postId: number) => {
 };
 
 export const useGetCommentsWithPostId = (
-  payload: { postId: number; page: number; size: number },
+  postId: string,
+  payload: { page: number; size: number },
   options?: Omit<UseQueryOptions<CommentResponse[], Error>, 'queryKey' | 'queryFn'>
 ) => {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['comments', payload],
-    queryFn: () => fetchCommentsWithPostId(payload),
-    enabled: !!payload.postId,
+    queryKey: ['comments', postId, payload],
+    queryFn: () =>
+      fetchCommentsWithPostId({
+        postId,
+        page: payload,
+      }),
+    enabled: !!postId,
     ...options,
   });
 
-  useWebSocket(`/topic/comments/add/${payload.postId}`, (message) => {
+  useWebSocket(`/topic/posts/comments/add/${postId}`, (message) => {
     const raw = JSON.parse(message);
     const newComment: CommentResponse = {
       ...raw,
       createdAt: formatDate(raw.createdAt),
     };
-    queryClient.setQueryData(['comments', payload], (old: CommentResponse[] = []) => [
+    queryClient.setQueryData(['comments', postId, payload], (old: CommentResponse[] = []) => [
       newComment,
       ...old,
     ]);
   });
 
-  useWebSocket(`/topic/comments/update/${payload.postId}`, (message) => {
+  useWebSocket(`/topic/posts/comments/update/${postId}`, (message) => {
     const raw = JSON.parse(message);
     const updatedComment: CommentResponse = {
       ...raw,
       createdAt: formatDate(raw.createdAt),
     };
 
-    queryClient.setQueryData(['comments', payload], (old: CommentResponse[] = []) => {
+    queryClient.setQueryData(['comments', postId, payload], (old: CommentResponse[] = []) => {
       return old.map((c) => (c.id === updatedComment.id ? updatedComment : c));
     });
   });
 
-  useWebSocket(`/topic/comments/remove/${payload.postId}`, (message) => {
+  useWebSocket(`/topic/posts/comments/remove/${postId}`, (message) => {
     const deletedCommentId = JSON.parse(message);
 
-    queryClient.setQueryData(['comments', payload], (old: CommentResponse[] = []) => {
-      return old.filter((c) => c.id !== deletedCommentId);
-    });
+    queryClient.setQueryData(['comments', postId, payload], (old: CommentResponse[] = []) =>
+      old.filter((c) => c.id !== deletedCommentId)
+    );
   });
 
   return query;
 };
 
 export const useGetUserCommentsWithPostId = (
-  postId: number,
-  options?: Omit<UseQueryOptions<UserCommentsResponse[], Error>, 'queryKey' | 'queryFn'>
+  postId: string,
+  options?: Omit<UseQueryOptions<string[], Error>, 'queryKey' | 'queryFn'>
 ) => {
   const queryClient = useQueryClient();
 
-  const query = useQuery<UserCommentsResponse[], Error>({
+  const query = useQuery<string[], Error>({
     queryKey: ['userComments', postId],
     queryFn: () => fetchUserCommentsWithPostId(postId),
     enabled: !!postId,
@@ -95,26 +100,28 @@ export const useGetUserCommentsWithPostId = (
 
   const token = useSelector((state: RootState) => state.auth.jwtToken) ?? undefined;
   useWebSocket(
-    '/user/queue/comment/add/' + postId,
+    '/user/queue/posts/comment/add/' + postId,
     (message) => {
       const raw = JSON.parse(message);
-      queryClient.setQueryData(['userComments', postId], (old: UserCommentsResponse[] = []) => {
-        return [raw, ...old];
-      });
+      console.log(raw);
+      const rawId = typeof raw === 'string' ? raw : raw.id;
+      queryClient.setQueryData(['userComments', postId], (old: string[] = []) => [rawId, ...old]);
     },
     token
   );
 
   useWebSocket(
-    '/user/queue/comment/remove/' + postId,
+    '/user/queue/posts/comment/remove/' + postId,
     (message) => {
-      const deletedCommentId = JSON.parse(message);
-      queryClient.setQueryData(['userComments', postId], (old: UserCommentsResponse[] = []) => {
-        return old.filter((c) => c.id !== deletedCommentId);
-      });
+      const raw = JSON.parse(message);
+      const deletedId = typeof raw === 'string' ? raw : raw.id;
+      queryClient.setQueryData(['userComments', postId], (old: string[] = []) =>
+        old.filter((c) => c !== deletedId)
+      );
     },
     token
   );
+
   return query;
 };
 

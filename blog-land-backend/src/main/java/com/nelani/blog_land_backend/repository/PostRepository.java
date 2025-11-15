@@ -7,25 +7,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, UUID> {
   long count();
-
-  long countByUser(User user);
 
   // Count only published posts in category
   @Query("SELECT COUNT(p) FROM Post p WHERE p.category.id = :categoryId AND " +
       "p.isDraft = false AND (p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP)")
-  int countByCategoryId(@Param("categoryId") Long categoryId);
+  int countByCategoryId(@Param("categoryId") UUID categoryId);
 
-  @Query("SELECT COALESCE(SUM(p.viewCount), 0) FROM Post p WHERE p.user.id = :userId")
-  Long getTotalViewsByUserId(@Param("userId") Long userId);
-
-  List<Post> findAllByUserId(Long userId);
+  List<Post> findAllByUserId(UUID userId);
 
   @Query("SELECT p FROM Post p WHERE p.isDraft = true AND p.scheduledAt <= CURRENT_TIMESTAMP")
   List<Post> findPostsToPublish();
@@ -35,10 +33,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
           SELECT * FROM BLOG_POSTS
           WHERE IS_DRAFT = FALSE
             AND (SCHEDULED_AT IS NULL OR SCHEDULED_AT <= NOW())
-            AND ID >= (
-                SELECT FLOOR(RAND() * (SELECT MAX(ID) FROM BLOG_POSTS))
-            )
-          ORDER BY ID ASC
+          ORDER BY RAND()
           LIMIT 1
       """, nativeQuery = true)
   Post findRandomPost();
@@ -65,8 +60,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   @Query("""
           SELECT p
           FROM Post p
-          LEFT JOIN p.likes l
-          LEFT JOIN p.comments c
+          LEFT JOIN Like l ON l.post = p
+          LEFT JOIN Comment c ON c.post = p
           WHERE p.isDraft = false
             AND (p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP)
           GROUP BY p
@@ -74,11 +69,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       """)
   Page<Post> findTrendingPosts(Pageable pageable);
 
-  // Category filter, only published
-  @Query("SELECT p FROM Post p WHERE p.category.id = :categoryId AND " +
-      "p.isDraft = false AND (p.scheduledAt IS NULL OR p.scheduledAt <= CURRENT_TIMESTAMP)")
-  Page<Post> findByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
+  Page<Post> findByUserIdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
 
-  Page<Post> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+  @Modifying
+  @Transactional
+  @Query("DELETE FROM Post p WHERE p.user = :user")
+  int deleteByUser(@Param("user") User user);
 
 }

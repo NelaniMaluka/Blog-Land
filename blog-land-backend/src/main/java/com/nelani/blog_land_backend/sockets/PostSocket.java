@@ -1,10 +1,12 @@
 package com.nelani.blog_land_backend.sockets;
 
-import com.nelani.blog_land_backend.util.builders.PostBuilder;
+import com.nelani.blog_land_backend.mapper.PostBuilder;
 import com.nelani.blog_land_backend.model.Post;
 import com.nelani.blog_land_backend.response.PostResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class PostSocket {
@@ -21,7 +23,7 @@ public class PostSocket {
 
         // Send new post to subscribers
         messagingTemplate.convertAndSend(
-                "/topic/post/add/" + post.getId(),
+                "/topic/posts/add/" + post.getId(),
                 postResponse);
     }
 
@@ -31,14 +33,14 @@ public class PostSocket {
 
         // Send updated comment to subscribers
         messagingTemplate.convertAndSend(
-                "/topic/post/update/" + post.getId(),
+                "/topic/posts/update/" + post.getId(),
                 postResponse);
     }
 
-    public void deletePost(Long deletedPostId) {
+    public void deletePost(UUID deletedPostId) {
         // Send deleted post ID to subscribers
         messagingTemplate.convertAndSend(
-                "/topic/post/remove/" + deletedPostId,
+                "/topic/posts/remove/" + deletedPostId,
                 deletedPostId);
     }
 

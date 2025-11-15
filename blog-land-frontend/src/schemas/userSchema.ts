@@ -25,7 +25,7 @@ const socialLinkSchema = z
 export const updateUserSchema = z.object({
   firstname: z.string().min(1, { message: 'First name cannot be empty' }),
   lastname: z.string().min(1, { message: 'Last name cannot be empty' }),
-  email: z.string().email({ message: 'Please enter a valid email address' }),
+  email: z.email({ message: 'Please enter a valid email address' }),
   provider: providerSchema,
   title: z.string().optional(),
   summary: z.string().optional(),

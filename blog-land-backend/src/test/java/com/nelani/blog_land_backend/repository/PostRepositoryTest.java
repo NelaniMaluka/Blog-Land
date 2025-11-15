@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,10 +48,8 @@ public class PostRepositoryTest {
                 .provider(Provider.LOCAL)
                 .build();
 
-        List<Post> posts = new ArrayList<>();
         category = Category.builder()
                 .name("testCategory")
-                .posts(posts)
                 .build();
 
         // Save user and category
@@ -109,19 +108,6 @@ public class PostRepositoryTest {
     }
 
     @Test
-    public void PostRepository_LongCountByUser_ReturnPostCount() {
-        // Arrange
-        Post post = createPost("Title", user, category);
-
-        // Act
-        postRepository.save(post);
-
-        // Assert
-        long found = postRepository.countByUser(user);
-        Assertions.assertThat(found).isEqualTo(1);
-    }
-
-    @Test
     public void PostRepository_FindAllByUserId_ReturnPostList() {
         // Act
         postList.forEach(postRepository::save);
@@ -147,7 +133,7 @@ public class PostRepositoryTest {
         // Assert
         var found = postRepository.findRandomPost();
         Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found.getId()).isGreaterThan(0);
+        Assertions.assertThat(found.getId()).isNotNull();
         Assertions.assertThat(found.getSummary()).isEqualTo("summary");
         Assertions.assertThat(found.getImgUrl()).isEqualTo("imgUrl");
     }
@@ -164,7 +150,7 @@ public class PostRepositoryTest {
         Assertions.assertThat(found).isNotNull();
         Assertions.assertThat(found).hasSize(5);
         found.forEach(post -> {
-            Assertions.assertThat(post.getId()).isGreaterThan(0);
+            Assertions.assertThat(post.getId()).isNotNull();
             Assertions.assertThat(post.getTitle()).isNotBlank();
             Assertions.assertThat(post.getSummary()).isEqualTo("summary");
             Assertions.assertThat(post.getImgUrl()).isEqualTo("imgUrl");
@@ -188,7 +174,7 @@ public class PostRepositoryTest {
         Assertions.assertThat(found.getSize()).isEqualTo(5); // page size check
 
         found.getContent().forEach(post -> {
-            Assertions.assertThat(post.getId()).isGreaterThan(0);
+            Assertions.assertThat(post.getId()).isNotNull();
             Assertions.assertThat(post.getSummary()).isEqualTo("summary");
             Assertions.assertThat(post.getImgUrl()).isEqualTo("imgUrl");
         });
@@ -211,30 +197,7 @@ public class PostRepositoryTest {
         Assertions.assertThat(found.getSize()).isEqualTo(5); // page size check
 
         found.getContent().forEach(post -> {
-            Assertions.assertThat(post.getId()).isGreaterThan(0);
-            Assertions.assertThat(post.getSummary()).isEqualTo("summary");
-            Assertions.assertThat(post.getImgUrl()).isEqualTo("imgUrl");
-        });
-    }
-
-    @Test
-    public void PostRepository_FindByCategoryId_ReturnPostPage() {
-        // Arrange
-        Pageable page = PageRequest.of(0, 5);
-        postList.forEach(postRepository::save);
-
-        // Act
-        var found = postRepository.findByCategoryId(category.getId(), page);
-
-        // Assert
-        Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found.getContent()).hasSize(5);
-        Assertions.assertThat(found.getTotalElements()).isGreaterThanOrEqualTo(5);
-        Assertions.assertThat(found.getNumber()).isEqualTo(0); // page index check
-        Assertions.assertThat(found.getSize()).isEqualTo(5); // page size check
-
-        found.getContent().forEach(post -> {
-            Assertions.assertThat(post.getId()).isGreaterThan(0);
+            Assertions.assertThat(post.getId()).isNotNull();
             Assertions.assertThat(post.getSummary()).isEqualTo("summary");
             Assertions.assertThat(post.getImgUrl()).isEqualTo("imgUrl");
         });
@@ -257,10 +220,46 @@ public class PostRepositoryTest {
         Assertions.assertThat(found.getSize()).isEqualTo(5); // page size check
 
         found.getContent().forEach(post -> {
-            Assertions.assertThat(post.getId()).isGreaterThan(0);
+            Assertions.assertThat(post.getId()).isNotNull();
             Assertions.assertThat(post.getSummary()).isEqualTo("summary");
             Assertions.assertThat(post.getImgUrl()).isEqualTo("imgUrl");
         });
+    }
+
+    @Test
+    public void PostRepository_FindPostsToPublish_DeletesPosts() {
+        // Arrange
+        Post post = Post.builder()
+                .title("title")
+                .summary("summary")
+                .imgUrl("imgUrl")
+                .isDraft(true)
+                .user(user)
+                .category(category)
+                .scheduledAt(LocalDateTime.now())
+                .build();
+        post.setContent("This is some example content for the blog post.");
+
+        postRepository.save(post);
+
+        // Act
+        var found = postRepository.findPostsToPublish();
+        Assertions.assertThat(found.size()).isEqualTo(1);
+        Assertions.assertThat(found.get(0).getId()).isEqualTo(post.getId());
+        Assertions.assertThat(found.get(0).getUser().getId()).isEqualTo(user.getId());
+        Assertions.assertThat(found.get(0).getImgUrl()).isEqualTo(post.getImgUrl());
+        Assertions.assertThat(found.get(0).getTitle()).isEqualTo(post.getTitle());
+        Assertions.assertThat(found.get(0).getSummary()).isEqualTo(post.getSummary());
+    }
+
+    @Test
+    public void PostRepository_DeleteByUser_DeletesPosts() {
+        // Arrange
+        postList.forEach(postRepository::save);
+
+        // Act
+        var count = postRepository.deleteByUser(user);
+        Assertions.assertThat(count).isEqualTo(5);
     }
 
     private Post createPost(String title, User user, Category category) {
@@ -271,8 +270,8 @@ public class PostRepositoryTest {
                 .user(user)
                 .category(category)
                 .build();
-        post.setContent("This is some example content for the blog post."); // ensures wordCount & readTime are
-                                                                            // calculated
+        post.setContent("This is some example content for the blog post.");
+
         return post;
     }
 

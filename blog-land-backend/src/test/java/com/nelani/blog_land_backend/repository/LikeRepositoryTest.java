@@ -10,9 +10,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @ActiveProfiles("test")
@@ -43,10 +40,8 @@ public class LikeRepositoryTest {
                 .provider(Provider.LOCAL)
                 .build();
 
-        List<Post> posts = new ArrayList<>();
         Category category = Category.builder()
                 .name("testCategory")
-                .posts(posts)
                 .build();
 
         post = Post.builder()
@@ -56,8 +51,7 @@ public class LikeRepositoryTest {
                 .user(user)
                 .category(category)
                 .build();
-        post.setContent("This is some example content for the blog post."); // ensures wordCount & readTime are
-                                                                            // calculated
+        post.setContent("This is some example content for the blog post.");
 
         // Save user and category
         userRepository.save(user);
@@ -131,6 +125,26 @@ public class LikeRepositoryTest {
         var found = likeRepository.findByUserAndPost(user, post);
         Assertions.assertThat(found).isNotNull();
         Assertions.assertThat(found).isEmpty();
+    }
+
+    @Test
+    public void LikeRepository_DeleteByUser_DeletesLike() {
+        // Act
+        likeRepository.save(like);
+
+        // Assert
+        var count = likeRepository.deleteByUser(user);
+        Assertions.assertThat(count).isEqualTo(1);
+    }
+
+    @Test
+    public void LikeRepository_DeleteByPost_DeletesLike() {
+        // Act
+        likeRepository.save(like);
+
+        // Assert
+        var count = likeRepository.deleteByPost(post);
+        Assertions.assertThat(count).isEqualTo(1);
     }
 
 }

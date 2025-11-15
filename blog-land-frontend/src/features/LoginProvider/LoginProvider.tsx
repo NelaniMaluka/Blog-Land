@@ -1,4 +1,3 @@
-// src/context/DialogContext.tsx
 import { createContext, useState, ReactNode, useContext } from 'react';
 
 interface DialogContextType {

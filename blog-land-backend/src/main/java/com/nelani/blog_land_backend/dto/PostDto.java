@@ -4,17 +4,20 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+@Builder
 public record PostDto(
-        Long id,
+        UUID id,
 
         @NotBlank(message = "Title is required") @Size(max = 150, message = "Title cannot exceed 150 characters") String title,
 
         @NotBlank(message = "Content is required") String content,
 
-        @NotNull(message = "Category ID is required") Long categoryId,
+        @NotNull(message = "Category ID is required") UUID categoryId,
 
         @NotBlank(message = "Summary is required") @Size(max = 300, message = "Summary cannot exceed 300 characters") String summary,
 

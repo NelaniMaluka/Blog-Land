@@ -1,20 +1,20 @@
 import apiClient from './apiClient';
-import { changePasswordRequest, changePasswordWithTokenRequest } from '../types/password/request';
+import { changePasswordRequest, forgotPasswordRequest } from '../types/password/request';
 
-export const changePassword = async (payload: changePasswordRequest) => {
-  const response = await apiClient.post('/password/change', {
+export const requestPasswordReset = async (email: string) => {
+  const response = await apiClient.post('/public/password/reset', email);
+  return response;
+};
+
+export const resetPassword = async (token: string, payload: forgotPasswordRequest) => {
+  const response = await apiClient.put(`/public/password/reset/${token}`, {
     payload,
   });
   return response;
 };
 
-export const forgotPassword = async (payload: { email: string }) => {
-  const response = await apiClient.post('/auth/request-password-reset', payload);
-  return response;
-};
-
-export const changePasswordWithToken = async (payload: changePasswordWithTokenRequest) => {
-  const response = await apiClient.post('/auth/change-password', {
+export const changePassword = async (payload: changePasswordRequest) => {
+  const response = await apiClient.put('/user/password', {
     payload,
   });
   return response;

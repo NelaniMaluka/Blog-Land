@@ -1,44 +1,40 @@
 import apiClient from './apiClient';
-import { AddCommentRequest, UpdateCommentRequest } from '../types/comment/requests';
+import { CommentRequest } from '../types/comment/requests';
 
-export const getCommentsCountByPost = async (postId: number) => {
-  const response = await apiClient.get('comments/get/comments-count', {
-    params: { postId },
-  });
+export const getCommentsCountByPost = async (postId: string) => {
+  const response = await apiClient.get(`/public/posts/${postId}/comments/count`);
   return response;
 };
 
-export const getCommentsByPost = async (payload: {
-  postId: number;
-  page: number;
-  size: number;
-}) => {
-  const response = await apiClient.get('/comments/get/comments', {
+export const getCommentsByPost = async (
+  postId: string,
+  payload: {
+    page: number;
+    size: number;
+  }
+) => {
+  const response = await apiClient.get(`/public/posts/${postId}/comments`, {
     params: { ...payload },
   });
   return response;
 };
 
-export const getUserCommentsByPost = async (postId: number) => {
-  const response = await apiClient.get('/comments/get-user-comments', {
-    params: { postId },
-  });
+export const getUserCommentsByPost = async (postId: string) => {
+  const response = await apiClient.get(`/user/posts/${postId}/comments/ids`);
   return response;
 };
 
-export const addComment = async (payload: AddCommentRequest) => {
-  const response = await apiClient.post('/comments/add-user-comment', payload);
+export const addComment = async (postId: string, payload: CommentRequest) => {
+  const response = await apiClient.post(`/user/posts/${postId}/comments`, payload);
   return response;
 };
 
-export const updateComment = async (payload: UpdateCommentRequest) => {
-  const response = await apiClient.put('/comments/update-user-comments', payload);
+export const updateComment = async (postId: string, commentId: string, payload: CommentRequest) => {
+  const response = await apiClient.put(`/user/posts/${postId}/comments/${commentId}`, payload);
   return response;
 };
 
-export const deleteComment = async (id: number) => {
-  const response = await apiClient.delete('/comments/delete-user-comment', {
-    params: { id },
-  });
+export const deleteComment = async (commentId: string) => {
+  const response = await apiClient.delete(`/user/posts/comments/${commentId}`);
   return response;
 };

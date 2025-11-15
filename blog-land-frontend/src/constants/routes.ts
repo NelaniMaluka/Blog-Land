@@ -12,7 +12,7 @@ export const ROUTES = {
   FORGOTPASSWORD: '/forgot-password',
 
   // Single post urls
-  POST: (id: number, title: string) => `/post/${id}-${slugify(title)}`,
+  POST: (id: string, title: string) => `/post/${id}-${slugify(title)}`,
   LATEST_POST_PAGE: (title: string) => `/posts/latest/${slugify(title)}`,
 
   // Post Groups

@@ -1,10 +1,13 @@
 package com.nelani.blog_land_backend.sockets;
 
-import com.nelani.blog_land_backend.util.builders.UserBuilder;
+import com.nelani.blog_land_backend.mapper.UserMapper;
 import com.nelani.blog_land_backend.model.User;
+import com.nelani.blog_land_backend.model.UserSocial;
 import com.nelani.blog_land_backend.response.UserResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class UserSocket {
@@ -15,25 +18,24 @@ public class UserSocket {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void updateUser(User user) {
+    public void updateUser(User user, List<UserSocial> socials) {
         // Map to DTO
-        UserResponse userResponse = UserBuilder.buildLoggedInUser(user);
+        UserResponse userResponse = UserMapper.buildLoggedInUser(user, socials);
 
         // Send updated comment to subscribers
         messagingTemplate.convertAndSendToUser(
-                user.getId().toString(),
+                user.getEmail(),
                 "/queue/user/update",
                 userResponse);
     }
 
     public void updatePublicUser(User user) {
         // Map to DTO
-        UserResponse userResponse = UserBuilder.publicUserWithMinimalDetails(user);
+        UserResponse userResponse = UserMapper.publicUserWithMinimalDetails(user);
 
         // Send updated comment to subscribers
         messagingTemplate.convertAndSend(
-                "/queue/user/public-update/"  + user.getNaniId(),
-                userResponse
-        );
+                "/topic/user/update/" + user.getNaniId(),
+                userResponse);
     }
 }

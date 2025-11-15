@@ -8,8 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "blog_posts")
@@ -20,12 +19,12 @@ import java.util.List;
 public class Post {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotBlank(message = "Title is required")
     @Size(max = 255, message = "Title must not exceed 255 characters")
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String title;
 
     @NotBlank(message = "Content is required")
@@ -80,14 +79,6 @@ public class Post {
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Like> likes = new ArrayList<>();
 
     public void setContent(String content) {
         this.content = content;

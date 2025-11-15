@@ -8,8 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "categories")
@@ -20,15 +19,11 @@ import java.util.List;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(unique = true, nullable = false)
     @NotBlank(message = "Category name cannot be blank")
     @Size(min = 3, max = 50, message = "Category name must be between 3 and 50 characters")
     private String name;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "category", orphanRemoval = true)
-    private List<Post> posts = new ArrayList<>();
 }

@@ -1,12 +1,10 @@
-import { UserResponse } from '../user/response';
-
 export interface CommentResponse {
-  id: number;
+  id: string;
   content: string;
   userId: string;
   createdAt: string;
 }
 
 export interface UserCommentsResponse {
-  id: number;
+  id: string;
 }

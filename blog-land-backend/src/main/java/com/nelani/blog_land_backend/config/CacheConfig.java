@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.TimeUnit;
@@ -12,37 +13,50 @@ import java.util.concurrent.TimeUnit;
 @EnableCaching
 public class CacheConfig {
 
-        // @Bean
-        public CacheManager CacheManager() {
+        @Bean
+        public CacheManager cacheManager() {
                 CaffeineCacheManager cacheManager = new CaffeineCacheManager();
 
-                Caffeine<Object, Object> commentCacheConfig = Caffeine.newBuilder()
-                                .maximumSize(1000)
-                                .expireAfterWrite(5, TimeUnit.MINUTES);
+                // Comment-related caches (frequently updated)
+                Caffeine<Object, Object> commentCache = Caffeine.newBuilder()
+                                .expireAfterWrite(5, TimeUnit.MINUTES)
+                                .maximumSize(500);
 
-                cacheManager.registerCustomCache("postCommentsCount", commentCacheConfig.build());
-                cacheManager.registerCustomCache("postComments", commentCacheConfig.build());
-                cacheManager.registerCustomCache("postLikesCount", commentCacheConfig.build());
+                var builtCommentCache = commentCache.build();
+                if (builtCommentCache != null) {
+                        cacheManager.registerCustomCache("postComments", builtCommentCache);
+                        cacheManager.registerCustomCache("postCommentsCount", builtCommentCache);
+                        cacheManager.registerCustomCache("postLikesCount", builtCommentCache);
+                        cacheManager.registerCustomCache("userComments", builtCommentCache);
+                        cacheManager.registerCustomCache("userLikes", builtCommentCache);
+                }
 
-                Caffeine<Object, Object> userCacheConfig = Caffeine.newBuilder()
-                                .maximumSize(500)
-                                .expireAfterWrite(1, TimeUnit.HOURS);
+                // User activity and trending-related caches (moderately dynamic)
+                Caffeine<Object, Object> activityCache = Caffeine.newBuilder()
+                                .expireAfterWrite(1, TimeUnit.HOURS)
+                                .maximumSize(300);
 
-                cacheManager.registerCustomCache("userComments", userCacheConfig.build());
-                cacheManager.registerCustomCache("userLikes", userCacheConfig.build());
-                cacheManager.registerCustomCache("user", userCacheConfig.build());
-                cacheManager.registerCustomCache("userPosts", userCacheConfig.build());
-                cacheManager.registerCustomCache("trendingPosts", userCacheConfig.build());
-                cacheManager.registerCustomCache("allPosts", userCacheConfig.build());
+                var builtActivityCache = activityCache.build();
+                if (builtActivityCache != null) {
+                        cacheManager.registerCustomCache("userPosts", builtActivityCache);
+                        cacheManager.registerCustomCache("trendingPosts", builtActivityCache);
+                        cacheManager.registerCustomCache("allPosts", builtActivityCache);
+                }
 
-                Caffeine<Object, Object> postCacheConfig = Caffeine.newBuilder()
-                                .maximumSize(2000)
-                                .expireAfterWrite(7, TimeUnit.DAYS);
+                // Post and category data caches (mostly static)
+                Caffeine<Object, Object> contentCache = Caffeine.newBuilder()
+                                .expireAfterWrite(7, TimeUnit.DAYS)
+                                .maximumSize(200);
 
-                cacheManager.registerCustomCache("categoryPosts", postCacheConfig.build());
-                cacheManager.registerCustomCache("post", postCacheConfig.build());
-                cacheManager.registerCustomCache("categories", postCacheConfig.build());
+                var builtContentCache = contentCache.build();
+                if (builtContentCache != null) {
+                        cacheManager.registerCustomCache("post", builtContentCache);
+                        cacheManager.registerCustomCache("categoryPosts", builtContentCache);
+                        cacheManager.registerCustomCache("categories", builtContentCache);
+                        cacheManager.registerCustomCache("user", builtContentCache);
+                }
 
                 return cacheManager;
         }
+
 }

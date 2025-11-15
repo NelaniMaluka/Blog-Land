@@ -9,10 +9,10 @@ export type AddPostRequest = {
 };
 
 export type UpdatePostRequest = {
-  id: number;
+  id: string;
   title: string;
   content: string;
-  categoryId: number;
+  categoryId: string;
   summary: string;
   imgUrl: string;
   draft: boolean;
