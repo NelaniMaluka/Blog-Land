@@ -5,6 +5,9 @@ Built with a clean layered architecture (Controller → Service → Repository) 
 
 ---
 
+[📄 API Documentation](https://blog-land.onrender.com/swagger-ui/index.html)
+
+
 ## Features
 
 ### Authentication & Security
@@ -48,20 +51,25 @@ Built with a clean layered architecture (Controller → Service → Repository) 
 ## Folder Structure
 
 ```
-src/main/java/com/nelani/blogland  
-├── config/          # App configuration (security, DB, etc.)  
-├── controller/      # REST controllers (User, Post, Auth, Category, etc.)  
+src/main/java/com/nelani/blogland
+├── cache/          # Cache configuration  
+├── config/         # App configuration (security, DB, etc.)  
+├── controller/     # REST controllers (User, Post, Auth, Category, etc.)  
 ├── dto/            # Data Transfer Objects  
-├── exception/      # Global exception handling  
-├── model/          # JPA entities  
+├── exception/      # Global exception handling
+├── mapper/         # Response builders
+├── model/          # JPA entities
+├── notifications/  # Emails etc.
 ├── repository/     # Spring Data repositories  
-├── response/       # Standard API response wrappers  
-├── service/        # Service interfaces  
-│   └── impl/       # Service implementations  
-├── seeder/         # Initial + scheduled seeders  
+├── response/       # Standard API response wrappers
+├── schedule/       # Scheduled methods
+├── seeder/         # Initial seeders 
+├── service/        # Service interfaces
+│   └── impl/       # Service implementations
+├── sockets/        # For live updates 
 └── utils/  
-    ├── validation/ # Entity validation logic  
-    └── builder/   # Response builders  
+     └── validation/ # Entity validation logic  
+    
 ```
 
 ---
@@ -152,8 +160,7 @@ docker run -p 8080:8080 blogland-backend
 
 - ✅ JWT & OAuth2 authentication  
 - ✅ CRUD for posts, categories, comments, users  
-- ✅ AI moderation with Hugging Face  
-- ⏳ Switch from H2 → MySQL in production  
+- ✅ AI moderation with Hugging Face   
 - ⏳ Expand admin dashboard endpoints  
 
 ---
