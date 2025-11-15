@@ -1,8 +1,6 @@
 package com.nelani.blog_land_backend.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nelani.blog_land_backend.response.LikeResponse;
-import com.nelani.blog_land_backend.response.UserResponse;
 import com.nelani.blog_land_backend.security.JwtService;
 import com.nelani.blog_land_backend.service.LikeService;
 import org.junit.jupiter.api.Test;

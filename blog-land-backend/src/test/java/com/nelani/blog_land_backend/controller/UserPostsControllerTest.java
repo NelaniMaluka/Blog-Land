@@ -128,9 +128,8 @@ public class UserPostsControllerTest {
         void UserPostsControllerTest_DeleteUserPost_ReturnNoContent() throws Exception {
                 UUID postId = UUID.randomUUID();
 
-                // Act & Assert
                 mockMvc.perform(delete("/api/user/posts/remove")
-                                .param("id", postId.toString()))
+                                .param("postId", postId.toString()))
                                 .andExpect(status().isNoContent());
 
                 verify(userPostService, times(1)).deletePost(postId);
