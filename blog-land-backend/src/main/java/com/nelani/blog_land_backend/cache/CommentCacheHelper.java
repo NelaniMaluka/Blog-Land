@@ -20,7 +20,7 @@ public class CommentCacheHelper {
     public void evictPostCommentsCount(@NonNull UUID postId) {
         Cache cache = cacheManager.getCache("postCommentsCount");
         if (cache != null)
-            cache.evict(postId);
+            cache.evict("comments-" + postId);
     }
 
     /** Evict the user’s comments for a post */

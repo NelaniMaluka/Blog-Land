@@ -138,7 +138,12 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </LoadingScreen>
-      {newsletter.isSuccess && <SuccessMessage message={newsletter.data} severity="success" />}
+      {newsletter.isSuccess && (
+        <SuccessMessage
+          message={'You’ve successfully subscribed to the newsletter!'}
+          severity="success"
+        />
+      )}
     </footer>
   );
 };

@@ -12,19 +12,27 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './useWebSocket';
 import { useSelector } from 'react-redux';
 import { likeResponse } from '../types/like/likeResponse';
+import { useCallback } from 'react';
 
 export const useGetPostLikesCount = (postId: string) => {
   const queryClient = useQueryClient();
 
-  // React Query for initial fetch
   const query = useQuery({
     queryKey: ['post-likes', postId],
     queryFn: () => fetchPostLikesCount(postId),
   });
 
-  useWebSocket(`/topic/posts/likes/${postId}`, (message) => {
-    queryClient.setQueryData(['post-likes', postId], Number(message));
-  });
+  const handleMessage = useCallback(
+    (message: string) => {
+      const value = Number(message);
+      if (!isNaN(value)) {
+        queryClient.setQueryData(['post-likes', postId], value);
+      }
+    },
+    [queryClient, postId]
+  );
+
+  useWebSocket(`/topic/posts/likes/${postId}`, handleMessage);
 
   return query;
 };
