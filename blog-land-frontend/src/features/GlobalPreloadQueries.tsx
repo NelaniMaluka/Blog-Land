@@ -9,6 +9,8 @@ export function GlobalPreloadQueries() {
 
   useGetAllPost({ page: 0, size: 10, order: Order.LATEST });
   useGetLatestPosts({ page: 1, size: 20 });
+  useGetLatestPosts({ page: 2, size: 20 });
+  useGetLatestPosts({ page: 3, size: 20 });
   useGetTrendingPosts({ page: 0, size: 12 });
 
   // Always call, but disable fetching if not authenticated
