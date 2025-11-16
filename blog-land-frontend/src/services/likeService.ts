@@ -8,7 +8,7 @@ export const fetchPostLikesCount = async (postId: string): Promise<string> => {
   const validPayload = validateOrThrow(idSchema, postId);
   try {
     const response = await getPostLikesCount(validPayload);
-    return formatDigit(response?.data.likesCount);
+    return formatDigit(response?.data);
   } catch (error) {
     throw new Error(
       getAxiosErrorMessage(error, 'Failed to fetch post likes count. Please try again later.')

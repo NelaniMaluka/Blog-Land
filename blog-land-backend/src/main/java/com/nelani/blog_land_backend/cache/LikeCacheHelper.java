@@ -20,7 +20,7 @@ public class LikeCacheHelper {
     public void evictPostLikesCount(@NonNull UUID postId) {
         Cache cache = cacheManager.getCache("postLikesCount");
         if (cache != null) {
-            cache.evict(postId);
+            cache.evict("likes-" + postId);
         }
     }
 

@@ -33,7 +33,7 @@ public class LikeController {
         @GetMapping("/public/posts/{postId}/likes")
         public ResponseEntity<?> getPostLikesCount(
                         @PathVariable("postId") @NotNull(message = "Post ID is required") UUID postId) {
-                return ResponseEntity.ok(Map.of("likesCount", likeService.getPostLikesCount(postId)));
+                return ResponseEntity.ok(likeService.getPostLikesCount(postId));
         }
 
         @Operation(summary = "Get all likes by the authenticated user", description = "Fetches all posts liked by the currently logged-in user.")

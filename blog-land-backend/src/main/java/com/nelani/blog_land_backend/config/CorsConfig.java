@@ -47,8 +47,8 @@ public class CorsConfig implements WebMvcConfigurer {
         // Static resource handler for profile icons
         @Override
         public void addResourceHandlers(ResourceHandlerRegistry registry) {
-                registry.addResourceHandler("/ProfileIcons/**")
-                                .addResourceLocations("file:ProfileIcons/");
+                registry.addResourceHandler("/userProfileIcons/**")
+                                .addResourceLocations("file:userProfileIcons/");
         }
 
 }

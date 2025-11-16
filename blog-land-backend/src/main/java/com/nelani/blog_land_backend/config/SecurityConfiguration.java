@@ -44,7 +44,7 @@ public class SecurityConfiguration {
                                                                 "/swagger-ui/**",
                                                                 "/swagger-ui.html",
                                                                 "/actuator/**",
-                                                                "/ProfileIcons/**",
+                                                                "/userProfileIcons/**",
                                                                 "/ws/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())

@@ -40,7 +40,7 @@ public class LikeServiceImpl implements LikeService {
 
         @Override
         @Transactional
-        @Cacheable(value = "postLikesCount", key = "#postId")
+        @Cacheable(value = "postLikesCount", key = "'likes-' + #postId")
         public long getPostLikesCount(UUID postId) {
                 // Checks if the post exists
                 Post existingPost = postRepository.findById(postId)

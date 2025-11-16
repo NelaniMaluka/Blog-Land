@@ -50,7 +50,7 @@ public class CommentServiceImpl implements CommentService {
 
         @Override
         @Transactional
-        @Cacheable(value = "postCommentsCount", key = "#postId")
+        @Cacheable(value = "postCommentsCount", key = "'comments-' + #postId")
         public long getCountByPostId(UUID postId) {
                 // Check if the post exists
                 Post post = postRepository.findById(postId)
