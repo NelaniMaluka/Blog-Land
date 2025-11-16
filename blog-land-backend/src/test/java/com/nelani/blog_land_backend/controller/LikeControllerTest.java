@@ -19,8 +19,7 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = LikeController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -49,8 +48,8 @@ public class LikeControllerTest {
 
                 // Act & Assert
                 mockMvc.perform(get("/api/public/posts/{postId}/likes", postId))
-                                .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.likesCount").value(likesCount));
+                        .andExpect(status().isOk())
+                        .andExpect(content().string(String.valueOf(likesCount)));
 
                 verify(likeService, times(1)).getPostLikesCount(postId);
         }
