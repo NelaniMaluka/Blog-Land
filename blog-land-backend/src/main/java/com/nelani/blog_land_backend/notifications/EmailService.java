@@ -6,6 +6,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.lang.NonNull;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -23,17 +26,18 @@ public class EmailService {
 
     @Async("emailTaskExecutor")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Retryable(retryFor = { Exception.class }, maxAttempts = 3, backoff = @Backoff(delay = 1000, multiplier = 2))
     private void sendEmail(@NonNull String toEmail, @NonNull String subject, @NonNull String htmlContent) {
+        MimeMessage message = mailSender.createMimeMessage();
         try {
-            MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(toEmail);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
-
             mailSender.send(message);
         } catch (Exception e) {
-            log.error("Failed to send email to {} with subject '{}'", toEmail, subject, e);
+            // Rethrow as runtime to trigger retry
+            throw new RuntimeException(e);
         }
     }
 
@@ -89,4 +93,11 @@ public class EmailService {
         // Email the recipe to the provided email
         sendEmail(toEmail, subject, htmlContent);
     }
+
+    // Called only after all retry attempts fail
+    @Recover
+    private void recoverSendEmail(Exception e, String toEmail, String subject, String htmlContent) {
+        log.error("Failed to send email to {} with subject '{}' after retries", toEmail, subject, e);
+    }
+
 }

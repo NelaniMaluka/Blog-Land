@@ -24,7 +24,7 @@ public class ModerationValidator {
     }
 
     public void commentModeration(Comment comment) {
-        // moderationClient.validateContent(comment.getContent());
+        moderationClient.validateContent(comment.getContent());
     }
 
     public void postModeration(Post post) {
@@ -48,8 +48,7 @@ public class ModerationValidator {
             }
         }
 
-        // moderation call
-        // moderationClient.validateContent(combined.toString());
+        moderationClient.validateContent(combined.toString());
     }
 
     public void userModeration(User user, Map<String, String> socials) {
@@ -79,8 +78,7 @@ public class ModerationValidator {
             }
         }
 
-        // Single moderation call
-        // moderationClient.validateContent(combined.toString());
+        moderationClient.validateContent(combined.toString());
     }
 
     private String fetchPageTitleOrSnippet(String url) {
