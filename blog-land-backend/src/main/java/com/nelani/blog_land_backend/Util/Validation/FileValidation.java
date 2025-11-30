@@ -8,7 +8,7 @@ import java.nio.file.*;
 
 public class FileValidation {
 
-    public static String removeFile(String file) {
+    public static void removeFile(String file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("No file uploaded");
         }
@@ -17,7 +17,6 @@ public class FileValidation {
 
         try {
             Files.delete(path);
-            return "File deleted successfully";
         } catch (NoSuchFileException e) {
             throw new IllegalArgumentException("No such file: " + file);
         } catch (DirectoryNotEmptyException e) {
