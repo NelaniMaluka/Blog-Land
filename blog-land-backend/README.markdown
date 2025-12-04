@@ -5,7 +5,7 @@ Built with a clean layered architecture (Controller → Service → Repository) 
 
 ---
 
-[📄 API Documentation](https://blog-land.onrender.com/swagger-ui/index.html)
+[API Documentation](https://blog-land.onrender.com/swagger-ui/index.html)
 
 
 ## Features
